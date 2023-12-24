@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
-const UserSchema = new mongoose.Schema({
+import bcrypt from 'bcrypt';
+import { IUser, IUserModel } from '../types';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const UserSchema = new mongoose.Schema<IUser, IUserModel>({
   userName: {
     type: String,
     unique: true,
@@ -20,11 +24,11 @@ const UserSchema = new mongoose.Schema({
     default: '',
   },
   createdAt: {
-    type: String,
+    type: Date,
     default: Date.now(),
   },
   updatedAt: {
-    type: String,
+    type: Date,
     default: Date.now(),
   },
   role: {
@@ -40,5 +44,21 @@ UserSchema.set('toJSON', {
     delete ret._id;
   },
 });
-const User = mongoose.model('User', UserSchema);
+
+UserSchema.static(
+  'isEmailTaken',
+  async function (email: string, excludeUserId: mongoose.ObjectId): Promise<boolean> {
+    const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
+    return !!user;
+  }
+);
+
+UserSchema.pre('save', async function (next) {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 8);
+  }
+  next();
+});
+
+const User = mongoose.model<IUser, IUserModel>('User', UserSchema);
 export default User;
