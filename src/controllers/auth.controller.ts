@@ -6,7 +6,11 @@ import { validateEmail } from '../validators/emailValidator';
 
 export const loginUserController = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
+
+  //check invalid email
   const emailError = validateEmail(email);
+
+  //check existing email and password
   if (!email || !password) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
@@ -24,19 +28,22 @@ export const loginUserController = catchAsync(async (req: Request, res: Response
 
 export const registerUserController = catchAsync(async (req: Request, res: Response) => {
   const { email, password, userName } = req.body;
-  const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-  const isCheckEmail = reg.test(email);
+
+  //check invalid email
+  const emailError = validateEmail(email);
+
+  //check existing email, password and userName
   if (!email || !password || !userName) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
       message: 'Please provide complete information.',
     });
-  } else if (!isCheckEmail) {
+  } else if (emailError) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
       message: 'Please enter a valid email.',
     });
   }
-  const response = await registerUserService(req.body);
+  const response = await registerUserService({ email, password, userName });
   res.status(200).json(response);
 });
