@@ -10,7 +10,7 @@ const ConversationSchema = new mongoose.Schema({
   messages: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: 'Messages',
+      ref: 'Message',
     },
   ],
   createdAt: {
@@ -19,5 +19,5 @@ const ConversationSchema = new mongoose.Schema({
   },
 });
 
-const Conversations = mongoose.model('Conversations', ConversationSchema);
-export default Conversations;
+const Conversation = mongoose.model('Conversation', ConversationSchema);
+export default Conversation;

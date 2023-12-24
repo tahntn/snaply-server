@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MessagesSchema = new mongoose.Schema({
+const MessageSchema = new mongoose.Schema({
   title: {
     type: String,
   },
@@ -36,7 +36,7 @@ const MessagesSchema = new mongoose.Schema({
   ],
 });
 
-MessagesSchema.set('toJSON', {
+MessageSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc, ret) {
@@ -44,5 +44,5 @@ MessagesSchema.set('toJSON', {
   },
 });
 
-const Messages = mongoose.model('Messages', MessagesSchema);
-export default Messages;
+const Message = mongoose.model('Message', MessageSchema);
+export default Message;
