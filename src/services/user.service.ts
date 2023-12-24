@@ -5,6 +5,23 @@ import { IQueryUser, IUser } from '../types';
 import { parseNumber } from '../utils';
 import bcrypt from 'bcrypt';
 
+export const getUserByIdService = async (id: string) => {
+  try {
+    const user = await User.findById(id);
+    if (user === null) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
+    }
+    return user;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      const errorMessage = error.message;
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, errorMessage);
+    } else {
+      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
+    }
+  }
+};
+
 export const searchUserNameService = async ({ page, limit, q }: IQueryUser) => {
   try {
     const _page = parseNumber(page, 1);
