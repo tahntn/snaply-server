@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from 'express';
 import { deleteMessage, getMessage, getMessages, sendMessage, updateMessage } from '../validators';
 import { validate } from '../middlewares';
 import {
   deleteMessageController,
+  getAllMessagesController,
   getMessageByIdController,
-  getMessagesController,
   sendMessagesController,
   updateMessageController,
 } from '../controllers';
@@ -14,13 +13,13 @@ const router = Router();
 
 router
   .route('/')
-  .post('sendMessage' as any, validate(sendMessage), sendMessagesController)
-  .get('getMessages' as any, validate(getMessages), getMessagesController);
+  .post(validate(sendMessage), sendMessagesController)
+  .get(validate(getMessages), getAllMessagesController);
 
 router
   .route('/:messageId')
-  .get('getMessage' as any, validate(getMessage), getMessageByIdController)
-  .patch('updateMessage' as any, validate(updateMessage), updateMessageController)
-  .delete('deleteMessage' as any, validate(deleteMessage), deleteMessageController);
+  .get(validate(getMessage), getMessageByIdController)
+  .patch(validate(updateMessage), updateMessageController)
+  .delete(validate(deleteMessage), deleteMessageController);
 
 export default router;

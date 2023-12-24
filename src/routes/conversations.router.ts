@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Router } from 'express';
 import { validate } from '../middlewares';
 import {
@@ -20,13 +19,13 @@ const router = Router();
 
 router
   .route('/')
-  .post('createConversation' as any, validate(createConversation), createConversationController)
-  .get('getConversations' as any, validate(getConversations), getConversationsController);
+  .post(validate(createConversation), createConversationController)
+  .get(validate(getConversations), getConversationsController);
 
 router
   .route('/:conversationId')
-  .get('getConversation' as any, validate(getConversation), getConversationByIdController)
-  .patch('updateConversation' as any, validate(updateConversation), updateConversationController)
-  .delete('deleteConversation' as any, validate(deleteConversation), deleteConversationController);
+  .get(validate(getConversation), getConversationByIdController)
+  .patch(validate(updateConversation), updateConversationController)
+  .delete(validate(deleteConversation), deleteConversationController);
 
 export default router;
