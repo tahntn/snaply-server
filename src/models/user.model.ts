@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
 import { IUser, IUserModel } from '../types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const UserSchema = new mongoose.Schema<IUser, IUserModel>({
   userName: {
     type: String,
@@ -43,21 +41,6 @@ UserSchema.set('toJSON', {
   transform: function (doc, ret) {
     delete ret._id;
   },
-});
-
-UserSchema.static(
-  'isEmailTaken',
-  async function (email: string, excludeUserId: mongoose.ObjectId): Promise<boolean> {
-    const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
-    return !!user;
-  }
-);
-
-UserSchema.pre('save', async function (next) {
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 8);
-  }
-  next();
 });
 
 const User = mongoose.model<IUser, IUserModel>('User', UserSchema);

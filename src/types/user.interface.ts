@@ -19,4 +19,4 @@ export interface IUserModel extends Model<IUser> {
   isEmailTaken(email: string, excludeUserId?: mongoose.Types.ObjectId): Promise<boolean>;
 }
 
-export type TNewRegisteredUser = Pick<IUser, 'email' | 'password' | 'userName'>;
+export type INewRegisteredUser = Pick<IUser, 'email' | 'password' | 'userName'>;
