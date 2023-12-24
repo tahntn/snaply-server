@@ -4,6 +4,8 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import router from './routes';
 import mongoose from 'mongoose';
+import { errorConverter, errorHandler } from './errors';
+
 dotenv.config();
 
 const app: Express = express();
@@ -35,6 +37,12 @@ const server = app.listen(port, () => {
 
 //initiate router
 app.use('/api/v1', router);
+
+// convert error to ApiError, if needed
+app.use(errorConverter);
+
+// handle error
+app.use(errorHandler);
 
 process.on('unhandledRejection', (reason, p) => {
   console.error('Unhandled Rejection at:', p, 'reason:', reason);
