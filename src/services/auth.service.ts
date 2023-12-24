@@ -3,6 +3,7 @@ import { ApiError } from '../errors';
 import User from '../models/user.model';
 import bcrypt from 'bcrypt';
 import { INewRegisteredUser } from '../types';
+import { handleError } from '../errors/handlError';
 
 export const loginUserService = async (email: string, password: string) => {
   try {
@@ -32,12 +33,7 @@ export const loginUserService = async (email: string, password: string) => {
       };
     }
   } catch (error) {
-    if (error instanceof ApiError) {
-      const errorMessage = error.message;
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, errorMessage);
-    } else {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
-    }
+    handleError(error);
   }
 };
 
@@ -77,11 +73,6 @@ export const registerUserService = async (newUser: INewRegisteredUser) => {
       },
     };
   } catch (error) {
-    if (error instanceof ApiError) {
-      const errorMessage = error.message;
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, errorMessage);
-    } else {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
-    }
+    handleError(error);
   }
 };

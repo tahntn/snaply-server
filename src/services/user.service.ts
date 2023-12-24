@@ -1,5 +1,6 @@
 import { httpStatus } from '../constant';
 import { ApiError } from '../errors';
+import { handleError } from '../errors/handlError';
 import User from '../models/user.model';
 import { IQueryUser, IUser } from '../types';
 import { parseNumber } from '../utils';
@@ -13,12 +14,7 @@ export const getUserByIdService = async (id: string) => {
     }
     return user;
   } catch (error) {
-    if (error instanceof ApiError) {
-      const errorMessage = error.message;
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, errorMessage);
-    } else {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
-    }
+    handleError(error);
   }
 };
 
@@ -57,12 +53,7 @@ export const searchUserNameService = async ({ page, limit, q }: IQueryUser) => {
       },
     };
   } catch (error) {
-    if (error instanceof ApiError) {
-      const errorMessage = error.message;
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, errorMessage);
-    } else {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
-    }
+    handleError(error);
   }
 };
 
@@ -107,11 +98,6 @@ export const updateUserService = async (id: string, data: Partial<IUser>) => {
       },
     };
   } catch (error) {
-    if (error instanceof ApiError) {
-      const errorMessage = error.message;
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, errorMessage);
-    } else {
-      throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Internal Server Error');
-    }
+    handleError(error);
   }
 };
