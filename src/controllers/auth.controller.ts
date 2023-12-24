@@ -45,5 +45,5 @@ export const registerUserController = catchAsync(async (req: Request, res: Respo
     });
   }
   const response = await registerUserService({ email, password, userName });
-  res.status(200).json(response);
+  res.status(httpStatus.CREATED).json(response);
 });
