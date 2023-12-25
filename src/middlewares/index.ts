@@ -1,3 +1,3 @@
 import validate from './validate.middleware';
-
-export { validate };
+import auth from './auth.middleware';
+export { validate, auth };

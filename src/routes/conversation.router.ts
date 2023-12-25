@@ -1,7 +1,8 @@
 import { Router } from 'express';
+
 import { validate } from '../middlewares';
 import {
-  createConversation,
+  // createConversation,
   deleteConversation,
   getConversation,
   getConversations,
@@ -19,7 +20,7 @@ const router = Router();
 
 router
   .route('/')
-  .post(validate(createConversation), createConversationController)
+  .post(createConversationController)
   .get(validate(getConversations), getConversationsController);
 
 router
