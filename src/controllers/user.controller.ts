@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 
 import { httpStatus } from '../constant';
 import { IQueryUser } from '../types';
@@ -42,6 +43,6 @@ export const getUserByIdController = catchAsync(async (req: Request, res: Respon
       message: 'Please provide a valid user id',
     });
   }
-  const response = await getUserByIdService(userId);
+  const response = await getUserByIdService(new mongoose.Types.ObjectId(userId));
   return res.status(httpStatus.OK).json(response);
 });

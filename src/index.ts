@@ -4,7 +4,9 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import router from './routes';
 import mongoose from 'mongoose';
+import passport from 'passport';
 import { errorConverter, errorHandler } from './errors';
+import { jwtStrategy } from './config';
 
 dotenv.config();
 
@@ -13,7 +15,9 @@ app.use(express());
 app.use(cors({}));
 app.use(bodyParser.json());
 
-const port = process.env.PORT || 8000;
+// jwt authentication
+app.use(passport.initialize());
+passport.use('jwt', jwtStrategy);
 
 //connect to MongoDB
 if (process.env.MONGO && process.env.MONGO_PASSWORD) {
@@ -31,6 +35,7 @@ if (process.env.MONGO && process.env.MONGO_PASSWORD) {
 }
 
 //initialize the server
+const port = process.env.PORT || 8000;
 const server = app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });

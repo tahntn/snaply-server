@@ -1,11 +1,12 @@
 import mongoose, { Document } from 'mongoose';
+import { roles } from '../constant';
 
 export interface IUser extends Document {
   userName: string;
   email: string;
   password: string;
   avatar: string;
-  role: boolean;
+  role: string;
 }
 
 const UserSchema = new mongoose.Schema<IUser>(
@@ -30,8 +31,9 @@ const UserSchema = new mongoose.Schema<IUser>(
       default: '',
     },
     role: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: roles,
+      default: 'user',
     },
   },
   { timestamps: true }

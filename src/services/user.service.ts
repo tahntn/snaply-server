@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 
 import { httpStatus } from '../constant';
 import { ApiError, handleError } from '../errors';
@@ -6,7 +7,7 @@ import { IUser, User } from '../models';
 import { IQueryUser } from '../types';
 import { parseNumber } from '../utils';
 
-export const getUserByIdService = async (id: string) => {
+export const getUserByIdService = async (id: mongoose.Types.ObjectId) => {
   try {
     const user = await User.findById(id);
     if (user === null) {
