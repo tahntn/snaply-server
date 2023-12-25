@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import catchAsync from '../utils/catchAsync';
+
 import { httpStatus } from '../constant';
-import pick from '../utils/pick';
-import { getUserByIdService, searchUserNameService, updateUserService } from '../services';
 import { IQueryUser } from '../types';
+import { catchAsync, pick } from '../utils';
+import { getUserByIdService, searchUserNameService, updateUserService } from '../services';
 
 export const searchUserNameController = catchAsync(async (req: Request, res: Response) => {
   //check q

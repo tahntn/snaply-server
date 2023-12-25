@@ -1,10 +1,10 @@
-import { httpStatus } from '../constant';
-import { ApiError } from '../errors';
-import { handleError } from '../errors/handlError';
-import User from '../models/user.model';
-import { IQueryUser, IUser } from '../types';
-import { parseNumber } from '../utils';
 import bcrypt from 'bcrypt';
+
+import { httpStatus } from '../constant';
+import { ApiError, handleError } from '../errors';
+import { IUser, User } from '../models';
+import { IQueryUser } from '../types';
+import { parseNumber } from '../utils';
 
 export const getUserByIdService = async (id: string) => {
   try {

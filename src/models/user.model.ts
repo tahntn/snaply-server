@@ -1,39 +1,41 @@
-import mongoose from 'mongoose';
-import { IUser, IUserModel } from '../types';
+import mongoose, { Document } from 'mongoose';
 
-const UserSchema = new mongoose.Schema<IUser, IUserModel>({
-  userName: {
-    type: String,
-    unique: true,
-    required: true,
+export interface IUser extends Document {
+  userName: string;
+  email: string;
+  password: string;
+  avatar: string;
+  role: boolean;
+}
+
+const UserSchema = new mongoose.Schema<IUser>(
+  {
+    userName: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    avatar: {
+      type: String,
+      default: '',
+    },
+    role: {
+      type: Boolean,
+      default: false,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  avatar: {
-    type: String,
-    default: '',
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  role: {
-    type: Boolean,
-    default: false,
-  },
-});
+  { timestamps: true }
+);
 
 UserSchema.set('toJSON', {
   virtuals: true,
@@ -43,5 +45,5 @@ UserSchema.set('toJSON', {
   },
 });
 
-const User = mongoose.model<IUser, IUserModel>('User', UserSchema);
+const User = mongoose.model<IUser>('User', UserSchema);
 export default User;

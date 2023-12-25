@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { deleteMessage, getMessage, getMessages, sendMessage, updateMessage } from '../validators';
+
 import { validate } from '../middlewares';
+import { deleteMessage, getMessage, getMessages, sendMessage, updateMessage } from '../validators';
 import {
   deleteMessageController,
   getAllMessagesController,

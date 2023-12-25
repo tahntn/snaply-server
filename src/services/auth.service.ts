@@ -1,9 +1,9 @@
-import { httpStatus } from '../constant';
-import { ApiError } from '../errors';
-import User from '../models/user.model';
 import bcrypt from 'bcrypt';
+
+import { User } from '../models';
+import { ApiError, handleError } from '../errors';
 import { INewRegisteredUser } from '../types';
-import { handleError } from '../errors/handlError';
+import { httpStatus } from '../constant';
 
 export const loginUserService = async (email: string, password: string) => {
   try {

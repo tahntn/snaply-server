@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { loginUserService, registerUserService } from '../services';
+
 import { httpStatus } from '../constant';
-import catchAsync from '../utils/catchAsync';
-import { validateEmail } from '../validators/emailValidator';
+import { validateEmail } from '../validators';
+import { catchAsync } from '../utils';
+import { loginUserService, registerUserService } from '../services';
 
 export const loginUserController = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;

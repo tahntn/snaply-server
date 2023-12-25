@@ -1,9 +1,11 @@
 import { Router } from 'express';
+
 import {
   getUserByIdController,
   searchUserNameController,
   updateUserController,
 } from '../controllers';
+
 const router = Router();
 
 router.put('/:id', updateUserController);

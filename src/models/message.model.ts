@@ -1,6 +1,15 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-const MessageSchema = new mongoose.Schema({
+export interface IMessage extends Document {
+  title: string;
+  senderId: Schema.Types.ObjectId;
+  replyTo?: Schema.Types.ObjectId;
+  conversationsId: Schema.Types.ObjectId;
+  isPin?: boolean;
+  attachments?: string[];
+}
+
+const MessageSchema = new mongoose.Schema<IMessage>({
   title: {
     type: String,
   },
@@ -8,26 +17,17 @@ const MessageSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'User',
   },
-  content: { type: String, required: true },
-  receiverId: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'User',
-  },
   replyTo: {
     type: mongoose.Schema.ObjectId,
-    ref: 'Messages',
+    ref: 'Message',
   },
   conversationsId: {
     type: mongoose.Schema.ObjectId,
-    ref: 'Conversations',
+    ref: 'Conversation',
   },
   isPin: {
     type: Boolean,
     default: false,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
   },
   attachments: [
     {
@@ -44,5 +44,5 @@ MessageSchema.set('toJSON', {
   },
 });
 
-const Message = mongoose.model('Message', MessageSchema);
+const Message = mongoose.model<IMessage>('Message', MessageSchema);
 export default Message;
