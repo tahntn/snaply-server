@@ -15,7 +15,7 @@ export const searchUserNameController = catchAsync(async (req: Request, res: Res
     });
   }
 
-  const query: IQueryUser = pick(req.query, ['limit, page', 'q']);
+  const query: IQueryUser = pick(req.query, ['limit', 'page', 'q']);
 
   const response = await searchUserNameService(query);
 
