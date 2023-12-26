@@ -9,32 +9,35 @@ export interface IMessage extends Document {
   attachments?: string[];
 }
 
-const MessageSchema = new mongoose.Schema<IMessage>({
-  title: {
-    type: String,
-  },
-  senderId: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'User',
-  },
-  replyTo: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'Message',
-  },
-  conversationsId: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'Conversation',
-  },
-  isPin: {
-    type: Boolean,
-    default: false,
-  },
-  attachments: [
-    {
+const MessageSchema = new mongoose.Schema<IMessage>(
+  {
+    title: {
       type: String,
     },
-  ],
-});
+    senderId: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+    },
+    replyTo: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Message',
+    },
+    conversationsId: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Conversation',
+    },
+    isPin: {
+      type: Boolean,
+      default: false,
+    },
+    attachments: [
+      {
+        type: String,
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
 MessageSchema.set('toJSON', {
   virtuals: true,

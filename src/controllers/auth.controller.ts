@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-
 import { httpStatus } from '../constant';
 import { validateEmail } from '../validators';
 import { catchAsync } from '../utils';
