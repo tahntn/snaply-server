@@ -11,8 +11,9 @@ import {
 } from '../services';
 import { generateAuthTokens } from '../services/token.service';
 import { AccessAndRefreshTokens } from '../types/token.interface';
+import { IRequest } from '../types';
 
-export const loginUserController = catchAsync(async (req: Request, res: Response) => {
+export const loginUserController = catchAsync(async (req: IRequest, res: Response) => {
   const { email, password } = req.body;
 
   //check invalid email

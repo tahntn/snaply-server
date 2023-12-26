@@ -11,6 +11,6 @@ const router = Router();
 
 router.put('/:id', auth(), updateUserController);
 router.get('/search', auth(), searchUserNameController);
-router.get('/:id', getUserByIdController);
+router.get('/:id', auth(), getUserByIdController);
 
 export default router;

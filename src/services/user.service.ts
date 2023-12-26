@@ -4,14 +4,14 @@ import mongoose from 'mongoose';
 import { httpStatus } from '../constant';
 import { ApiError, handleError } from '../errors';
 import { IUser, User } from '../models';
-import { IQueryUser } from '../types';
+import { IObject, IQueryUser } from '../types';
 import { parseNumber } from '../utils';
 
-export const getUserByIdService = async (id: mongoose.Types.ObjectId) => {
+export const getUserByIdService = async (id: mongoose.Types.ObjectId, language: IObject = {}) => {
   try {
     const user = await User.findById(id);
     if (user === null) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'User not found');
+      throw new ApiError(httpStatus.BAD_REQUEST, language.user_not_found);
     }
     return user;
   } catch (error) {

@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import { errorConverter, errorHandler } from './errors';
 import { jwtStrategy } from './config';
+import setLanguage from './middlewares/setLanguage.middleware';
 
 dotenv.config();
 
@@ -39,6 +40,9 @@ const port = process.env.PORT || 8000;
 const server = app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
+
+//setLanguage
+app.use(setLanguage);
 
 //initiate router
 app.use('/api/v1', router);
