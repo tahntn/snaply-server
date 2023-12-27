@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import { auth } from '../middlewares';
-import { createFriendRequestController } from '../controllers';
+import { confirmFriendRequestController, createFriendRequestController } from '../controllers';
 
 const router = Router();
 
 router.post('/create', auth(), createFriendRequestController);
+router.post('/confirm/:id', auth(), confirmFriendRequestController);
 
 export default router;

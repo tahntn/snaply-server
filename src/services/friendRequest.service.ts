@@ -3,10 +3,16 @@ import { httpStatus } from '../constant';
 import { IUser, User } from '../models';
 import FriendRequest from '../models/friendRequest.model';
 import Friend from '../models/friend.model';
+import mongoose from 'mongoose';
 
 interface ICreateFriendRequest {
   sender: IUser;
   receiverEmail: string;
+}
+
+interface IConfirmFriendRequest {
+  currentUser: IUser;
+  confirmUserId: mongoose.Types.ObjectId;
 }
 
 export const createFriendRequestService = async (payload: ICreateFriendRequest) => {
@@ -65,4 +71,74 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
   } catch (error) {
     handleError(error);
   }
+};
+
+export const confirmFriendRequestService = async (payload: IConfirmFriendRequest) => {
+  const { currentUser, confirmUserId } = payload;
+
+  //check confirm User
+  const confirmUser = await User.findById(confirmUserId);
+
+  if (!confirmUser) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `${confirmUserId} has not been found. Please check email address again.`
+    );
+  }
+  //check 2 object ID
+  const areEquals = currentUser.equals(confirmUser._id);
+  if (areEquals) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot send friend request to yourself');
+  }
+
+  //check existing request
+  const existingRequest = await FriendRequest.findOne({
+    senderId: confirmUser._id,
+    receiverId: currentUser._id,
+  });
+  if (!existingRequest) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'request not found');
+  }
+
+  //check friend
+  const friendship1 = await Friend.findOne({
+    userId: confirmUser._id,
+    friends: { $in: [currentUser._id] },
+  });
+  const friendship2 = await Friend.findOne({
+    userId: currentUser._id,
+    friends: { $in: [confirmUser._id] },
+  });
+  if (!!friendship1 || !!friendship2) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Already friends');
+  }
+
+  //delete request
+  await FriendRequest.deleteOne({
+    senderId: confirmUser._id,
+    receiverId: currentUser._id,
+  });
+
+  //push friend
+  await Friend.findOneAndUpdate(
+    { userId: confirmUser._id },
+    {
+      $addToSet: {
+        friends: currentUser._id,
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  await Friend.findOneAndUpdate(
+    { userId: currentUser._id },
+    {
+      $addToSet: {
+        friends: confirmUser._id,
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  return { status: 'Success' };
 };
