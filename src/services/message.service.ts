@@ -6,7 +6,7 @@ import { TPayloadSendMessage } from '../types';
 export const sendMessageService = async (payload: TPayloadSendMessage) => {
   try {
     const { user, conversationsId, title } = payload;
-    const currentUserId = user?.id;
+    const currentUserId = user?._id;
 
     //check conversation exist
     const conversation = await Conversation.findById(conversationsId);
@@ -15,13 +15,8 @@ export const sendMessageService = async (payload: TPayloadSendMessage) => {
     }
 
     // check user is in conversation
-    const existingConversation = await Conversation.find({
-      participants: {
-        $elemMatch: { $eq: currentUserId },
-      },
-    });
-
-    if (existingConversation.length <= 0) {
+    const isUserInConversation = conversation?.participants?.some((id) => currentUserId.equals(id));
+    if (!isUserInConversation) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'User is not in conversation');
     }
 
