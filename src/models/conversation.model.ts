@@ -2,7 +2,6 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IConversation extends Document {
   participants: Schema.Types.ObjectId[];
-  messages: Schema.Types.ObjectId[];
 }
 
 const ConversationSchema = new mongoose.Schema<IConversation>(
