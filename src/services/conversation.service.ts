@@ -18,8 +18,8 @@ export const createConversationService = async (payload: {
     }
 
     //check participant
-    const checkParticiant = await getUserByIdService(new mongoose.Types.ObjectId(userId2));
-    if (!checkParticiant) {
+    const checkParticipant = await getUserByIdService(new mongoose.Types.ObjectId(userId2));
+    if (!checkParticipant) {
       throw new Error();
     }
 

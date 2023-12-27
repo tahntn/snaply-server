@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { validate } from '../middlewares';
+import { auth, validate } from '../middlewares';
 import { deleteMessage, getMessage, getMessages, sendMessage, updateMessage } from '../validators';
 import {
   deleteMessageController,
@@ -14,7 +14,7 @@ const router = Router();
 
 router
   .route('/')
-  .post(validate(sendMessage), sendMessagesController)
+  .post(auth(), validate(sendMessage), sendMessagesController)
   .get(validate(getMessages), getAllMessagesController);
 
 router

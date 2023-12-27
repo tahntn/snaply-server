@@ -3,9 +3,6 @@ import Joi from 'joi';
 export const sendMessage = {
   body: Joi.object().keys({
     title: Joi.string().required(),
-    senderId: Joi.string().required(),
-    content: Joi.string().required(),
-    receiverId: Joi.string().required(),
     conversationsId: Joi.string().required(),
   }),
 };
