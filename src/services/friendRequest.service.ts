@@ -15,6 +15,11 @@ interface IConfirmFriendRequest {
   confirmUserId: mongoose.Types.ObjectId;
 }
 
+interface IConfirmFriendRequest2 {
+  currentUser: IUser;
+  friendRequestId: mongoose.Types.ObjectId;
+}
+
 export const createFriendRequestService = async (payload: ICreateFriendRequest) => {
   try {
     const { sender, receiverEmail } = payload;
@@ -86,7 +91,7 @@ export const confirmFriendRequestService = async (payload: IConfirmFriendRequest
     );
   }
   //check 2 object ID
-  const areEquals = currentUser.equals(confirmUser._id);
+  const areEquals = currentUser._id.equals(confirmUser._id);
   if (areEquals) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot send friend request to yourself');
   }
@@ -135,6 +140,66 @@ export const confirmFriendRequestService = async (payload: IConfirmFriendRequest
     {
       $addToSet: {
         friends: confirmUser._id,
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  return { status: 'Success' };
+};
+
+export const confirmFriendRequestService2 = async (payload: IConfirmFriendRequest2) => {
+  const { currentUser, friendRequestId } = payload;
+
+  //check  friend Request
+  const friendRequest = await FriendRequest.findById(friendRequestId);
+  if (!friendRequest) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `${friendRequestId} has not been found. Please check email address again.`
+    );
+  }
+  const senderId = friendRequest.senderId;
+  //check receiver ID
+  const areEquals = currentUser._id.equals(friendRequest.receiverId);
+  if (!areEquals) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You are not receiver');
+  }
+
+  //check friend
+  const friendship1 = await Friend.findOne({
+    userId: senderId,
+    friends: { $in: [currentUser._id] },
+  });
+  const friendship2 = await Friend.findOne({
+    userId: currentUser._id,
+    friends: { $in: [senderId] },
+  });
+  if (!!friendship1 || !!friendship2) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Already friends');
+  }
+
+  //delete request
+  await friendRequest.deleteOne({
+    _id: friendRequest._id,
+  });
+
+  //push friend
+  await Friend.findOneAndUpdate(
+    { userId: senderId },
+    {
+      $addToSet: {
+        friends: currentUser._id,
+      },
+    },
+    { upsert: true, new: true }
+  );
+
+  await Friend.findOneAndUpdate(
+    { userId: currentUser._id },
+    {
+      $addToSet: {
+        friends: senderId,
       },
     },
     { upsert: true, new: true }
