@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
-import { handleError } from '../errors';
-import { Conversation, IUser } from '../models';
+import { ApiError, handleError } from '../errors';
+import { Conversation, IUser, Message } from '../models';
 import { getUserByIdService } from './user.service';
+import { httpStatus } from '../constant';
+import { parseNumber } from '../utils';
 
 export const createConversationService = async (payload: {
   user: IUser;
@@ -38,6 +40,44 @@ export const createConversationService = async (payload: {
     });
     await newConversation.save();
     return { conversation: newConversation };
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getConversationByIdService = async (payload: {
+  user: IUser;
+  conversationId: string;
+  page?: string;
+  limit?: string;
+}) => {
+  try {
+    const { user, conversationId, page, limit } = payload;
+
+    const _page = parseNumber(page, 1);
+    const _limit = parseNumber(limit, 5);
+    const startIndex = (_page - 1) * _limit;
+
+    const conversation = await Conversation.findById(conversationId);
+    //check existing conversation
+    if (!conversation) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Conversation id  does not exist.');
+    }
+
+    //check user in conversation
+    const isAuth = conversation.participants.find((item) => user._id.equals(item));
+    if (!isAuth) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'You do not have access to this conversation ');
+    }
+
+    const messages = await Message.find({ conversationsId: conversationId })
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(_limit)
+      .populate('senderId', '-role -password -createdAt -updatedAt')
+      .exec();
+
+    return { messages };
   } catch (error) {
     handleError(error);
   }

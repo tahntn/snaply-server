@@ -25,7 +25,7 @@ router
 
 router
   .route('/:conversationId')
-  .get(validate(getConversation), getConversationByIdController)
+  .get(validate(getConversation), auth(), getConversationByIdController)
   .patch(validate(updateConversation), updateConversationController)
   .delete(validate(deleteConversation), deleteConversationController);
 
