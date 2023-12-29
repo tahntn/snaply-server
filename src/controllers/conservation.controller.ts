@@ -2,9 +2,10 @@
 import { Request, Response } from 'express';
 
 import { httpStatus } from '../constant';
-import { catchAsync } from '../utils';
-import { createConversationService } from '../services';
-import { IUser } from '../models';
+import { catchAsync, pick } from '../utils';
+import { createConversationService, getConversationsService } from '../services';
+import { IUser, User } from '../models';
+import { IQueryUser, IRequest } from '../types';
 
 export const createConversationController = catchAsync(async (req: Request, res: Response) => {
   const { participants } = req.body;
@@ -30,7 +31,22 @@ export const createConversationController = catchAsync(async (req: Request, res:
   });
   res.status(httpStatus.OK).json(response);
 });
-export const getConversationsController = catchAsync(async (req: Request, res: Response) => {});
+
+export const getConversationsController = catchAsync(async (req: IRequest, res: Response) => {
+  const currentUser = req.user;
+
+  const query: IQueryUser = pick(req.query, ['limit', 'page']);
+
+  if (!currentUser) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      code: httpStatus.BAD_REQUEST,
+      message: 'User is not existing',
+    });
+  }
+
+  const response = await getConversationsService(currentUser, query);
+  res.status(httpStatus.OK).json(response);
+});
 export const getConversationByIdController = catchAsync(async (req: Request, res: Response) => {});
 export const updateConversationController = catchAsync(async (req: Request, res: Response) => {});
 export const deleteConversationController = catchAsync(async (req: Request, res: Response) => {});

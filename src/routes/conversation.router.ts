@@ -1,13 +1,7 @@
 import { Router } from 'express';
 
 import { auth, validate } from '../middlewares';
-import {
-  // createConversation,
-  deleteConversation,
-  getConversation,
-  getConversations,
-  updateConversation,
-} from '../validators';
+import { deleteConversation, getConversation, updateConversation } from '../validators';
 import {
   createConversationController,
   deleteConversationController,
@@ -21,7 +15,7 @@ const router = Router();
 router
   .route('/')
   .post(auth(), createConversationController)
-  .get(validate(getConversations), getConversationsController);
+  .get(auth(), getConversationsController);
 
 router
   .route('/:conversationId')
