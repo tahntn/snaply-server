@@ -8,7 +8,7 @@ import {
   getConversationByIdService,
   getConversationsService,
 } from '../services';
-import { IUser, User } from '../models';
+import { IUser } from '../models';
 import { IQueryUser, IRequest } from '../types';
 
 export const createConversationController = catchAsync(async (req: Request, res: Response) => {
