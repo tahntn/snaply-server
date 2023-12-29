@@ -3,7 +3,11 @@ import { Request, Response } from 'express';
 
 import { httpStatus } from '../constant';
 import { catchAsync, pick } from '../utils';
-import { createConversationService, getConversationsService } from '../services';
+import {
+  createConversationService,
+  getConversationByIdService,
+  getConversationsService,
+} from '../services';
 import { IUser, User } from '../models';
 import { IQueryUser, IRequest } from '../types';
 
@@ -47,6 +51,32 @@ export const getConversationsController = catchAsync(async (req: IRequest, res: 
   const response = await getConversationsService(currentUser, query);
   res.status(httpStatus.OK).json(response);
 });
-export const getConversationByIdController = catchAsync(async (req: Request, res: Response) => {});
+
+export const getConversationByIdController = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUser;
+  const query = pick(req.query, ['limit', 'page']);
+  if (!user) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      code: httpStatus.BAD_REQUEST,
+      message: 'User is not existing',
+    });
+  }
+
+  if (!req.params.conversationId) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      code: httpStatus.BAD_REQUEST,
+      message: 'Please provide keyword',
+    });
+  }
+
+  const response = await getConversationByIdService({
+    user,
+    conversationId: req.params.conversationId as string,
+    page: query?.page,
+    limit: query?.limit,
+  });
+  res.status(httpStatus.OK).json(response);
+});
+
 export const updateConversationController = catchAsync(async (req: Request, res: Response) => {});
 export const deleteConversationController = catchAsync(async (req: Request, res: Response) => {});
