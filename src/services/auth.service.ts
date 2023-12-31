@@ -16,7 +16,6 @@ export const loginUserService = async (email: string, password: string) => {
     const checkUser = await User.findOne({
       email,
     });
-
     if (checkUser === null) {
       throw new ApiError(httpStatus.UNAUTHORIZED, 'Email does not exist.');
     } else {
@@ -29,12 +28,7 @@ export const loginUserService = async (email: string, password: string) => {
       }
 
       return {
-        code: httpStatus.OK,
-        status: 'SUCCESS',
-        message: 'Login successful.',
-        data: {
-          checkUser,
-        },
+        user: checkUser,
       };
     }
   } catch (error) {

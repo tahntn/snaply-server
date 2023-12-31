@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Response } from 'express';
 import { httpStatus } from '../constant';
 import { IRequest } from '../types';
@@ -6,8 +7,7 @@ import {
   confirmFriendRequestService,
   confirmFriendRequestService2,
   createFriendRequestService,
-} from '../services/friendRequest.service';
-import mongoose from 'mongoose';
+} from '../services';
 
 export const createFriendRequestController = catchAsync(async (req: IRequest, res: Response) => {
   const { receiverEmail } = req.body;

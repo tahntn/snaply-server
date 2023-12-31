@@ -33,11 +33,16 @@ export const loginUserController = catchAsync(async (req: IRequest, res: Respons
   const response = await loginUserService(email, password);
   let tokens: AccessAndRefreshTokens | null = null;
   if (response) {
-    tokens = await generateAuthTokens(response?.data.checkUser);
+    tokens = await generateAuthTokens(response?.user);
   }
   res.status(httpStatus.OK).json({
-    response,
-    tokens,
+    data: {
+      user: response?.user,
+      tokens,
+    },
+    code: httpStatus.OK,
+    status: 'SUCCESS',
+    message: 'Login successful.',
   });
 });
 
