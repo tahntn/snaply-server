@@ -41,7 +41,6 @@ export const loginUserController = catchAsync(async (req: IRequest, res: Respons
       tokens,
     },
     code: httpStatus.OK,
-    status: 'SUCCESS',
     message: 'Login successful.',
   });
 });
