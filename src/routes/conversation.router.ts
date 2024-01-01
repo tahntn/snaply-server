@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
-import { auth, validate } from '../middlewares';
-import { deleteConversation, getConversation, updateConversation } from '../validators';
+import { auth } from '../middlewares';
 import {
   createConversationController,
   deleteConversationController,
@@ -16,11 +15,10 @@ router
   .route('/')
   .post(auth(), createConversationController)
   .get(auth(), getConversationsController);
-
 router
   .route('/:conversationId')
-  .get(validate(getConversation), auth(), getConversationByIdController)
-  .patch(validate(updateConversation), updateConversationController)
-  .delete(validate(deleteConversation), deleteConversationController);
+  .get(auth(), getConversationByIdController)
+  .patch(auth(), updateConversationController)
+  .delete(auth(), deleteConversationController);
 
 export default router;

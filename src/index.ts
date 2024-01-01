@@ -7,14 +7,29 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import { errorConverter, errorHandler } from './errors';
 import { jwtStrategy } from './config';
-import setLanguage from './middlewares/setLanguage.middleware';
+import i18next from 'i18next';
+import Backend from 'i18next-node-fs-backend';
+import i18nextMiddleware from 'i18next-http-middleware';
 
 dotenv.config();
 
+i18next
+  .use(Backend)
+  .use(i18nextMiddleware.LanguageDetector)
+  .init({
+    backend: {
+      loadPath: __dirname + '/locales/{{lng}}/{{ns}}.json',
+    },
+    fallbackLng: 'en',
+    preload: ['en', 'vi'],
+  });
+
 const app: Express = express();
+
 app.use(express());
 app.use(cors({}));
 app.use(bodyParser.json());
+app.use(i18nextMiddleware.handle(i18next));
 
 // jwt authentication
 app.use(passport.initialize());
@@ -40,9 +55,6 @@ const port = process.env.PORT || 8000;
 const server = app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
-
-//setLanguage
-app.use(setLanguage);
 
 //initiate router
 app.use('/api/v1', router);

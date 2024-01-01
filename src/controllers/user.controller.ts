@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
 import { httpStatus } from '../constant';
-import { IQueryUser, IRequest } from '../types';
+import { IQueryUser } from '../types';
 import { catchAsync, pick } from '../utils';
 import { getUserByIdService, searchUserNameService, updateUserService } from '../services';
 
@@ -35,8 +35,7 @@ export const updateUserController = catchAsync(async (req: Request, res: Respons
   return res.status(httpStatus.OK).json(response);
 });
 
-export const getUserByIdController = catchAsync(async (req: IRequest, res: Response) => {
-  const language = req.language;
+export const getUserByIdController = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
   if (!userId) {
     return res.status(httpStatus.BAD_REQUEST).json({
@@ -44,6 +43,6 @@ export const getUserByIdController = catchAsync(async (req: IRequest, res: Respo
       message: 'Please provide a valid user id',
     });
   }
-  const response = await getUserByIdService(new mongoose.Types.ObjectId(userId), language);
+  const response = await getUserByIdService(new mongoose.Types.ObjectId(userId));
   return res.status(httpStatus.OK).json(response);
 });

@@ -1,7 +1,7 @@
 import { IUser } from '../models/user.model';
 import { AccessAndRefreshTokens } from './token.interface';
 
-export type INewRegisteredUser = Pick<IUser, 'email' | 'password' | 'userName'>;
+export type INewRegisteredUser = Pick<IUser, 'email' | 'password' | 'username'>;
 
 export interface IUserWithTokens {
   user: IUser;

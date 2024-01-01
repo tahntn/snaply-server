@@ -9,11 +9,11 @@ import {
   getConversationsService,
 } from '../services';
 import { IUser } from '../models';
-import { IQueryUser, IRequest } from '../types';
+import { IQueryUser } from '../types';
 
 export const createConversationController = catchAsync(async (req: Request, res: Response) => {
   const { participants } = req.body;
-  const users = req.user as IUser;
+  const users = req.user;
 
   //check participant
   if (!participants || !Array.isArray(participants) || participants?.length < 1) {
@@ -36,7 +36,7 @@ export const createConversationController = catchAsync(async (req: Request, res:
   res.status(httpStatus.OK).json(response);
 });
 
-export const getConversationsController = catchAsync(async (req: IRequest, res: Response) => {
+export const getConversationsController = catchAsync(async (req: Request, res: Response) => {
   const currentUser = req.user;
 
   const query: IQueryUser = pick(req.query, ['limit', 'page']);

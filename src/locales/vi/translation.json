@@ -1,0 +1,28 @@
+{
+  "auth": {
+    "email": {
+      "email": "Vui lòng nhập địa chỉ email hợp lệ.",
+      "required": "Vui lòng nhập địa chỉ email của bạn."
+    },
+    "password": {
+      "min": "Mật khẩu phải có ít nhất 4 chữ cái.",
+      "required": "Vui lòng nhập mật khẩu của bạn.",
+      "match": "Mật khẩu phải chứa ít nhất 1 chữ cái và 1 số."
+    },
+    "username": {
+      "min": "Tên người dùng phải có ít nhất 4 chữ cái.",
+      "required": "Vui lòng nhập tên người dùng của bạn."
+    },
+    "refreshToken": {
+      "required": "Đảm bảo có một refresh token được cung cấp."
+    },
+    "success": {
+      "loginSuccessful": "Đăng nhập thành công.",
+      "registrationSuccessful.": "Đăng ký thành công."
+    },
+    "error": {
+      "unauthorized": "Không được ủy quyền: Thông tin đăng nhập không hợp lệ.",
+      "forbidden": "Từ chối truy cập: Quyền hạn không đủ cho hành động được yêu cầu."
+    }
+  }
+}

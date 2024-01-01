@@ -38,7 +38,7 @@ export const loginUserService = async (email: string, password: string) => {
 
 export const registerUserService = async (newUser: INewRegisteredUser) => {
   try {
-    const { email, userName, password } = newUser;
+    const { email, username, password } = newUser;
 
     // check existing email
     const existingEmailUser = await User.findOne({ email });
@@ -47,8 +47,8 @@ export const registerUserService = async (newUser: INewRegisteredUser) => {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Email is already registered.');
     }
 
-    //check existing userName
-    const existingUserNameUser = await User.findOne({ userName });
+    //check existing username
+    const existingUserNameUser = await User.findOne({ username });
     if (existingUserNameUser) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'UserName is already taken.');
     }
@@ -59,18 +59,11 @@ export const registerUserService = async (newUser: INewRegisteredUser) => {
     //create user
     const user = await User.create({
       email,
-      userName,
+      username,
       password: hashedPassword,
     });
 
-    return {
-      code: httpStatus.CREATED,
-      status: 'SUCCESS',
-      message: 'Registration successful.',
-      data: {
-        user,
-      },
-    };
+    return { user };
   } catch (error) {
     handleError(error);
   }

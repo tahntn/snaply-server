@@ -7,12 +7,12 @@ import { parseNumber } from '../utils';
 import { httpStatus } from '../constant';
 
 export const createConversationService = async (payload: {
-  user: IUser;
+  user: Express.User;
   participants: string[];
 }) => {
   try {
     const { user, participants } = payload;
-    const userId = user._id;
+    const userId = user._id
     const userId2 = participants[0];
     //check user
     const checkUser = await getUserByIdService(userId);

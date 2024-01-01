@@ -4,14 +4,14 @@ import mongoose from 'mongoose';
 import { httpStatus } from '../constant';
 import { ApiError, handleError } from '../errors';
 import { IUser, User } from '../models';
-import { IObject, IQueryUser } from '../types';
+import { IQueryUser } from '../types';
 import { parseNumber } from '../utils';
 
-export const getUserByIdService = async (id: mongoose.Types.ObjectId, language: IObject = {}) => {
+export const getUserByIdService = async (id: mongoose.Types.ObjectId) => {
   try {
     const user = await User.findById(id);
     if (user === null) {
-      throw new ApiError(httpStatus.BAD_REQUEST, language.user_not_found);
+      throw new ApiError(httpStatus.BAD_REQUEST, '');
     }
     return user;
   } catch (error) {
@@ -26,7 +26,7 @@ export const searchUserNameService = async ({ page, limit, q }: IQueryUser) => {
 
     const startIndex = (_page - 1) * _limit;
     const query = {
-      userName: { $regex: q, $options: 'i' },
+      username: { $regex: q, $options: 'i' },
     };
 
     const users = await User.find(query)

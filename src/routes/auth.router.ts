@@ -1,23 +1,16 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import {
   loginUserController,
   logoutController,
   refreshTokensController,
   registerUserController,
 } from '../controllers';
-import {
-  validateLogin,
-  validateLogout,
-  validateRefreshTokens,
-  validateRegister,
-} from '../validators';
-import { validate } from '../middlewares';
 
 const router = Router();
 
-router.post('/login', validate(validateLogin), loginUserController);
-router.post('/register', validate(validateRegister), registerUserController);
-router.post('/logout', validate(validateLogout), logoutController);
-router.post('/refresh-tokens', validate(validateRefreshTokens), refreshTokensController);
+router.post('/login', loginUserController);
+router.post('/register', registerUserController);
+router.post('/logout', logoutController);
+router.post('/refresh-tokens', refreshTokensController);
 
 export default router;

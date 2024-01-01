@@ -7,7 +7,7 @@ import { pick } from '../utils';
 import { ApiError } from '../errors';
 
 const validate =
-  (schema: Record<string, any>) =>
+  (schema: any) =>
   (req: Request, _res: Response, next: NextFunction): void => {
     const validSchema = pick(schema, ['params', 'query', 'body']);
     const object = pick(req, Object.keys(validSchema));
@@ -20,7 +20,6 @@ const validate =
       return next(new ApiError(httpStatus.BAD_REQUEST, errorMessage));
     }
     Object.assign(req, value);
-    return next();
   };
 
 export default validate;

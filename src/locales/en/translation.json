@@ -1,0 +1,28 @@
+{
+  "auth": {
+    "email": {
+      "email": "Please enter a valid email address.",
+      "required": "Please enter your email."
+    },
+    "password": {
+      "min": "Password must have at least 4 letters.",
+      "required": "Please enter your password.",
+      "match": "Password must contain at least 1 letter and 1 number."
+    },
+    "username": {
+      "min": "Username must have at least 4 letters.",
+      "required": "Please enter your username."
+    },
+    "refreshToken": {
+      "required": "Ensure a refresh token is provided.."
+    },
+    "success": {
+      "loginSuccessful": "Login successful.",
+      "registrationSuccessful.": "Registration successful."
+    },
+    "error": {
+      "unauthorized": "Unauthorized: Invalid credentials.",
+      "forbidden": "Access denied: Insufficient permissions for the requested action."
+    }
+  }
+}
