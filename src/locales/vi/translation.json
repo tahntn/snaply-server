@@ -24,5 +24,32 @@
       "unauthorized": "Không được ủy quyền: Thông tin đăng nhập không hợp lệ.",
       "forbidden": "Từ chối truy cập: Quyền hạn không đủ cho hành động được yêu cầu."
     }
+  },
+  "user": {
+    "searchUser": {
+      "success": "Tìm kiếm người dùng thành công",
+      "keyword": "Thiếu từ khóa tìm kiếm."
+    },
+    "updateUser": {
+      "success": "Cập nhật thành công",
+      "unauthorized": "Bạn không thể cập nhật thông tin người dùng khác."
+    },
+    "error": {
+      "userNotFound": "Không tìm thấy người dùng.",
+      "emailAlready": "Email đã đăng ký.",
+      "EmaileoesNotExist": "Email không tồn tại.",
+      "incorrectPassword.": "Mật khẩu không chính xác"
+    }
+  },
+  "token": {
+    "error": {
+      "notFound": "Không tìm thấy."
+    }
+  },
+  "conversation": {
+    "error": {
+      "conversationNotFound": "Không tìm thấy cuộc trò chuyện.",
+      "userIsNotPartOfThisConversation.": "Người dùng không thuộc về cuộc trò chuyện này."
+    }
   }
 }

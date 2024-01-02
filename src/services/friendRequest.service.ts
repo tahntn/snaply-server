@@ -6,17 +6,17 @@ import Friend from '../models/friend.model';
 import mongoose from 'mongoose';
 
 interface ICreateFriendRequest {
-  sender: IUser;
+  sender: Express.User;
   receiverEmail: string;
 }
 
 interface IConfirmFriendRequest {
-  currentUser: IUser;
+  currentUser: Express.User;
   confirmUserId: mongoose.Types.ObjectId;
 }
 
 interface IConfirmFriendRequest2 {
-  currentUser: IUser;
+  currentUser: Express.User;
   friendRequestId: mongoose.Types.ObjectId;
 }
 

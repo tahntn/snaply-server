@@ -5,23 +5,25 @@ import { getUserByIdService } from './user.service';
 import { IQueryUser } from '../types';
 import { parseNumber } from '../utils';
 import { httpStatus } from '../constant';
+import { Request } from 'express';
 
 export const createConversationService = async (payload: {
   user: Express.User;
   participants: string[];
+  req: Request;
 }) => {
   try {
-    const { user, participants } = payload;
-    const userId = user._id
+    const { user, participants, req } = payload;
+    const userId = user._id;
     const userId2 = participants[0];
     //check user
-    const checkUser = await getUserByIdService(userId);
+    const checkUser = await getUserByIdService(userId, req);
     if (!checkUser) {
       throw new Error();
     }
 
     //check participant
-    const checkParticipant = await getUserByIdService(new mongoose.Types.ObjectId(userId2));
+    const checkParticipant = await getUserByIdService(new mongoose.Types.ObjectId(userId2), req);
     if (!checkParticipant) {
       throw new Error();
     }

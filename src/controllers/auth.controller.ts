@@ -23,7 +23,7 @@ export const loginUserController = catchAsync(
     await validate(validateLogin(req))(req, res, next);
 
     const { email, password } = req.body;
-    const response = await loginUserService(email, password);
+    const response = await loginUserService(email, password, req);
     let tokens: AccessAndRefreshTokens | null = null;
     if (response) {
       tokens = await generateAuthTokens(response?.user);
@@ -44,7 +44,7 @@ export const registerUserController = catchAsync(
     await validate(validateRegister(req))(req, res, next);
 
     const { email, password, username } = req.body;
-    const response = await registerUserService({ email, password, username });
+    const response = await registerUserService({ email, password, username }, req);
     let tokens: AccessAndRefreshTokens | null = null;
     if (response) {
       tokens = await generateAuthTokens(response.user);
@@ -64,7 +64,7 @@ export const logoutController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     await validate(validateLogout(req))(req, res, next);
 
-    await logoutService(req.body.refreshToken);
+    await logoutService(req.body.refreshToken, req);
     res.status(httpStatus.NO_CONTENT).send();
   }
 );
@@ -73,7 +73,7 @@ export const refreshTokensController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     await validate(validateRefreshTokens(req))(req, res, next);
 
-    const userWithTokens = await refreshTokensService(req.body.refreshToken);
+    const userWithTokens = await refreshTokensService(req.body.refreshToken, req);
     res.send({ ...userWithTokens });
   }
 );

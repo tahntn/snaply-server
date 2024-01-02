@@ -24,5 +24,32 @@
       "unauthorized": "Unauthorized: Invalid credentials.",
       "forbidden": "Access denied: Insufficient permissions for the requested action."
     }
+  },
+  "user": {
+    "searchUser": {
+      "success": "Search for user successful.",
+      "keyword": "Search keyword is missing."
+    },
+    "updateUser": {
+      "success": "Update successful.",
+      "unauthorized": "You cannot update another user's information."
+    },
+    "error": {
+      "userNotFound": "User not found.",
+      "emailAlready": "Email is already registered.",
+      "EmaileoesNotExist": "Email does not exist.",
+      "incorrectPassword.": "Incorrect password."
+    }
+  },
+  "token": {
+    "error": {
+      "notFound": "Not found"
+    }
+  },
+  "conversation": {
+    "error": {
+      "conversationNotFound": "Conversation not found",
+      "userIsNotPartOfThisConversation.": "User is not part of this conversation."
+    }
   }
 }

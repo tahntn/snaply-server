@@ -13,7 +13,7 @@ import { IQueryUser } from '../types';
 
 export const createConversationController = catchAsync(async (req: Request, res: Response) => {
   const { participants } = req.body;
-  const users = req.user;
+  const user = req.user;
 
   //check participant
   if (!participants || !Array.isArray(participants) || participants?.length < 1) {
@@ -22,7 +22,7 @@ export const createConversationController = catchAsync(async (req: Request, res:
       message: 'Please provide complete information with at least two participants.',
     });
   }
-  if (!users) {
+  if (!user) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
       message: 'User is not existing',
@@ -30,8 +30,9 @@ export const createConversationController = catchAsync(async (req: Request, res:
   }
 
   const response = await createConversationService({
-    user: users,
+    user: user,
     participants,
+    req,
   });
   res.status(httpStatus.OK).json(response);
 });

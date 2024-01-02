@@ -1,9 +1,14 @@
+import { Request } from 'express';
 import Joi from 'joi';
 
-export const searchUserName = {
+export const searchUserName = (req: Request) => ({
   query: Joi.object().keys({
-    q: Joi.string().required(),
-    limit: Joi.number().integer(),
-    page: Joi.number().integer(),
+    q: Joi.string()
+      .required()
+      .messages({
+        'any.required': req.t('user.searchUser.keyword'),
+      }),
+    limit: Joi.string(),
+    page: Joi.string(),
   }),
-};
+});

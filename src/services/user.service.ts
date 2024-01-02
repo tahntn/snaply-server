@@ -6,12 +6,13 @@ import { ApiError, handleError } from '../errors';
 import { IUser, User } from '../models';
 import { IQueryUser } from '../types';
 import { parseNumber } from '../utils';
+import { Request } from 'express';
 
-export const getUserByIdService = async (id: mongoose.Types.ObjectId) => {
+export const getUserByIdService = async (id: mongoose.Types.ObjectId, req: Request) => {
   try {
     const user = await User.findById(id);
     if (user === null) {
-      throw new ApiError(httpStatus.BAD_REQUEST, '');
+      throw new ApiError(httpStatus.BAD_REQUEST, req.t('user.error.userNotFound'));
     }
     return user;
   } catch (error) {
@@ -19,13 +20,19 @@ export const getUserByIdService = async (id: mongoose.Types.ObjectId) => {
   }
 };
 
-export const searchUserNameService = async ({ page, limit, q }: IQueryUser) => {
+export const searchUserNameService = async ({
+  page,
+  limit,
+  q,
+  userId,
+}: IQueryUser & { userId: mongoose.Types.ObjectId }) => {
   try {
     const _page = parseNumber(page, 1);
     const _limit = parseNumber(limit, 5);
 
     const startIndex = (_page - 1) * _limit;
     const query = {
+      _id: { $ne: userId }, // remove current user id
       username: { $regex: q, $options: 'i' },
     };
 
@@ -41,16 +48,12 @@ export const searchUserNameService = async ({ page, limit, q }: IQueryUser) => {
     const totalPages = Math.ceil(totalUsers / _limit);
 
     return {
-      code: httpStatus.OK,
-      message: 'Search user successful.',
-      data: {
-        data: users,
-        pagination: {
-          totalPages,
-          page: _page,
-          limit: _limit,
-          totalUsers,
-        },
+      data: users,
+      pagination: {
+        totalPages,
+        page: _page,
+        limit: _limit,
+        totalUsers,
       },
     };
   } catch (error) {
@@ -58,7 +61,7 @@ export const searchUserNameService = async ({ page, limit, q }: IQueryUser) => {
   }
 };
 
-export const updateUserService = async (id: string, data: Partial<IUser>) => {
+export const updateUserService = async (id: string, data: Partial<IUser>, req: Request) => {
   try {
     const { email, password } = data;
 
@@ -67,7 +70,7 @@ export const updateUserService = async (id: string, data: Partial<IUser>) => {
       _id: id,
     });
     if (checkUser === null) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('user.error.userNotFound'));
     }
 
     if (email) {
@@ -77,7 +80,7 @@ export const updateUserService = async (id: string, data: Partial<IUser>) => {
 
       //check existing email
       if (existingEmail) {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Email is already registered.');
+        throw new ApiError(httpStatus.BAD_REQUEST, req.t('user.error.emailAlready'));
       }
     }
 
@@ -92,11 +95,7 @@ export const updateUserService = async (id: string, data: Partial<IUser>) => {
 
     const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
     return {
-      code: httpStatus.OK,
-      message: 'Updated successful.',
-      data: {
-        updatedUser,
-      },
+      data: updatedUser,
     };
   } catch (error) {
     handleError(error);
