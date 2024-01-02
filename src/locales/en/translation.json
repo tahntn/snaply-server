@@ -46,10 +46,16 @@
       "notFound": "Not found"
     }
   },
-  "conversation": {
+  "message": {
     "error": {
       "conversationNotFound": "Conversation not found",
       "userIsNotPartOfThisConversation.": "User is not part of this conversation."
+    }
+  },
+  "conversation": {
+    "error": {
+      "conversationDoesNotExist": "Conversation does not exist.",
+      "accesscConversation.": "You do not have access to this conversation."
     }
   }
 }

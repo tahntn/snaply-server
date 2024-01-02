@@ -76,9 +76,10 @@ export const getConversationByIdService = async (payload: {
   conversationId: string;
   page?: string;
   limit?: string;
+  req: Request;
 }) => {
   try {
-    const { user, conversationId, page, limit } = payload;
+    const { user, conversationId, page, limit, req } = payload;
 
     const _page = parseNumber(page, 1);
     const _limit = parseNumber(limit, 5);
@@ -87,13 +88,16 @@ export const getConversationByIdService = async (payload: {
     const conversation = await Conversation.findById(conversationId);
     //check existing conversation
     if (!conversation) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, 'Conversation id  does not exist.');
+      throw new ApiError(
+        httpStatus.UNAUTHORIZED,
+        req.t('conversation.error.conversationDoesNotExist')
+      );
     }
 
     //check user in conversation
     const isAuth = conversation.participants.find((item) => user._id.equals(item));
     if (!isAuth) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, 'You do not have access to this conversation ');
+      throw new ApiError(httpStatus.UNAUTHORIZED, req.t('conversation.error.accesscConversation'));
     }
 
     const messages = await Message.find({ conversationsId: conversationId })
