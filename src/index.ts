@@ -15,6 +15,7 @@ import { IUser } from './models';
 dotenv.config();
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     export interface User extends IUser {}
   }
