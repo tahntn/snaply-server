@@ -10,8 +10,15 @@ import { jwtStrategy } from './config';
 import i18next from 'i18next';
 import Backend from 'i18next-node-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
+import { IUser } from './models';
 
 dotenv.config();
+
+declare global {
+  namespace Express {
+    export interface User extends IUser {}
+  }
+}
 
 i18next
   .use(Backend)

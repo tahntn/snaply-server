@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { httpStatus } from '../constant';
 import {
-  validateEmail,
   validateLogin,
   validateLogout,
   validateRefreshTokens,
