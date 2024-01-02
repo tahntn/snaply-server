@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { httpStatus } from '../constant';
-import { IRequest } from '../types';
 import { catchAsync } from '../utils';
 import {
   confirmFriendRequestService,
@@ -9,8 +8,15 @@ import {
   createFriendRequestService,
 } from '../services';
 
-export const createFriendRequestController = catchAsync(async (req: IRequest, res: Response) => {
+export const createFriendRequestController = catchAsync(async (req: Request, res: Response) => {
   const { receiverEmail } = req.body;
+  const user = req.user;
+  if (!user) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      code: httpStatus.BAD_REQUEST,
+      message: 'User is not existing',
+    });
+  }
   if (!receiverEmail) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
@@ -18,13 +24,13 @@ export const createFriendRequestController = catchAsync(async (req: IRequest, re
     });
   }
   const response = await createFriendRequestService({
-    sender: req.user,
+    sender: user,
     receiverEmail,
   });
   return res.status(httpStatus.OK).json(response);
 });
 
-export const confirmFriendRequestController = catchAsync(async (req: IRequest, res: Response) => {
+export const confirmFriendRequestController = catchAsync(async (req: Request, res: Response) => {
   const confirmUserId = req.params.id;
   if (!confirmUserId) {
     return res.status(httpStatus.BAD_REQUEST).json({
@@ -32,15 +38,29 @@ export const confirmFriendRequestController = catchAsync(async (req: IRequest, r
       message: 'Please provide id',
     });
   }
+  const user = req.user;
+  if (!user) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      code: httpStatus.BAD_REQUEST,
+      message: 'User is not existing',
+    });
+  }
   const response = await confirmFriendRequestService({
-    currentUser: req.user,
+    currentUser: user,
     confirmUserId: new mongoose.Types.ObjectId(confirmUserId),
   });
   return res.status(httpStatus.OK).json(response);
 });
 
-export const confirmFriendRequestController2 = catchAsync(async (req: IRequest, res: Response) => {
+export const confirmFriendRequestController2 = catchAsync(async (req: Request, res: Response) => {
   const friendRequestId = req.params.id;
+  const user = req.user;
+  if (!user) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      code: httpStatus.BAD_REQUEST,
+      message: 'User is not existing',
+    });
+  }
   if (!friendRequestId) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
@@ -48,7 +68,7 @@ export const confirmFriendRequestController2 = catchAsync(async (req: IRequest, 
     });
   }
   const response = await confirmFriendRequestService2({
-    currentUser: req.user,
+    currentUser: user,
     friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
   });
   return res.status(httpStatus.OK).json(response);

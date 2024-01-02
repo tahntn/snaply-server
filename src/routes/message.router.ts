@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import { auth, validate } from '../middlewares';
-import { deleteMessage, getMessage, getMessages, sendMessage, updateMessage } from '../validators';
+import { auth } from '../middlewares';
+
 import {
   deleteMessageController,
   getAllMessagesController,
@@ -12,15 +12,12 @@ import {
 
 const router = Router();
 
-router
-  .route('/')
-  .post(auth(), validate(sendMessage), sendMessagesController)
-  .get(validate(getMessages), getAllMessagesController);
+router.route('/').post(auth(), sendMessagesController).get(auth(), getAllMessagesController);
 
 router
   .route('/:messageId')
-  .get(validate(getMessage), getMessageByIdController)
-  .patch(validate(updateMessage), updateMessageController)
-  .delete(validate(deleteMessage), deleteMessageController);
+  .get(auth(), getMessageByIdController)
+  .patch(auth(), updateMessageController)
+  .delete(auth(), deleteMessageController);
 
 export default router;

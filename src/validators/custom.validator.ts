@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { CustomHelpers } from 'joi';
 
 export const objectId = (value: string, helpers: CustomHelpers) => {
@@ -7,12 +8,20 @@ export const objectId = (value: string, helpers: CustomHelpers) => {
   return value;
 };
 
-export const password = (value: string, helpers: CustomHelpers) => {
+export const password = (value: string, helpers: CustomHelpers, req: Request) => {
   if (value.length < 4) {
-    return helpers.message({ custom: 'password must be at least 4 characters' });
+    return helpers.message({ custom: req.t('auth.password.min') });
   }
   if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
-    return helpers.message({ custom: 'password must contain at least 1 letter and 1 number' });
+    return helpers.message({ custom: req.t('auth.password.match') });
   }
+  return value;
+};
+
+export const username = (value: string, helpers: CustomHelpers, req: Request) => {
+  if (value.length < 4) {
+    return helpers.message({ custom: req.t('auth.username.min') });
+  }
+
   return value;
 };

@@ -1,6 +1,11 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { httpStatus } from '../constant';
-import { validateEmail } from '../validators';
+import {
+  validateLogin,
+  validateLogout,
+  validateRefreshTokens,
+  validateRegister,
+} from '../validators';
 import { catchAsync } from '../utils';
 import {
   loginUserService,
@@ -10,72 +15,64 @@ import {
 } from '../services';
 import { generateAuthTokens } from '../services/token.service';
 import { AccessAndRefreshTokens } from '../types/token.interface';
-import { IRequest } from '../types';
+import { validate } from '../middlewares';
 
-export const loginUserController = catchAsync(async (req: IRequest, res: Response) => {
-  const { email, password } = req.body;
+export const loginUserController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    await validate(validateLogin(req))(req, res, next);
 
-  //check invalid email
-  const emailError = validateEmail(email);
-
-  //check existing email and password
-  if (!email || !password) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      code: httpStatus.BAD_REQUEST,
-      message: 'Please provide complete information.',
-    });
-  } else if (emailError) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      code: httpStatus.BAD_REQUEST,
-      message: 'Please enter a valid email.',
-    });
-  }
-  const response = await loginUserService(email, password);
-  let tokens: AccessAndRefreshTokens | null = null;
-  if (response) {
-    tokens = await generateAuthTokens(response?.user);
-  }
-  res.status(httpStatus.OK).json({
-    data: {
-      user: response?.user,
-      tokens,
-    },
-    code: httpStatus.OK,
-    message: 'Login successful.',
-  });
-});
-
-export const registerUserController = catchAsync(async (req: Request, res: Response) => {
-  const { email, password, userName } = req.body;
-  //check invalid email
-  const emailError = validateEmail(email);
-
-  //check existing email, password and userName
-  if (!email || !password || !userName) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      code: httpStatus.BAD_REQUEST,
-      message: 'Please provide complete information.',
-    });
-  } else if (emailError) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      code: httpStatus.BAD_REQUEST,
-      message: 'Please enter a valid email.',
+    const { email, password } = req.body;
+    const response = await loginUserService(email, password, req);
+    let tokens: AccessAndRefreshTokens | null = null;
+    if (response) {
+      tokens = await generateAuthTokens(response?.user);
+    }
+    res.status(httpStatus.OK).json({
+      data: {
+        user: response?.user,
+        tokens,
+      },
+      code: httpStatus.OK,
+      message: req.t('auth.success.loginSuccessful'),
     });
   }
-  const response = await registerUserService({ email, password, userName });
-  let tokens: AccessAndRefreshTokens | null = null;
-  if (response) {
-    tokens = await generateAuthTokens(response?.data.user);
+);
+
+export const registerUserController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    await validate(validateRegister(req))(req, res, next);
+
+    const { email, password, username } = req.body;
+    const response = await registerUserService({ email, password, username }, req);
+    let tokens: AccessAndRefreshTokens | null = null;
+    if (response) {
+      tokens = await generateAuthTokens(response.user);
+    }
+    res.status(httpStatus.CREATED).json({
+      data: {
+        user: response?.user,
+        tokens,
+      },
+      code: httpStatus.CREATED,
+      message: req.t('auth.success.registrationSuccessful'),
+    });
   }
-  res.status(httpStatus.CREATED).json({ response, tokens });
-});
+);
 
-export const logoutController = catchAsync(async (req: Request, res: Response) => {
-  await logoutService(req.body.refreshToken);
-  res.status(httpStatus.NO_CONTENT).send();
-});
+export const logoutController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    await validate(validateLogout(req))(req, res, next);
 
-export const refreshTokensController = catchAsync(async (req: Request, res: Response) => {
-  const userWithTokens = await refreshTokensService(req.body.refreshToken);
-  res.send({ ...userWithTokens });
-});
+    await logoutService(req.body.refreshToken, req);
+    res.status(httpStatus.NO_CONTENT).send();
+  }
+);
+
+export const refreshTokensController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    await validate(validateRefreshTokens(req))(req, res, next);
+
+    const userWithTokens = await refreshTokensService(req.body.refreshToken, req);
+    res.send({ ...userWithTokens });
+  }
+);

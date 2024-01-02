@@ -2,25 +2,20 @@
 import { Request, Response } from 'express';
 import { httpStatus } from '../constant';
 import { catchAsync } from '../utils';
-import { IRequest } from '../types';
+
 import { sendMessageService } from '../services';
 
-export const sendMessagesController = catchAsync(async (req: IRequest, res: Response) => {
-  const currentUser = req.user;
-
-  //check payload
+export const sendMessagesController = catchAsync(async (req: Request, res: Response) => {
+  const currentUser = req.user!;
   const { title, conversationsId } = req.body;
-  if (!currentUser) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      code: httpStatus.BAD_REQUEST,
-      message: 'User is not existing',
-    });
-  }
-  const response = await sendMessageService({
-    user: currentUser,
-    conversationsId,
-    title,
-  });
+  const response = await sendMessageService(
+    {
+      user: currentUser,
+      conversationsId,
+      title,
+    },
+    req
+  );
   res.status(httpStatus.OK).json(response);
 });
 export const getAllMessagesController = catchAsync(async (req: Request, res: Response) => {});

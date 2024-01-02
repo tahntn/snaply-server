@@ -1,0 +1,61 @@
+{
+  "auth": {
+    "email": {
+      "email": "Please enter a valid email address.",
+      "required": "Please enter your email."
+    },
+    "password": {
+      "min": "Password must have at least 4 letters.",
+      "required": "Please enter your password.",
+      "match": "Password must contain at least 1 letter and 1 number."
+    },
+    "username": {
+      "min": "Username must have at least 4 letters.",
+      "required": "Please enter your username."
+    },
+    "refreshToken": {
+      "required": "Ensure a refresh token is provided.."
+    },
+    "success": {
+      "loginSuccessful": "Login successful.",
+      "registrationSuccessful.": "Registration successful."
+    },
+    "error": {
+      "unauthorized": "Unauthorized: Invalid credentials.",
+      "forbidden": "Access denied: Insufficient permissions for the requested action."
+    }
+  },
+  "user": {
+    "searchUser": {
+      "success": "Search for user successful.",
+      "keyword": "Search keyword is missing."
+    },
+    "updateUser": {
+      "success": "Update successful.",
+      "unauthorized": "You cannot update another user's information."
+    },
+    "error": {
+      "userNotFound": "User not found.",
+      "emailAlready": "Email is already registered.",
+      "EmaileoesNotExist": "Email does not exist.",
+      "incorrectPassword.": "Incorrect password."
+    }
+  },
+  "token": {
+    "error": {
+      "notFound": "Not found"
+    }
+  },
+  "message": {
+    "error": {
+      "conversationNotFound": "Conversation not found",
+      "userIsNotPartOfThisConversation.": "User is not part of this conversation."
+    }
+  },
+  "conversation": {
+    "error": {
+      "conversationDoesNotExist": "Conversation does not exist.",
+      "accesscConversation.": "You do not have access to this conversation."
+    }
+  }
+}

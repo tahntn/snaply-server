@@ -2,17 +2,16 @@ import mongoose, { Document } from 'mongoose';
 import { roles } from '../constant';
 
 export interface IUser extends Document {
-  userName: string;
+  username: string;
   email: string;
   password: string;
   avatar: string;
   role: string;
-  // _id: mongoose.Schema.Types.ObjectId;
 }
 
 const UserSchema = new mongoose.Schema<IUser>(
   {
-    userName: {
+    username: {
       type: String,
       unique: true,
       required: true,
