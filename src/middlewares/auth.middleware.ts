@@ -9,7 +9,9 @@ const verifyCallback =
   (req: Request, resolve: any, reject: any, requiredRights: string[]) =>
   async (err: Error, user: IUser, info: string) => {
     if (err || info || !user) {
-      return reject(new ApiError(httpStatus.UNAUTHORIZED, req.t('auth.error.unauthorized')));
+      return reject(
+        new ApiError(httpStatus.ACCESS_TOKEN_EXPIRED, req.t('auth.error.unauthorized'))
+      );
     }
     req.user = user;
     if (requiredRights.length) {

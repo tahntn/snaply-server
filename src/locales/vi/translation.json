@@ -38,7 +38,7 @@
       "userNotFound": "Không tìm thấy người dùng.",
       "emailAlready": "Email đã đăng ký.",
       "EmaileoesNotExist": "Email không tồn tại.",
-      "incorrectPassword.": "Mật khẩu không chính xác"
+      "incorrectPassword": "Mật khẩu không chính xác"
     }
   },
   "token": {

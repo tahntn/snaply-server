@@ -3,7 +3,12 @@ import moment, { Moment } from 'moment';
 import mongoose from 'mongoose';
 import { ApiError } from '../errors';
 import { httpStatus } from '../constant';
-import { AccessAndRefreshTokens, ITokenDoc, tokenTypes } from '../types/token.interface';
+import {
+  AccessAndRefreshTokens,
+  ITokenDoc,
+  TokenPayload,
+  tokenTypes,
+} from '../types/token.interface';
 import Token from '../models/token.model';
 import { IUser } from '../models';
 
@@ -73,6 +78,15 @@ export const generateAuthTokens = async (user: IUser): Promise<AccessAndRefreshT
       token: refreshToken,
       expires: refreshTokenExpires.toDate(),
     },
+  };
+};
+
+export const generateAccessTokens = async (user: IUser): Promise<TokenPayload> => {
+  const accessTokenExpires = moment().add(process.env.JWT_ACCESS_EXPIRATION_MINUTES, 'minutes');
+  const accessToken = generateToken(user.id, accessTokenExpires, tokenTypes.ACCESS);
+  return {
+    token: accessToken,
+    expires: accessTokenExpires.toDate(),
   };
 };
 

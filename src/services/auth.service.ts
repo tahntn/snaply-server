@@ -3,11 +3,11 @@ import mongoose from 'mongoose';
 
 import { User } from '../models';
 import { ApiError, handleError } from '../errors';
-import { INewRegisteredUser, IUserWithTokens } from '../types';
+import { INewRegisteredUser } from '../types';
 import { httpStatus } from '../constant';
 import Token from '../models/token.model';
-import { tokenTypes } from '../types/token.interface';
-import { generateAuthTokens, verifyToken } from './token.service';
+import { TokenPayload, tokenTypes } from '../types/token.interface';
+import { generateAccessTokens, verifyToken } from './token.service';
 import { getUserByIdService } from './user.service';
 import { Request } from 'express';
 
@@ -79,17 +79,16 @@ export const logoutService = async (refreshToken: string, req: Request): Promise
 export const refreshTokensService = async (
   refreshToken: string,
   req: Request
-): Promise<IUserWithTokens> => {
+): Promise<TokenPayload> => {
   try {
     const refreshTokenDoc = await verifyToken(refreshToken, tokenTypes.REFRESH);
     const user = await getUserByIdService(new mongoose.Types.ObjectId(refreshTokenDoc.user), req);
     if (!user) {
       throw new Error();
     }
-    await refreshTokenDoc.deleteOne();
-    const tokens = await generateAuthTokens(user);
-    return { user, tokens };
+    const tokens = await generateAccessTokens(user);
+    return tokens;
   } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, req.t('auth.error.unauthorized'));
+    throw new ApiError(httpStatus.FORBIDDEN, req.t('auth.error.unauthorized'));
   }
 };
