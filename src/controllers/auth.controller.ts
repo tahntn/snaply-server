@@ -71,7 +71,6 @@ export const logoutController = catchAsync(
 export const refreshTokensController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     await validate(validateRefreshTokens(req))(req, res, next);
-
     const userWithTokens = await refreshTokensService(req.body.refreshToken, req);
     res.send({ ...userWithTokens });
   }
