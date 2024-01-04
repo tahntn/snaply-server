@@ -57,5 +57,24 @@
       "conversationDoesNotExist": "Conversation does not exist.",
       "accesscConversation.": "You do not have access to this conversation."
     }
+  },
+  "friend": {
+    "createFriend": {
+      "success": "Successfully sent a new friend request"
+    },
+    "confirmFriend": {
+      "success": "Successfully confirmed a friend request",
+      "id": { "required": "Missing id params" }
+    },
+    "denyFriend": {
+      "success": "Successfully denied a friend request"
+    },
+    "error": {
+      "cantSendRequestToYourself": "You cannot send a friend request to yourself.",
+      "receiverNotFound": "{email} has not been found. Please check email address again.",
+      "invitationAlreadySent": "Invitation has been already sent",
+      "friendAlreadyAdded": "Friend already added. Please check friends list.",
+      "friendRequestNotFound": "Friend request has not been found"
+    }
   }
 }
