@@ -10,6 +10,7 @@ import { TokenPayload, tokenTypes } from '../types/token.interface';
 import { generateAccessTokens, verifyToken } from './token.service';
 import { getUserByIdService } from './user.service';
 import { Request } from 'express';
+import { randomNumber } from '../utils';
 
 export const loginUserService = async (email: string, password: string, req: Request) => {
   try {
@@ -51,11 +52,16 @@ export const registerUserService = async (newUser: INewRegisteredUser, req: Requ
     //hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    //random img
+    const number = randomNumber(100);
+    const avatar = `https://ik.imagekit.io/gmltgojm2/snaply/${number}.png`;
+
     //create user
     const user = await User.create({
       email,
       username,
       password: hashedPassword,
+      avatar,
     });
 
     return { user };
