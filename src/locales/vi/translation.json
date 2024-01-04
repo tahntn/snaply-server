@@ -67,9 +67,7 @@
     },
     "confirmFriend": {
       "success": "Chấp nhận lời mời kết bạn thành công",
-      "friendRequestId": {
-        "required": "friendRequestId là dữ liệu bắt buộc"
-      }
+      "id": { "required": "Truyền thiếu id params" }
     },
     "denyFriend": {
       "success": "Từ chối lời mời kết bạn thành công"

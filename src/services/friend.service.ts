@@ -22,6 +22,7 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
 
     // check create to yourself
     if (currentUser?.email?.toLowerCase() === receiverEmail?.toLowerCase()) {
+      console.log('a');
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.cantSendRequestToYourself'));
     }
 
@@ -31,6 +32,7 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
     });
 
     if (receiver === null) {
+      console.log('b');
       throw new ApiError(
         httpStatus.BAD_REQUEST,
         req.t(`friend.error.receiverNotFound`).replace('{email}', receiverEmail)
@@ -45,6 +47,7 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
     });
 
     if (invitationAlreadyReceived) {
+      console.log('c');
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.invitationAlreadySent'));
     }
 
@@ -58,18 +61,20 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
     });
 
     if (areAlreadyFriends) {
+      console.log('d');
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.friendAlreadyAdded'));
     }
 
     //Create your request list
     const friendRequest = await Friend.create({
-      senderId: currentUser?._id,
-      receiverId: receiver?._id,
+      userId: currentUser?._id,
+      targetUserId: receiver?._id,
       status: 'pending',
     });
 
     return friendRequest;
   } catch (error) {
+    console.log('error', error);
     handleError(error);
   }
 };
@@ -86,7 +91,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.friendRequestNotFound'));
     }
 
-    return updatedFriendRequest;
+    return true;
   } catch (error) {
     handleError(error);
   }

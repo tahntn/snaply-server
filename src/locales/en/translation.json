@@ -63,7 +63,8 @@
       "success": "Successfully sent a new friend request"
     },
     "confirmFriend": {
-      "success": "Successfully confirmed a friend request"
+      "success": "Successfully confirmed a friend request",
+      "id": { "required": "Missing id params" }
     },
     "denyFriend": {
       "success": "Successfully denied a friend request"
