@@ -2228,6 +2228,11 @@ min-indent@^1.0.0:
   resolved "https://registry.yarnpkg.com/min-indent/-/min-indent-1.0.1.tgz#a63f681673b30571fbe8bc25686ae746eefa9869"
   integrity sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==
 
+minidenticons@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/minidenticons/-/minidenticons-4.2.0.tgz#6c5e06e30127d160902f6ba600da3db4ac8e70dd"
+  integrity sha512-2T3VU1N30yI3kXMRbdLsJ5DgsBoGLi2+2hbm1xTOU2RQXWW5wwpmz9XQohVSsVlhymf4W69sMGj6s39t796PBA==
+
 minimatch@^3.0.5, minimatch@^3.1.1, minimatch@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.1.2.tgz#19cd194bfd3e428f049a70817c038d89ab4be35b"

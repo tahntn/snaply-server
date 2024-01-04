@@ -6,7 +6,8 @@ import { IQueryUser } from '../types';
 import { parseNumber } from '../utils';
 import { httpStatus } from '../constant';
 import { Request } from 'express';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { minidenticon } from 'minidenticons';
 export const createConversationService = async (payload: {
   user: Express.User;
   participants: string[];
@@ -21,7 +22,6 @@ export const createConversationService = async (payload: {
     if (!checkUser) {
       throw new Error();
     }
-
     //check participant
     const checkParticipant = await getUserByIdService(new mongoose.Types.ObjectId(userId2), req);
     if (!checkParticipant) {
@@ -55,9 +55,12 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
 
     const startIndex = (_page - 1) * _limit;
 
+    const a = minidenticon('a', 1, 1);
+    console.log('🚀 ~ file: conversation.service.ts:25 ~ a:', a);
     const conversations = await Conversation.find({
       participants: { $in: [user._id] },
     })
+      .populate('participants', 'username avatar')
       .select('-createdAt -updatedAt -__v')
       .sort({ createdAt: -1 })
       .skip(startIndex)
@@ -65,7 +68,13 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
       .lean()
       .exec();
 
-    return { conversations };
+    return {
+      data: conversations,
+      pagination: {
+        page: _page,
+        limit: _limit,
+      },
+    };
   } catch (error) {
     handleError(error);
   }
