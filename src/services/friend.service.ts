@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { ApiError, handleError } from '../errors';
 import { httpStatus } from '../constant';
-import { User } from '../models';
+import { Conversation, User } from '../models';
 import Friend from '../models/friend.model';
 import mongoose from 'mongoose';
 
@@ -22,7 +22,6 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
 
     // check create to yourself
     if (currentUser?.email?.toLowerCase() === receiverEmail?.toLowerCase()) {
-      console.log('a');
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.cantSendRequestToYourself'));
     }
 
@@ -32,7 +31,6 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
     });
 
     if (receiver === null) {
-      console.log('b');
       throw new ApiError(
         httpStatus.BAD_REQUEST,
         req.t(`friend.error.receiverNotFound`).replace('{email}', receiverEmail)
@@ -47,7 +45,6 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
     });
 
     if (invitationAlreadyReceived) {
-      console.log('c');
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.invitationAlreadySent'));
     }
 
@@ -61,7 +58,6 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
     });
 
     if (areAlreadyFriends) {
-      console.log('d');
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.friendAlreadyAdded'));
     }
 
@@ -74,7 +70,6 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
 
     return friendRequest;
   } catch (error) {
-    console.log('error', error);
     handleError(error);
   }
 };
@@ -90,6 +85,14 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
     if (!updatedFriendRequest) {
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.friendRequestNotFound'));
     }
+
+    // Create conversation between two user
+    const { userId, targetUserId } = updatedFriendRequest;
+
+    const newConversation = new Conversation({
+      participants: [userId, targetUserId],
+    });
+    await newConversation.save();
 
     return true;
   } catch (error) {
