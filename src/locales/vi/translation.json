@@ -53,9 +53,13 @@
     }
   },
   "conversation": {
+    "getListMessage": {
+      "conversationId": { "required": "Thiếu params conversationId" }
+    },
     "error": {
       "conversationDoesNotExist": "Cuộc trò chuyện không tồn tại.",
-      "accesscConversation.": "Bạn không có quyền truy cập vào cuộc trò chuyện này."
+      "accesscConversation.": "Bạn không có quyền truy cập vào cuộc trò chuyện này.",
+      "atLeastTwoParticipants": "Cuộc trò chuyện phải có ít nhất hai người tham gia."
     }
   },
   "friend": {

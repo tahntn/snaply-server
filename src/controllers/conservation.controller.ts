@@ -16,7 +16,7 @@ export const createConversationController = catchAsync(async (req: Request, res:
   if (!participants || !Array.isArray(participants) || participants?.length < 1) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
-      message: 'Please provide complete information with at least two participants.',
+      message: req.t('conversation.error.atLeastTwoParticipants'),
     });
   }
 
@@ -45,7 +45,7 @@ export const getListMessageByConversationIdController = catchAsync(
     if (!req.params.conversationId) {
       return res.status(httpStatus.BAD_REQUEST).json({
         code: httpStatus.BAD_REQUEST,
-        message: 'Please provide keyword',
+        message: req.t('conversation.error.conversationId.required'),
       });
     }
 

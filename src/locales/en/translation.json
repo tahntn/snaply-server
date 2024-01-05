@@ -53,9 +53,13 @@
     }
   },
   "conversation": {
+    "getListMessage": {
+      "conversationId": { "required": "Missing conversationId params" }
+    },
     "error": {
       "conversationDoesNotExist": "Conversation does not exist.",
-      "accesscConversation": "You do not have access to this conversation."
+      "accesscConversation": "You do not have access to this conversation.",
+      "atLeastTwoParticipants": "Please provide complete information with at least two participants."
     }
   },
   "friend": {

@@ -141,12 +141,17 @@ export const getListFriendByUserIdService = async (req: Request) => {
     const startIndex = (_page - 1) * _limit;
 
     const queryObj = {
-      userId: currentUser?._id,
       status: type === 'friendRequests' ? 'pending' : 'accept',
+      ...(type === 'friendRequests' && { targetUserId: currentUser?._id }),
+      ...(type === 'friend' && { userId: currentUser?._id }),
     };
 
+    const selectFields = 'username email avatar _id';
     const friends = await Friend.find(queryObj)
-      .populate('targetUserId')
+      .populate([
+        { path: 'userId', select: selectFields },
+        { path: 'targetUserId', select: selectFields },
+      ])
       .select('-__v')
       .sort({ createdAt: -1 })
       .skip(startIndex)
