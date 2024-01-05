@@ -74,7 +74,8 @@
       "receiverNotFound": "User does not exist.",
       "invitationAlreadySent": "Invitation has been already sent",
       "friendAlreadyAdded": "Friend already added. Please check friends list.",
-      "friendRequestNotFound": "Friend request has not been found"
+      "friendRequestNotFound": "Friend request has not been found",
+      "youAreAlreadyFriends": "You are already friends."
     }
   },
   "error": {

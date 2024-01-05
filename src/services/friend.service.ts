@@ -4,6 +4,7 @@ import { httpStatus } from '../constant';
 import { Conversation, User } from '../models';
 import Friend from '../models/friend.model';
 import mongoose from 'mongoose';
+import { createConversationService } from './conversation.service';
 
 interface ICreateFriendRequest {
   req: Request;
@@ -72,24 +73,30 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
 export const confirmFriendRequestService = async (payload: IUpdateStateFriendRequest) => {
   try {
     const { req, friendRequestId } = payload;
-    const updatedFriendRequest = await Friend.findByIdAndUpdate(
-      friendRequestId,
-      { status: 'accept' },
-      { new: true }
-    );
-    if (!updatedFriendRequest) {
-      throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.friendRequestNotFound'));
+
+    const currentUser = req.user!;
+
+    const friendRequest = await Friend.findById(friendRequestId);
+
+    if (!friendRequest) {
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
     }
 
-    // Create conversation between two user
-    const { userId, targetUserId } = updatedFriendRequest;
+    if (friendRequest.status !== 'pending') {
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
+    }
 
-    const newConversation = new Conversation({
-      participants: [userId, targetUserId],
+    if (!friendRequest.targetUserId.equals(currentUser._id)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, req.t('auth.error.unauthorized'));
+    }
+    await Friend.findByIdAndUpdate(friendRequestId, { status: 'accept' }, { new: true });
+
+    const res = await createConversationService({
+      user: currentUser,
+      participants: [friendRequest.userId],
+      req,
     });
-    await newConversation.save();
-
-    return true;
+    return res?.conversation;
   } catch (error) {
     handleError(error);
   }
