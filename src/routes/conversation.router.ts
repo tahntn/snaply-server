@@ -3,10 +3,8 @@ import { Router } from 'express';
 import { auth } from '../middlewares';
 import {
   createConversationController,
-  deleteConversationController,
-  getConversationByIdController,
+  getListMessageByConversationIdController,
   getConversationsController,
-  updateConversationController,
 } from '../controllers';
 
 const router = Router();
@@ -15,10 +13,6 @@ router
   .route('/')
   .post(auth(), createConversationController)
   .get(auth(), getConversationsController);
-router
-  .route('/:conversationId')
-  .get(auth(), getConversationByIdController)
-  .patch(auth(), updateConversationController)
-  .delete(auth(), deleteConversationController);
+router.route('/:conversationId').get(auth(), getListMessageByConversationIdController);
 
 export default router;

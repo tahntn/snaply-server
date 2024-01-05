@@ -4,6 +4,7 @@ import { httpStatus } from '../constant';
 import { Conversation, User } from '../models';
 import Friend from '../models/friend.model';
 import mongoose from 'mongoose';
+import { parseNumber, pick } from '../utils';
 
 interface ICreateFriendRequest {
   req: Request;
@@ -109,6 +110,48 @@ export const denyFriendRequestService = async (payload: IUpdateStateFriendReques
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.friendRequestNotFound'));
     }
     return true;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getListFriendByUserIdService = async (req: Request) => {
+  try {
+    const currentUser = req.user!;
+    const query = pick(req.query, ['limit', 'page', 'type']);
+    const { limit, page, type } = query;
+
+    const _page = parseNumber(page, 1);
+    const _limit = parseNumber(limit, 5);
+
+    const startIndex = (_page - 1) * _limit;
+
+    const queryObj = {
+      userId: currentUser?._id,
+      status: type === 'friendRequests' ? 'pending' : 'accept',
+    };
+
+    const friends = await Friend.find(queryObj)
+      .populate('targetUserId')
+      .select('-__v')
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(_limit)
+      .lean()
+      .exec();
+
+    const totalFriends = await Friend.countDocuments(queryObj).exec();
+    const totalPages = Math.ceil(totalFriends / _limit);
+
+    return {
+      data: friends,
+      pagination: {
+        page: _page,
+        limit: _limit,
+        totalPages,
+        totalFriends,
+      },
+    };
   } catch (error) {
     handleError(error);
   }

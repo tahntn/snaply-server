@@ -65,6 +65,11 @@
         "required": "Vui lòng nhập email người gửi kết bạn"
       }
     },
+    "getListFriend": {
+      "type": {
+        "enum": "Type không hợp lệ. Chỉ chấp nhận 'friends' hoặc 'friendRequests'"
+      }
+    },
     "confirmFriend": {
       "success": "Chấp nhận lời mời kết bạn thành công",
       "id": { "required": "Truyền thiếu id params" }
