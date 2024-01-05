@@ -8,8 +8,8 @@ import {
 
 const router = Router();
 
-router.post('/create', auth(), createFriendRequestController);
-router.post('/confirm/:id', auth(), confirmFriendRequestController);
-router.post('/deny/:id', auth(), denyFriendRequestController);
+router.post('/create/:userId', auth(), createFriendRequestController);
+router.post('/confirm/:friendRequestId', auth(), confirmFriendRequestController);
+router.post('/deny/:friendRequestId', auth(), denyFriendRequestController);
 
 export default router;

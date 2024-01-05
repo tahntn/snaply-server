@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 
 interface ICreateFriendRequest {
   req: Request;
-  receiverEmail: string;
+  receiverUserId: mongoose.Types.ObjectId;
 }
 
 interface IUpdateStateFriendRequest {
@@ -17,24 +17,19 @@ interface IUpdateStateFriendRequest {
 
 export const createFriendRequestService = async (payload: ICreateFriendRequest) => {
   try {
-    const { req, receiverEmail } = payload;
+    const { req, receiverUserId } = payload;
     const currentUser = req.user!;
 
     // check create to yourself
-    if (currentUser?.email?.toLowerCase() === receiverEmail?.toLowerCase()) {
+    if (currentUser._id.equals(receiverUserId)) {
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.cantSendRequestToYourself'));
     }
 
     // check receiver exist
-    const receiver = await User.findOne({
-      email: receiverEmail,
-    });
+    const receiver = await User.findById(receiverUserId);
 
     if (receiver === null) {
-      throw new ApiError(
-        httpStatus.BAD_REQUEST,
-        req.t(`friend.error.receiverNotFound`).replace('{email}', receiverEmail)
-      );
+      throw new ApiError(httpStatus.BAD_REQUEST, req.t(`friend.error.receiverNotFound`));
     }
 
     //check if invitation has been already sent

@@ -56,7 +56,6 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
     const startIndex = (_page - 1) * _limit;
 
     const a = minidenticon('a', 1, 1);
-    console.log('🚀 ~ file: conversation.service.ts:25 ~ a:', a);
     const conversations = await Conversation.find({
       participants: { $in: [user._id] },
     })
