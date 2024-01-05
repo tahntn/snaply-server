@@ -8,7 +8,7 @@ import { httpStatus } from '../constant';
 import { Request } from 'express';
 export const createConversationService = async (payload: {
   user: Express.User;
-  participants: string[];
+  participants: mongoose.Types.ObjectId[];
   req: Request;
 }) => {
   try {

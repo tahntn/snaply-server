@@ -1,9 +1,9 @@
 import { Request } from 'express';
 import { CustomHelpers } from 'joi';
 
-export const objectId = (value: string, helpers: CustomHelpers) => {
+export const objectId = (value: string, helpers: CustomHelpers, req: Request) => {
   if (!value.match(/^[0-9a-fA-F]{24}$/)) {
-    return helpers.message({ custom: '"{{#label}}" must be a valid mongo id' });
+    return helpers.message({ custom: req.t('error.objectId') });
   }
   return value;
 };

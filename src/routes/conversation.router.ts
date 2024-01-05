@@ -11,8 +11,8 @@ const router = Router();
 
 router
   .route('/')
-  .post(auth(), createConversationController)
-  .get(auth(), getConversationsController);
-router.route('/:conversationId').get(auth(), getListMessageByConversationIdController);
+  .post(auth(), createConversationController) //tạo
+  .get(auth(), getConversationsController); //get các conversation của user
+router.route('/:conversationId').get(auth(), getListMessageByConversationIdController); //get tin nhắn của conversation
 
 export default router;

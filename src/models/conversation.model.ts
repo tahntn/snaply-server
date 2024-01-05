@@ -2,6 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IConversation extends Document {
   participants: Schema.Types.ObjectId[];
+  isGroup: boolean;
+  nameGroup?: string;
+  avatarGroup?: string;
 }
 
 const ConversationSchema = new mongoose.Schema<IConversation>(
@@ -12,6 +15,16 @@ const ConversationSchema = new mongoose.Schema<IConversation>(
         ref: 'User',
       },
     ],
+    isGroup: {
+      type: Boolean,
+      default: false,
+    },
+    nameGroup: {
+      type: String,
+    },
+    avatarGroup: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

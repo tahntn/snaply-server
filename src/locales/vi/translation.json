@@ -79,10 +79,14 @@
     },
     "error": {
       "cantSendRequestToYourself": "Không thể kết bạn với chính mình",
-      "receiverNotFound": "Email {email} không tồn tại. Vui lòng kiểm tra lại địa chỉ email.",
+      "receiverNotFound": "Người dùng không tồn tại",
       "invitationAlreadySent": "Lời mời kết bạn đã được gửi",
       "friendAlreadyAdded": "Người dùng đã là bạn bè . Vui lòng kiểm tra danh sách bạn bè của bạn.",
-      "friendRequestNotFound": "Không tìm thấy lời mời kết bạn"
+      "friendRequestNotFound": "Không tìm thấy lời mời kết bạn",
+      "youAreAlreadyFriends": "Bạn đã là bạn bè."
     }
+  },
+  "error": {
+    "objectId": "Phải là một id mongo hợp lệ."
   }
 }

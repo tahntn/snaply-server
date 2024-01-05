@@ -55,7 +55,7 @@
   "conversation": {
     "error": {
       "conversationDoesNotExist": "Conversation does not exist.",
-      "accesscConversation.": "You do not have access to this conversation."
+      "accesscConversation": "You do not have access to this conversation."
     }
   },
   "friend": {
@@ -76,10 +76,14 @@
     },
     "error": {
       "cantSendRequestToYourself": "You cannot send a friend request to yourself.",
-      "receiverNotFound": "{email} has not been found. Please check email address again.",
+      "receiverNotFound": "User does not exist.",
       "invitationAlreadySent": "Invitation has been already sent",
       "friendAlreadyAdded": "Friend already added. Please check friends list.",
-      "friendRequestNotFound": "Friend request has not been found"
+      "friendRequestNotFound": "Friend request has not been found",
+      "youAreAlreadyFriends": "You are already friends."
     }
+  },
+  "error": {
+    "objectId": "Must be a valid mongo id."
   }
 }
