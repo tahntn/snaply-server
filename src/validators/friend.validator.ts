@@ -16,7 +16,8 @@ export const createFriendRequestValidate = (req: Request) => ({
 
 export const updateFriendRequestValidate = (req: Request) => ({
   params: Joi.object().keys({
-    id: Joi.string()
+    friendRequestId: Joi.string()
+      .custom((value, helper) => objectId(value, helper, req))
       .required()
       .messages({
         'any.required': req.t('friend.confirmFriend.id.required'),

@@ -98,11 +98,23 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
 export const denyFriendRequestService = async (payload: IUpdateStateFriendRequest) => {
   try {
     const { req, friendRequestId } = payload;
+    const currentUser = req.user!;
+    //check friend request, status pending
+    const friendRequest = await Friend.findOne({
+      _id: friendRequestId,
+      status: 'pending',
+    });
 
-    const deletedFriendRequest = await Friend.findByIdAndDelete(friendRequestId);
-    if (!deletedFriendRequest) {
-      throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.friendRequestNotFound'));
+    if (!friendRequest) {
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
     }
+
+    if (!friendRequest.targetUserId.equals(currentUser._id)) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, req.t('auth.error.unauthorized'));
+    }
+
+    await Friend.deleteOne(friendRequestId);
+
     return true;
   } catch (error) {
     handleError(error);
