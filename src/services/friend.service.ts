@@ -4,10 +4,11 @@ import { httpStatus } from '../constant';
 import { Conversation, User } from '../models';
 import Friend from '../models/friend.model';
 import mongoose from 'mongoose';
+import { createConversationService } from './conversation.service';
 
 interface ICreateFriendRequest {
   req: Request;
-  receiverEmail: string;
+  receiverUserId: mongoose.Types.ObjectId;
 }
 
 interface IUpdateStateFriendRequest {
@@ -17,24 +18,19 @@ interface IUpdateStateFriendRequest {
 
 export const createFriendRequestService = async (payload: ICreateFriendRequest) => {
   try {
-    const { req, receiverEmail } = payload;
+    const { req, receiverUserId } = payload;
     const currentUser = req.user!;
 
     // check create to yourself
-    if (currentUser?.email?.toLowerCase() === receiverEmail?.toLowerCase()) {
+    if (currentUser._id.equals(receiverUserId)) {
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.cantSendRequestToYourself'));
     }
 
     // check receiver exist
-    const receiver = await User.findOne({
-      email: receiverEmail,
-    });
+    const receiver = await User.findById(receiverUserId);
 
     if (receiver === null) {
-      throw new ApiError(
-        httpStatus.BAD_REQUEST,
-        req.t(`friend.error.receiverNotFound`).replace('{email}', receiverEmail)
-      );
+      throw new ApiError(httpStatus.BAD_REQUEST, req.t(`friend.error.receiverNotFound`));
     }
 
     //check if invitation has been already sent
@@ -77,24 +73,30 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
 export const confirmFriendRequestService = async (payload: IUpdateStateFriendRequest) => {
   try {
     const { req, friendRequestId } = payload;
-    const updatedFriendRequest = await Friend.findByIdAndUpdate(
-      friendRequestId,
-      { status: 'accept' },
-      { new: true }
-    );
-    if (!updatedFriendRequest) {
-      throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.friendRequestNotFound'));
+
+    const currentUser = req.user!;
+
+    const friendRequest = await Friend.findById(friendRequestId);
+
+    if (!friendRequest) {
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
     }
 
-    // Create conversation between two user
-    const { userId, targetUserId } = updatedFriendRequest;
+    if (friendRequest.status !== 'pending') {
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
+    }
 
-    const newConversation = new Conversation({
-      participants: [userId, targetUserId],
+    if (!friendRequest.targetUserId.equals(currentUser._id)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, req.t('auth.error.unauthorized'));
+    }
+    await Friend.findByIdAndUpdate(friendRequestId, { status: 'accept' }, { new: true });
+
+    const res = await createConversationService({
+      user: currentUser,
+      participants: [friendRequest.userId],
+      req,
     });
-    await newConversation.save();
-
-    return true;
+    return res?.conversation;
   } catch (error) {
     handleError(error);
   }
@@ -103,11 +105,23 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
 export const denyFriendRequestService = async (payload: IUpdateStateFriendRequest) => {
   try {
     const { req, friendRequestId } = payload;
+    const currentUser = req.user!;
+    //check friend request, status pending
+    const friendRequest = await Friend.findOne({
+      _id: friendRequestId,
+      status: 'pending',
+    });
 
-    const deletedFriendRequest = await Friend.findByIdAndDelete(friendRequestId);
-    if (!deletedFriendRequest) {
-      throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.friendRequestNotFound'));
+    if (!friendRequest) {
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
     }
+
+    if (!friendRequest.targetUserId.equals(currentUser._id)) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, req.t('auth.error.unauthorized'));
+    }
+
+    await Friend.deleteOne(friendRequestId);
+
     return true;
   } catch (error) {
     handleError(error);

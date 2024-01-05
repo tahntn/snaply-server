@@ -61,4 +61,4 @@ export const getConversationByIdController = catchAsync(async (req: Request, res
 });
 
 export const updateConversationController = catchAsync(async (req: Request, res: Response) => {});
-export const deleteConversationController = catchAsync(async (req: Request, res: Response) => {});
+// export const deleteConversationController = catchAsync(async (req: Request, res: Response) => {});
