@@ -6,8 +6,6 @@ import { IQueryUser } from '../types';
 import { parseNumber } from '../utils';
 import { httpStatus } from '../constant';
 import { Request } from 'express';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { minidenticon } from 'minidenticons';
 export const createConversationService = async (payload: {
   user: Express.User;
   participants: string[];
@@ -55,7 +53,6 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
 
     const startIndex = (_page - 1) * _limit;
 
-    const a = minidenticon('a', 1, 1);
     const conversations = await Conversation.find({
       participants: { $in: [user._id] },
     })
