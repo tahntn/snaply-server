@@ -66,6 +66,7 @@ export const registerUserService = async (newUser: INewRegisteredUser, req: Requ
 
     return { user };
   } catch (error) {
+    console.log('error', error);
     handleError(error);
   }
 };

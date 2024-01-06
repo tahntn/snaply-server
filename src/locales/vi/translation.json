@@ -53,9 +53,13 @@
     }
   },
   "conversation": {
+    "getListMessage": {
+      "conversationId": { "required": "Thiếu params conversationId" }
+    },
     "error": {
       "conversationDoesNotExist": "Cuộc trò chuyện không tồn tại.",
-      "accesscConversation.": "Bạn không có quyền truy cập vào cuộc trò chuyện này."
+      "accesscConversation.": "Bạn không có quyền truy cập vào cuộc trò chuyện này.",
+      "atLeastTwoParticipants": "Cuộc trò chuyện phải có ít nhất hai người tham gia."
     }
   },
   "friend": {
@@ -63,6 +67,11 @@
       "success": "Gửi lời mời kết bạn thành công",
       "receiverEmail": {
         "required": "Vui lòng nhập email người gửi kết bạn"
+      }
+    },
+    "getListFriend": {
+      "type": {
+        "enum": "Type không hợp lệ. Chỉ chấp nhận 'friends' hoặc 'friendRequests'"
       }
     },
     "confirmFriend": {

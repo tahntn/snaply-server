@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 async function sha256(message: string) {
   const encoder = new TextEncoder();
   const data = encoder.encode(message);

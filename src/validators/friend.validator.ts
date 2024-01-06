@@ -24,3 +24,16 @@ export const updateFriendRequestValidate = (req: Request) => ({
       }),
   }),
 });
+
+export const getListFriendByUserIdValidate = (req: Request) => ({
+  query: Joi.object().keys({
+    limit: Joi.string(),
+    page: Joi.string(),
+    type: Joi.string()
+      .valid('friends', 'friendRequests')
+      .default('friends')
+      .messages({
+        'any.only': req.t('friend.getListFriend.type.enum'),
+      }),
+  }),
+});

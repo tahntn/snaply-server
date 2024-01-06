@@ -76,7 +76,7 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
   }
 };
 
-export const getConversationByIdService = async (payload: {
+export const getListMessageByConversationIdService = async (payload: {
   user: IUser;
   conversationId: string;
   page?: string;

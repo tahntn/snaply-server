@@ -4,11 +4,9 @@ import { httpStatus } from '../constant';
 import { catchAsync, pick } from '../utils';
 import {
   createConversationService,
-  getConversationByIdService,
   getConversationsService,
+  getListMessageByConversationIdService,
 } from '../services';
-import { IUser } from '../models';
-import { IQueryUser } from '../types';
 
 export const createConversationController = catchAsync(async (req: Request, res: Response) => {
   const { participants } = req.body;
@@ -18,7 +16,7 @@ export const createConversationController = catchAsync(async (req: Request, res:
   if (!participants || !Array.isArray(participants) || participants?.length < 1) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
-      message: 'Please provide complete information with at least two participants.',
+      message: req.t('conversation.error.atLeastTwoParticipants'),
     });
   }
 
@@ -33,32 +31,31 @@ export const createConversationController = catchAsync(async (req: Request, res:
 export const getConversationsController = catchAsync(async (req: Request, res: Response) => {
   const currentUser = req.user!;
 
-  const query: IQueryUser = pick(req.query, ['limit', 'page']);
+  const query = pick(req.query, ['limit', 'page']);
 
   const response = await getConversationsService(currentUser, query);
   res.status(httpStatus.OK).json(response);
 });
 
-export const getConversationByIdController = catchAsync(async (req: Request, res: Response) => {
-  const user = req.user!;
-  const query = pick(req.query, ['limit', 'page']);
+export const getListMessageByConversationIdController = catchAsync(
+  async (req: Request, res: Response) => {
+    const user = req.user!;
+    const query = pick(req.query, ['limit', 'page']);
 
-  if (!req.params.conversationId) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      code: httpStatus.BAD_REQUEST,
-      message: 'Please provide keyword',
+    if (!req.params.conversationId) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        code: httpStatus.BAD_REQUEST,
+        message: req.t('conversation.error.conversationId.required'),
+      });
+    }
+
+    const response = await getListMessageByConversationIdService({
+      user,
+      conversationId: req.params.conversationId as string,
+      page: query?.page,
+      limit: query?.limit,
+      req,
     });
+    res.status(httpStatus.OK).json(response);
   }
-
-  const response = await getConversationByIdService({
-    user,
-    conversationId: req.params.conversationId as string,
-    page: query?.page,
-    limit: query?.limit,
-    req,
-  });
-  res.status(httpStatus.OK).json(response);
-});
-
-export const updateConversationController = catchAsync(async (req: Request, res: Response) => {});
-// export const deleteConversationController = catchAsync(async (req: Request, res: Response) => {});
+);

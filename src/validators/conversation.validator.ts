@@ -5,7 +5,3 @@ export const createConversation = {
     participants: Joi.array().items(Joi.string()),
   }),
 };
-
-export const getConversation = {};
-export const updateConversation = {};
-export const deleteConversation = {};

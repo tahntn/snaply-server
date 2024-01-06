@@ -53,14 +53,23 @@
     }
   },
   "conversation": {
+    "getListMessage": {
+      "conversationId": { "required": "Missing conversationId params" }
+    },
     "error": {
       "conversationDoesNotExist": "Conversation does not exist.",
-      "accesscConversation": "You do not have access to this conversation."
+      "accesscConversation": "You do not have access to this conversation.",
+      "atLeastTwoParticipants": "Please provide complete information with at least two participants."
     }
   },
   "friend": {
     "createFriend": {
       "success": "Successfully sent a new friend request"
+    },
+    "getListFriend": {
+      "type": {
+        "enum": "Invalid type. Only 'friends' or 'friendRequests' are accepted."
+      }
     },
     "confirmFriend": {
       "success": "Successfully confirmed a friend request",

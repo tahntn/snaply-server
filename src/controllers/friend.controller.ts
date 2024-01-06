@@ -4,12 +4,14 @@ import {
   confirmFriendRequestService,
   createFriendRequestService,
   denyFriendRequestService,
+  getListFriendByUserIdService,
 } from '../services';
 import { catchAsync } from '../utils';
 import { NextFunction, Request, Response } from 'express';
 import { validate } from '../middlewares';
 import {
   createFriendRequestValidate,
+  getListFriendByUserIdValidate,
   updateFriendRequestValidate,
 } from '../validators/friend.validator';
 
@@ -61,5 +63,14 @@ export const denyFriendRequestController = catchAsync(
       message: req.t('friend.denyFriend.success'),
       data: response,
     });
+  }
+);
+
+export const getListFriendByUserIdController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    await validate(getListFriendByUserIdValidate(req))(req, res, next);
+
+    const response = await getListFriendByUserIdService(req);
+    res.status(httpStatus.OK).json(response);
   }
 );
