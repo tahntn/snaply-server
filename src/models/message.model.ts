@@ -4,7 +4,7 @@ export interface IMessage extends Document {
   title: string;
   senderId: mongoose.Types.ObjectId;
   replyTo?: mongoose.Types.ObjectId;
-  conversationsId: mongoose.Types.ObjectId;
+  conversationId: mongoose.Types.ObjectId;
   isPin?: boolean;
   attachments?: string[];
 }
@@ -22,7 +22,7 @@ const MessageSchema = new mongoose.Schema<IMessage>(
       type: Schema.Types.ObjectId,
       ref: 'Message',
     },
-    conversationsId: {
+    conversationId: {
       type: Schema.Types.ObjectId,
       ref: 'Conversation',
     },

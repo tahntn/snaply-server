@@ -3,7 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 import { httpStatus } from '../constant';
 import { catchAsync, pick } from '../utils';
 
-import { getListMessageByConversationIdService, sendMessageService } from '../services';
+import {
+  getListMessageByConversationIdService,
+  pinMessageService,
+  sendMessageService,
+} from '../services';
 import mongoose from 'mongoose';
 import { validate } from '../middlewares';
 import { getListMessageByConversationIdValidate, sendMessageValidate } from '../validators';
@@ -18,7 +22,7 @@ export const sendMessagesController = catchAsync(
     const response = await sendMessageService(
       {
         user: currentUser,
-        conversationsId: new mongoose.Types.ObjectId(conversationId),
+        conversationId: new mongoose.Types.ObjectId(conversationId),
         title,
       },
       req
@@ -32,13 +36,30 @@ export const getListMessageByConversationIdController = catchAsync(
     await validate(getListMessageByConversationIdValidate(req))(req, res, next);
     const user = req.user!;
     const query = pick(req.query, ['limit', 'page']);
+    const conversationId = req.params.conversationId;
 
     const response = await getListMessageByConversationIdService({
       user,
-      conversationId: req.params.conversationId as string,
+      conversationId: new mongoose.Types.ObjectId(conversationId),
       page: query?.page,
       limit: query?.limit,
       req,
+    });
+    res.status(httpStatus.OK).json(response);
+  }
+);
+
+export const pinMessageController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const currentUser = req.user!;
+    const conversationId = req.params.conversationId;
+    const messageId = req.params.messageId;
+
+    const response = await pinMessageService({
+      currentUser,
+      conversationId: new mongoose.Types.ObjectId(conversationId),
+      messageId: new mongoose.Types.ObjectId(messageId),
+      t: req.t,
     });
     res.status(httpStatus.OK).json(response);
   }
