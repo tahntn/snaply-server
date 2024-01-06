@@ -61,7 +61,7 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
         throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.youAreAlreadyFriends'));
       }
       //check status pending
-      throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.youAreAlreadyFriends'));
+      throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.invitationAlreadySent'));
     }
 
     //Create your request list
@@ -90,7 +90,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
     }
 
     if (friendRequest.status !== 'pending') {
-      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.invitationAlreadySent'));
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.youAreAlreadyFriends'));
     }
 
     if (
