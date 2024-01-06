@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { ICheckFriend } from '../types/friend.interface';
 
 /**
@@ -8,5 +9,5 @@ import { ICheckFriend } from '../types/friend.interface';
  */
 
 export const areUserIdsEqual = ({ userId1, userId2 }: ICheckFriend) => {
-  return userId1.equals(userId2);
+  return new mongoose.Types.ObjectId(userId1).equals(new mongoose.Types.ObjectId(userId2));
 };

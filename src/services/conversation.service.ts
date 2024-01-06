@@ -1,44 +1,81 @@
 import mongoose from 'mongoose';
 import { ApiError, handleError } from '../errors';
-import { Conversation, IUser } from '../models';
+import { Conversation, IConversation, IUser, User } from '../models';
 import { getUserByIdService } from './user.service';
 import { IQueryUser } from '../types';
-import { parseNumber } from '../utils';
+import { areUserIdsEqual, hashEmail, parseNumber, randomNumber } from '../utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
 import { httpStatus } from '../constant';
 export const createConversationService = async (payload: {
-  user: Express.User;
-  participants: mongoose.Types.ObjectId[];
+  currentUser: Express.User;
+  data: IConversation;
   req: Request;
 }) => {
   try {
-    const { user, participants, req } = payload;
-    const userId = user._id;
-    const userId2 = participants[0];
-    //check user
-    const checkUser = await getUserByIdService(userId, req);
-    if (!checkUser) {
-      throw new Error();
-    }
-    //check participant
-    const checkParticipant = await getUserByIdService(new mongoose.Types.ObjectId(userId2), req);
-    if (!checkParticipant) {
-      throw new Error();
+    const { currentUser, req, data } = payload;
+    const { participants, isGroup, nameGroup, avatarGroup } = data;
+    const userId = currentUser._id;
+
+    //check curent user existing in participants
+    const validParticipants = participants.filter(
+      (user) =>
+        !areUserIdsEqual({
+          userId1: user,
+          userId2: userId,
+        })
+    );
+
+    if (validParticipants.length !== participants.length) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        req.t('conversation.createConversation.participantsIncludeCurrentUser')
+      );
     }
 
-    //check existing conversation
-    const existingConversation = await Conversation.find({
-      $or: [
-        { participants: { $all: [userId, userId2] } },
-        { participants: { $all: [userId2, userId] } },
-      ],
-    });
-    if (existingConversation.length > 0) {
-      return { conversation: existingConversation[0] };
+    // check existing users
+    const existingUsers = await User.find({ _id: { $in: participants } });
+
+    if (existingUsers.length !== participants.length) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        req.t('conversation.createConversation.participantsNotExist')
+      );
+    }
+
+    if (!isGroup) {
+      const userId2 = participants[0];
+
+      //check existing conversation
+      const existingConversation = await Conversation.find({
+        $or: [
+          { participants: { $all: [userId, userId2] } },
+          { participants: { $all: [userId2, userId] } },
+        ],
+      });
+      if (existingConversation.length > 0) {
+        return { conversation: existingConversation[0] };
+      }
+      const newConversation = new Conversation({
+        participants: [userId, userId2],
+      });
+      await newConversation.save();
+      return { conversation: newConversation };
+    }
+
+    const _nameGroup = nameGroup || existingUsers.map((user) => user.username).join(', ');
+
+    let _avatarGroup = avatarGroup || '';
+    if (!avatarGroup) {
+      const _randomNumber = randomNumber(10000000);
+      const hashedEmail = await hashEmail(_nameGroup + _randomNumber);
+      _avatarGroup = 'https://www.gravatar.com/avatar/' + hashedEmail + '?d=retro&s=400';
     }
     const newConversation = new Conversation({
-      participants: [userId, userId2],
+      participants: [userId, ...participants],
+      nameGroup: _nameGroup,
+      avatarGroup: _avatarGroup,
+      isGroup,
     });
     await newConversation.save();
     return { conversation: newConversation };

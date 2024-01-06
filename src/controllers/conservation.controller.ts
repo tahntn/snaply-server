@@ -8,25 +8,40 @@ import {
   getDetailConversationService,
 } from '../services';
 import mongoose from 'mongoose';
+import { createConversationService, getConversationsService } from '../services';
+import { validate } from '../middlewares';
+import { createConversation } from '../validators';
+import { IConversation } from '../models';
 
 export const createConversationController = catchAsync(async (req: Request, res: Response) => {
-  const { participants } = req.body;
-  const user = req.user!;
+  await validate(createConversation(req))(req, res);
+  const { participants, isGroup } = req.body as IConversation;
+  const currentUser = req.user!;
 
-  //check participant
-  if (!participants || !Array.isArray(participants) || participants?.length < 1) {
+  if (isGroup && participants.length < 2) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
-      message: req.t('conversation.error.atLeastTwoParticipants'),
+      message: req.t('conversation.createConversation.minParticipantsRequired'),
+    });
+  }
+  2;
+  if (!isGroup && participants.length !== 1) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      code: httpStatus.BAD_REQUEST,
+      message: req.t('conversation.createConversation.exactOneParticipantRequired'),
     });
   }
 
   const response = await createConversationService({
-    user: user,
-    participants,
+    currentUser,
+    data: req.body as IConversation,
     req,
   });
-  res.status(httpStatus.OK).json(response);
+  res.status(httpStatus.OK).json({
+    data: response?.conversation,
+    code: httpStatus.OK,
+    message: req.t('conversation.createConversation.createConversationSuccess'),
+  });
 });
 
 export const getConversationsController = catchAsync(async (req: Request, res: Response) => {
