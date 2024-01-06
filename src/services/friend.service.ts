@@ -90,7 +90,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
     }
 
     if (friendRequest.status !== 'pending') {
-      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.invitationAlreadySent'));
     }
 
     if (
