@@ -5,7 +5,7 @@ import { getListMessageByConversationIdController, sendMessagesController } from
 const router = Router({ mergeParams: true });
 
 router
-  .route('/')
+  .route('/message')
   .post(auth(), sendMessagesController)
   .get(auth(), getListMessageByConversationIdController);
 

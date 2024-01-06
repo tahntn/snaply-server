@@ -11,6 +11,6 @@ router
   .post(auth(), createConversationController)
   .get(auth(), getConversationsController);
 
-router.use('/:conversationId/message', messageRouter);
+router.use('/:conversationId', messageRouter);
 
 export default router;
