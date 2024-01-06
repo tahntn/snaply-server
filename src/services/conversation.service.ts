@@ -18,7 +18,7 @@ export const createConversationService = async (payload: {
     const userId = currentUser._id;
 
     //check curent user existing in participants
-    const validParticipants = participants.filter((user) => !areIdsEqual(user, userId));
+    const validParticipants = participants.filter((user) => areIdsEqual(user, userId));
 
     if (validParticipants.length !== participants.length) {
       throw new ApiError(
@@ -52,6 +52,10 @@ export const createConversationService = async (payload: {
       }
       const newConversation = new Conversation({
         participants: [userId, userId2],
+        lastActivity: {
+          senderId: userId,
+          type: 'init',
+        },
       });
       await newConversation.save();
       return { conversation: newConversation };
@@ -70,6 +74,10 @@ export const createConversationService = async (payload: {
       nameGroup: _nameGroup,
       avatarGroup: _avatarGroup,
       isGroup,
+      lastActivity: {
+        senderId: userId,
+        type: 'init',
+      },
     });
     await newConversation.save();
     return { conversation: newConversation };
