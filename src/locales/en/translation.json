@@ -38,7 +38,7 @@
       "userNotFound": "User not found.",
       "emailAlready": "Email is already registered.",
       "EmaileoesNotExist": "Email does not exist.",
-      "incorrectPassword.": "Incorrect password."
+      "incorrectPassword": "Incorrect password."
     }
   },
   "token": {

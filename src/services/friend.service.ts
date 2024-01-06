@@ -151,40 +151,59 @@ export const getListFriendByUserIdService = async (req: Request) => {
 
     const _page = parseNumber(page, 1);
     const _limit = parseNumber(limit, 5);
+    const _type = type || 'friends';
 
     const startIndex = (_page - 1) * _limit;
 
     const queryObj = {
-      status: type === 'friendRequests' ? 'pending' : 'accept',
-      ...(type === 'friendRequests' && { targetUserId: currentUser?._id }),
-      ...(type === 'friend' && {
-        $or: [{ userId: currentUser?._id }, { targetUserId: currentUser?._id }],
-      }),
+      $and: [
+        {
+          status: _type === 'friendRequests' ? 'pending' : 'accept',
+        },
+        {
+          ...(_type === 'friendRequests' && { targetUserId: currentUser?._id }),
+          ...(_type === 'friends' && {
+            $or: [{ userId: currentUser?._id }, { targetUserId: currentUser?._id }],
+          }),
+        },
+      ],
     };
-
     const selectFields = 'username email avatar _id';
     const friends = await Friend.find(queryObj)
       .populate([
         { path: 'userId', select: selectFields },
         { path: 'targetUserId', select: selectFields },
       ])
-      .select('-__v')
+
       .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(_limit)
       .lean()
       .exec();
 
-    const totalFriends = await Friend.countDocuments(queryObj).exec();
-    const totalPages = Math.ceil(totalFriends / _limit);
+    // const totalFriends = await Friend.countDocuments(queryObj).exec();
+    // const totalPages = Math.ceil(totalFriends / _limit);
+
+    const _friend = friends.map((friend) => {
+      const { targetUserId, userId, ...newFriend } = friend;
+      const areEqual = areUserIdsEqual({
+        userId1: targetUserId._id,
+        userId2: currentUser._id,
+      });
+      const user = areEqual ? userId : targetUserId;
+      return {
+        ...newFriend,
+        user,
+      };
+    });
 
     return {
-      data: friends,
+      data: _friend,
       pagination: {
         page: _page,
         limit: _limit,
-        totalPages,
-        totalFriends,
+        // totalPages,
+        // totalFriends,
       },
     };
   } catch (error) {
