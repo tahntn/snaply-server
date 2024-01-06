@@ -5,8 +5,14 @@ export interface IConversation extends Document {
   isGroup?: boolean;
   nameGroup?: string;
   avatarGroup?: string;
+  lastActivity?: ILastActivity;
 }
-
+export interface ILastActivity {
+  type: 'init' | 'message' | 'user_leave';
+  content?: string;
+  senderId: mongoose.Types.ObjectId;
+  timestamp: Date;
+}
 const ConversationSchema = new mongoose.Schema<IConversation>(
   {
     participants: [
@@ -24,6 +30,25 @@ const ConversationSchema = new mongoose.Schema<IConversation>(
     },
     avatarGroup: {
       type: String,
+    },
+    lastActivity: {
+      type: {
+        type: String,
+        enum: ['init', 'message', 'user_leave'],
+        default: 'init',
+      },
+      content: {
+        type: String,
+        default: '',
+      },
+      senderId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+      },
+      timestamp: {
+        type: Date,
+        default: Date.now(),
+      },
     },
   },
   { timestamps: true }
