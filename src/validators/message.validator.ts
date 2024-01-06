@@ -8,6 +8,7 @@ export const sendMessageValidate = (req: Request) => ({
       .required()
       .messages({
         'any.required': req.t('message.sendMessage.title'),
+        'string.base': req.t('error.string'),
       }),
   }),
   params: Joi.object().keys({

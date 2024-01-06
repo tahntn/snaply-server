@@ -10,6 +10,7 @@ import {
   IUpdateStateFriendRequest,
 } from '../types/friend.interface';
 import { getUserByIdService } from './user.service';
+import { IConversation } from '../models';
 
 export const checkFriendRequest = async (payload: ICheckFriend, req: Request) => {
   try {
@@ -102,8 +103,11 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
     await Friend.findByIdAndUpdate(friendRequestId, { status: 'accept' }, { new: true });
 
     const res = await createConversationService({
-      user: currentUser,
-      participants: [friendRequest.userId],
+      currentUser,
+      data: {
+        participants: [friendRequest.userId],
+      } as IConversation,
+
       req,
     });
     return res?.conversation;

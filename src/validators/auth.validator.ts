@@ -16,6 +16,7 @@ export const validateLogin = (req: Request) => ({
       .required()
       .messages({
         'any.required': req.t('auth.password.required'),
+        'string.base': req.t('error.passwordString'),
       }),
   }),
 });
@@ -34,12 +35,14 @@ export const validateRegister = (req: Request) => ({
       .custom((value, helper) => password(value, helper, req))
       .messages({
         'any.required': req.t('auth.password.required'),
+        'string.base': req.t('error.passwordString'),
       }),
     username: Joi.string()
       .required()
       .custom((value, helper) => username(value, helper, req))
       .messages({
         'any.required': req.t('auth.username.required'),
+        'string.base': req.t('error.nameString'),
       }),
   }),
 });
@@ -50,6 +53,7 @@ export const validateLogout = (req: Request) => ({
       .required()
       .messages({
         'any.required': req.t('auth.refreshToken.required'),
+        'string.base': req.t('error.string'),
       }),
   }),
 });
@@ -60,6 +64,7 @@ export const validateRefreshTokens = (req: Request) => ({
       .required()
       .messages({
         'any.required': req.t('auth.refreshToken.required'),
+        'string.base': req.t('error.string'),
       }),
   }),
 });
