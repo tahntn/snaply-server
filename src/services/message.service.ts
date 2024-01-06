@@ -29,7 +29,7 @@ export const existingMessage = async (
   try {
     const message = await Message.findById(messageId);
     if (!message) {
-      throw new ApiError(httpStatus.BAD_REQUEST, t('conversation.error.conversationDoesNotExist')); // thêm translate sau
+      throw new ApiError(httpStatus.BAD_REQUEST, t('message.error.messageNotExist'));
     }
     return message;
   } catch (error) {
@@ -47,6 +47,22 @@ export const checkUserInConversation = (
   );
   if (!isAuth) {
     throw new ApiError(httpStatus.UNAUTHORIZED, t('conversation.error.accesscConversation'));
+  }
+  return true;
+};
+
+export const checkMessageInConversation = (
+  conversationId: mongoose.Types.ObjectId,
+  conversationMessageId: mongoose.Types.ObjectId,
+  t: TFunction<'translation', undefined>
+) => {
+  const checkMessageInConversation = areUserIdsEqual({
+    userId1: conversationId,
+    userId2: conversationMessageId,
+  });
+
+  if (!checkMessageInConversation) {
+    throw new ApiError(httpStatus.BAD_REQUEST, t('message.error.messageNotBelongToConversation'));
   }
   return true;
 };
@@ -96,7 +112,7 @@ export const getListMessageByConversationIdService = async (payload: {
     //check user in conversation
     checkUserInConversation(conversation!, currentUserId, req.t);
 
-    const messages = await Message.find({ conversationsId: conversationId })
+    const messages = await Message.find({ conversationId: conversationId })
       .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(_limit)
@@ -128,9 +144,19 @@ export const pinMessageService = async (payload: {
     const message = await existingMessage(messageId, t);
 
     //check message in converation
-    console.log(message);
+    checkMessageInConversation(conversationId, message?.conversationId!, t);
 
-    return 'hi';
+    const isPin = !message?.isPin;
+
+    const updatedMessage = await Message.findByIdAndUpdate(
+      messageId,
+      {
+        isPin,
+      },
+      { new: true }
+    );
+
+    return { message: updatedMessage };
   } catch (error) {
     handleError(error);
   }

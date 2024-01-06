@@ -19,6 +19,6 @@ itemRouter
 
 itemRouter.use('/:messageId', messageRouter);
 
-messageRouter.route('/pin').post(pinMessageController);
+messageRouter.route('/pin').post(auth(), pinMessageController);
 
 export default router;
