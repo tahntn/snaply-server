@@ -54,10 +54,7 @@ export const checkMessageInConversation = (
   conversationMessageId: mongoose.Types.ObjectId,
   t: TFunction<'translation', undefined>
 ) => {
-  const checkMessageInConversation = areUserIdsEqual({
-    userId1: conversationId,
-    userId2: conversationMessageId,
-  });
+  const checkMessageInConversation = areIdsEqual(conversationId, conversationMessageId);
 
   if (!checkMessageInConversation) {
     throw new ApiError(httpStatus.BAD_REQUEST, t('message.error.messageNotBelongToConversation'));
