@@ -185,14 +185,14 @@ export const getListFriendByUserIdService = async (req: Request) => {
     // const totalPages = Math.ceil(totalFriends / _limit);
 
     const _friend = friends.map((friend) => {
-      const { targetUserId, userId, ...newFriend } = friend;
+      const { targetUserId, userId, ...infoFriend } = friend;
       const areEqual = areUserIdsEqual({
         userId1: targetUserId._id,
         userId2: currentUser._id,
       });
       const user = areEqual ? userId : targetUserId;
       return {
-        ...newFriend,
+        ...infoFriend,
         user,
       };
     });
