@@ -2,6 +2,12 @@ import { Request, Response } from 'express';
 
 import { httpStatus } from '../constant';
 import { catchAsync, pick } from '../utils';
+import {
+  createConversationService,
+  getConversationsService,
+  getDetailConversationService,
+} from '../services';
+import mongoose from 'mongoose';
 import { createConversationService, getConversationsService } from '../services';
 import { validate } from '../middlewares';
 import { createConversation } from '../validators';
@@ -45,4 +51,19 @@ export const getConversationsController = catchAsync(async (req: Request, res: R
 
   const response = await getConversationsService(currentUser, query);
   res.status(httpStatus.OK).json(response);
+});
+
+export const getDetailConversationController = catchAsync(async (req: Request, res: Response) => {
+  const currentUser = req.user!;
+  const conversationId = req.params.conversationId;
+
+  const response = await getDetailConversationService(
+    new mongoose.Types.ObjectId(conversationId),
+    currentUser,
+    req.t
+  );
+  res.status(httpStatus.OK).json({
+    code: httpStatus.OK,
+    data: response?.conversation,
+  });
 });
