@@ -1,24 +1,12 @@
 import { Router } from 'express';
-
 import { auth } from '../middlewares';
+import { getListMessageByConversationIdController, sendMessagesController } from '../controllers';
 
-import {
-  sendMessagesController,
-  // deleteMessageController,
-  // getAllMessagesController,
-  // getMessageByIdController,
-  // updateMessageController,
-} from '../controllers';
+const router = Router({ mergeParams: true });
 
-const router = Router();
-
-router.route('/').post(auth(), sendMessagesController); // gửi tin nhắn
-// .get(auth(), getAllMessagesController);
-
-// router
-//   .route('/:messageId')
-//   .get(auth(), getMessageByIdController)
-//   .patch(auth(), updateMessageController)
-//   .delete(auth(), deleteMessageController);
+router
+  .route('/message')
+  .post(auth(), sendMessagesController)
+  .get(auth(), getListMessageByConversationIdController);
 
 export default router;

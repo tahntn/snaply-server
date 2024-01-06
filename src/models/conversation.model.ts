@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export interface IConversation extends Document {
   participants: mongoose.Types.ObjectId[];

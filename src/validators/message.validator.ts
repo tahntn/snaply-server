@@ -1,13 +1,36 @@
+import { Request } from 'express';
 import Joi from 'joi';
+import { objectId } from './custom.validator';
 
-export const sendMessage = {
+export const sendMessageValidate = (req: Request) => ({
   body: Joi.object().keys({
-    title: Joi.string().required(),
-    conversationsId: Joi.string().required(),
+    title: Joi.string()
+      .required()
+      .messages({
+        'any.required': req.t('message.sendMessage.title'),
+      }),
   }),
-};
+  params: Joi.object().keys({
+    conversationId: Joi.string()
+      .custom((value, helper) => objectId(value, helper, req))
+      .required()
+      .messages({
+        'any.required': req.t('message.sendMessage.conversationId'),
+      }),
+  }),
+});
 
-export const getMessages = {};
-export const getMessage = {};
-export const updateMessage = {};
-export const deleteMessage = {};
+export const getListMessageByConversationIdValidate = (req: Request) => ({
+  query: Joi.object().keys({
+    limit: Joi.string(),
+    page: Joi.string(),
+  }),
+  params: Joi.object().keys({
+    conversationId: Joi.string()
+      .custom((value, helper) => objectId(value, helper, req))
+      .required()
+      .messages({
+        'any.required': req.t('message.getListMessageByConversationId.conversationId'),
+      }),
+  }),
+});

@@ -1,15 +1,15 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const FriendSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
     targetUserId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Reference to the User model
+      type: Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     status: {

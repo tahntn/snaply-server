@@ -47,6 +47,13 @@
     }
   },
   "message": {
+    "sendMessage": {
+      "title": "Vui lòng nhập tin nhắn",
+      "conversationId": "Thiếu params conversationId"
+    },
+    "getListMessageByConversationId": {
+      "conversationId": "Thiếu params conversationId"
+    },
     "error": {
       "conversationNotFound": "Không tìm thấy cuộc trò chuyện.",
       "userIsNotPartOfThisConversation.": "Người dùng không thuộc về cuộc trò chuyện này."
@@ -59,7 +66,8 @@
     "error": {
       "conversationDoesNotExist": "Cuộc trò chuyện không tồn tại.",
       "accesscConversation.": "Bạn không có quyền truy cập vào cuộc trò chuyện này.",
-      "atLeastTwoParticipants": "Cuộc trò chuyện phải có ít nhất hai người tham gia."
+      "atLeastTwoParticipants": "Cuộc trò chuyện phải có ít nhất hai người tham gia.",
+      "userIsNotPartOfThisConversation": "Người dùng không thuộc về cuộc trò chuyên."
     }
   },
   "friend": {
