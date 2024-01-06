@@ -1,11 +1,7 @@
 import { Router } from 'express';
 
 import { auth } from '../middlewares';
-import {
-  createConversationController,
-  getListMessageByConversationIdController,
-  getConversationsController,
-} from '../controllers';
+import { createConversationController, getConversationsController } from '../controllers';
 import messageRouter from './message.router';
 
 const router = Router();
@@ -16,7 +12,5 @@ router
   .get(auth(), getConversationsController);
 
 router.use('/:conversationId/message', messageRouter);
-
-router.route('/:conversationId').get(auth(), getListMessageByConversationIdController);
 
 export default router;

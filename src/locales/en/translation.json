@@ -51,6 +51,9 @@
       "title": "Please enter message",
       "conversationId": "Missing conversationId params"
     },
+    "getListMessageByConversationId": {
+      "conversationId": "Missing conversationId params"
+    },
     "error": {
       "conversationNotFound": "Conversation not found",
       "userIsNotPartOfThisConversation.": "User is not part of this conversation."

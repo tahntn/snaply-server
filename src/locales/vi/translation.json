@@ -49,7 +49,10 @@
   "message": {
     "sendMessage": {
       "title": "Vui lòng nhập tin nhắn",
-      "conversationId": "Thiệu params conversationId"
+      "conversationId": "Thiếu params conversationId"
+    },
+    "getListMessageByConversationId": {
+      "conversationId": "Thiếu params conversationId"
     },
     "error": {
       "conversationNotFound": "Không tìm thấy cuộc trò chuyện.",

@@ -2,7 +2,7 @@ import { Request } from 'express';
 import Joi from 'joi';
 import { objectId } from './custom.validator';
 
-export const sendMessage = (req: Request) => ({
+export const sendMessageValidate = (req: Request) => ({
   body: Joi.object().keys({
     title: Joi.string()
       .required()
@@ -16,6 +16,21 @@ export const sendMessage = (req: Request) => ({
       .required()
       .messages({
         'any.required': req.t('message.sendMessage.conversationId'),
+      }),
+  }),
+});
+
+export const getListMessageByConversationIdValidate = (req: Request) => ({
+  query: Joi.object().keys({
+    limit: Joi.string(),
+    page: Joi.string(),
+  }),
+  params: Joi.object().keys({
+    conversationId: Joi.string()
+      .custom((value, helper) => objectId(value, helper, req))
+      .required()
+      .messages({
+        'any.required': req.t('message.getListMessageByConversationId.conversationId'),
       }),
   }),
 });
