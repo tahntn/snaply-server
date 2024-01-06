@@ -1,13 +1,21 @@
+import { Request } from 'express';
 import Joi from 'joi';
+import { objectId } from './custom.validator';
 
-export const sendMessage = {
+export const sendMessage = (req: Request) => ({
   body: Joi.object().keys({
-    title: Joi.string().required(),
-    conversationsId: Joi.string().required(),
+    title: Joi.string()
+      .required()
+      .messages({
+        'any.required': req.t('message.sendMessage.title'),
+      }),
   }),
-};
-
-export const getMessages = {};
-export const getMessage = {};
-export const updateMessage = {};
-export const deleteMessage = {};
+  params: Joi.object().keys({
+    conversationId: Joi.string()
+      .custom((value, helper) => objectId(value, helper, req))
+      .required()
+      .messages({
+        'any.required': req.t('message.sendMessage.conversationId'),
+      }),
+  }),
+});

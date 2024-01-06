@@ -6,13 +6,17 @@ import {
   getListMessageByConversationIdController,
   getConversationsController,
 } from '../controllers';
+import messageRouter from './message.router';
 
 const router = Router();
 
 router
   .route('/')
-  .post(auth(), createConversationController) //tạo
-  .get(auth(), getConversationsController); //get các conversation của user
-router.route('/:conversationId').get(auth(), getListMessageByConversationIdController); //get tin nhắn của conversation
+  .post(auth(), createConversationController)
+  .get(auth(), getConversationsController);
+
+router.use('/:conversationId/message', messageRouter);
+
+router.route('/:conversationId').get(auth(), getListMessageByConversationIdController);
 
 export default router;

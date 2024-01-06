@@ -2,9 +2,9 @@ import mongoose, { Schema } from 'mongoose';
 
 export interface IMessage extends Document {
   title: string;
-  senderId: Schema.Types.ObjectId;
-  replyTo?: Schema.Types.ObjectId;
-  conversationsId: Schema.Types.ObjectId;
+  senderId: mongoose.Types.ObjectId;
+  replyTo?: mongoose.Types.ObjectId;
+  conversationsId: mongoose.Types.ObjectId;
   isPin?: boolean;
   attachments?: string[];
 }
@@ -15,15 +15,15 @@ const MessageSchema = new mongoose.Schema<IMessage>(
       type: String,
     },
     senderId: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
     },
     replyTo: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Message',
     },
     conversationsId: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Conversation',
     },
     isPin: {

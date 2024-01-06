@@ -13,7 +13,10 @@ export const sendMessageService = async (payload: TPayloadSendMessage, req: Requ
     //check conversation exist
     const conversation = await Conversation.findById(conversationsId);
     if (!conversation) {
-      throw new ApiError(httpStatus.BAD_REQUEST, req.t('conversation.error.conversationNotFound'));
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        req.t('conversation.error.conversationDoesNotExist')
+      );
     }
 
     // check user is in conversation

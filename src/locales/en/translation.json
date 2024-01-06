@@ -47,6 +47,10 @@
     }
   },
   "message": {
+    "sendMessage": {
+      "title": "Please enter message",
+      "conversationId": "Missing conversationId params"
+    },
     "error": {
       "conversationNotFound": "Conversation not found",
       "userIsNotPartOfThisConversation.": "User is not part of this conversation."
@@ -59,7 +63,8 @@
     "error": {
       "conversationDoesNotExist": "Conversation does not exist.",
       "accesscConversation": "You do not have access to this conversation.",
-      "atLeastTwoParticipants": "Please provide complete information with at least two participants."
+      "atLeastTwoParticipants": "Please provide complete information with at least two participants.",
+      "userIsNotPartOfThisConversation": "The user does not belong to the conversation."
     }
   },
   "friend": {
