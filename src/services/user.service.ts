@@ -7,13 +7,13 @@ import { IUser, User } from '../models';
 import { IQueryUser } from '../types';
 import { parseNumber } from '../utils';
 import { Request } from 'express';
+import { checkExistence } from './common.service';
 
 export const getUserByIdService = async (id: mongoose.Types.ObjectId, req: Request) => {
   try {
-    const user = await User.findById(id);
-    if (user === null) {
-      throw new ApiError(httpStatus.BAD_REQUEST, req.t('user.error.userNotFound'));
-    }
+    //check user
+    const user = await checkExistence(User, id, req.t('user.error.userNotFound'));
+
     return user;
   } catch (error) {
     handleError(error);

@@ -11,6 +11,7 @@ import {
 } from '../types/friend.interface';
 import { getUserByIdService } from './user.service';
 import { IConversation } from '../models';
+import { checkExistence } from './common.service';
 
 export const checkFriendRequest = async (payload: ICheckFriend, req: Request) => {
   try {
@@ -81,18 +82,17 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
     const { req, friendRequestId } = payload;
 
     const currentUser = req.user!;
+    const friendRequest = await checkExistence(
+      Friend,
+      friendRequestId,
+      req.t('friend.error.friendRequestNotFound')
+    );
 
-    const friendRequest = await Friend.findById(friendRequestId);
-
-    if (!friendRequest) {
-      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
-    }
-
-    if (friendRequest.status !== 'pending') {
+    if (friendRequest!.status !== 'pending') {
       throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.youAreAlreadyFriends'));
     }
 
-    if (!areIdsEqual(friendRequest.targetUserId, currentUser._id)) {
+    if (!areIdsEqual(friendRequest!.targetUserId, currentUser._id)) {
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('auth.error.unauthorized'));
     }
     await Friend.findByIdAndUpdate(friendRequestId, { status: 'accept' }, { new: true });
@@ -100,7 +100,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
     const res = await createConversationService({
       currentUser,
       data: {
-        participants: [friendRequest.userId],
+        participants: [friendRequest!.userId],
       } as IConversation,
 
       req,

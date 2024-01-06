@@ -6,36 +6,7 @@ import { TPayloadSendMessage } from '../types';
 import { areIdsEqual, parseNumber } from '../utils';
 import mongoose from 'mongoose';
 import { TFunction } from 'i18next';
-
-export const existingConversation = async (
-  conversationId: mongoose.Types.ObjectId,
-  t: TFunction<'translation', undefined>
-) => {
-  try {
-    const conversation = await Conversation.findById(conversationId);
-    if (!conversation) {
-      throw new ApiError(httpStatus.BAD_REQUEST, t('conversation.error.conversationDoesNotExist'));
-    }
-    return conversation;
-  } catch (error) {
-    handleError(error);
-  }
-};
-
-export const existingMessage = async (
-  messageId: mongoose.Types.ObjectId,
-  t: TFunction<'translation', undefined>
-) => {
-  try {
-    const message = await Message.findById(messageId);
-    if (!message) {
-      throw new ApiError(httpStatus.BAD_REQUEST, t('message.error.messageNotExist'));
-    }
-    return message;
-  } catch (error) {
-    handleError(error);
-  }
-};
+import { checkExistence } from './common.service';
 
 export const checkUserInConversation = (
   conversation: IConversation,
@@ -68,7 +39,11 @@ export const sendMessageService = async (payload: TPayloadSendMessage, req: Requ
     const currentUserId = user?._id;
 
     //check conversation exist
-    const conversation = await existingConversation(conversationId, req.t);
+    const conversation = await checkExistence(
+      Conversation,
+      conversationId,
+      req.t('conversation.error.conversationDoesNotExist')
+    );
 
     // check user is in conversation
     checkUserInConversation(conversation!, currentUserId, req.t);
@@ -102,7 +77,11 @@ export const getListMessageByConversationIdService = async (payload: {
     const currentUserId = user?._id;
 
     //check existing conversation
-    const conversation = await existingConversation(conversationId, req.t);
+    const conversation = await checkExistence(
+      Conversation,
+      conversationId,
+      req.t('conversation.error.conversationDoesNotExist')
+    );
 
     //check user in conversation
     checkUserInConversation(conversation!, currentUserId, req.t);
@@ -130,13 +109,18 @@ export const pinMessageService = async (payload: {
     const { currentUser, conversationId, messageId, t } = payload;
 
     //check existing conversation
-    const conversation = await existingConversation(conversationId, t);
+    const conversation = await checkExistence(
+      Conversation,
+      conversationId,
+      t('conversation.error.conversationDoesNotExist')
+    );
 
     //check user in conversation
     checkUserInConversation(conversation!, currentUser._id, t);
 
     //check existing messages
-    const message = await existingMessage(messageId, t);
+    // const message = await existingMessage(messageId, t);
+    const message = await checkExistence(Message, messageId, t('message.error.messageNotExist'));
 
     //check message in converation
     checkMessageInConversation(conversationId, message?.conversationId!, t);
