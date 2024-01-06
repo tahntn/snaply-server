@@ -10,7 +10,7 @@ import { TokenPayload, tokenTypes } from '../types/token.interface';
 import { generateAccessTokens, verifyToken } from './token.service';
 import { getUserByIdService } from './user.service';
 import { Request } from 'express';
-import { hashEmail, randomNumber } from '../utils';
+import { hashEmail } from '../utils';
 
 export const loginUserService = async (email: string, password: string, req: Request) => {
   try {

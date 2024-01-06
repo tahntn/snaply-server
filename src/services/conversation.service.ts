@@ -3,7 +3,7 @@ import { ApiError, handleError } from '../errors';
 import { Conversation, IUser, Message } from '../models';
 import { getUserByIdService } from './user.service';
 import { IQueryUser } from '../types';
-import { parseNumber } from '../utils';
+import { areUserIdsEqual, parseNumber } from '../utils';
 import { httpStatus } from '../constant';
 import { Request } from 'express';
 export const createConversationService = async (payload: {
@@ -98,9 +98,10 @@ export const getListMessageByConversationIdService = async (payload: {
         req.t('conversation.error.conversationDoesNotExist')
       );
     }
-
     //check user in conversation
-    const isAuth = conversation.participants.find((item) => user._id.equals(item));
+    const isAuth = conversation.participants.find((item) =>
+      areUserIdsEqual({ userId1: user._id, userId2: item })
+    );
     if (!isAuth) {
       throw new ApiError(httpStatus.UNAUTHORIZED, req.t('conversation.error.accesscConversation'));
     }
