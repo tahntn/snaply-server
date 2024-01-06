@@ -3,6 +3,7 @@ import { httpStatus } from '../constant';
 import { ApiError, handleError } from '../errors';
 import { Conversation, Message } from '../models';
 import { TPayloadSendMessage } from '../types';
+import { areUserIdsEqual } from '../utils';
 
 export const sendMessageService = async (payload: TPayloadSendMessage, req: Request) => {
   try {
@@ -16,7 +17,12 @@ export const sendMessageService = async (payload: TPayloadSendMessage, req: Requ
     }
 
     // check user is in conversation
-    const isUserInConversation = conversation?.participants?.some((id) => currentUserId.equals(id));
+    const isUserInConversation = conversation?.participants?.some((id) =>
+      areUserIdsEqual({
+        userId1: currentUserId,
+        userId2: id,
+      })
+    );
     if (!isUserInConversation) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
