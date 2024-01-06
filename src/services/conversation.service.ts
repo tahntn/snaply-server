@@ -1,10 +1,12 @@
 import mongoose from 'mongoose';
-import { handleError } from '../errors';
+import { ApiError, handleError } from '../errors';
 import { Conversation, IUser } from '../models';
 import { getUserByIdService } from './user.service';
 import { IQueryUser } from '../types';
 import { parseNumber } from '../utils';
 import { Request } from 'express';
+import { TFunction } from 'i18next';
+import { httpStatus } from '../constant';
 export const createConversationService = async (payload: {
   user: Express.User;
   participants: mongoose.Types.ObjectId[];
@@ -70,6 +72,25 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
         limit: _limit,
       },
     };
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getDetailConversationService = async (
+  conversationId: mongoose.Types.ObjectId,
+  currentUser: Express.User,
+  t: TFunction<'translation', undefined>
+) => {
+  try {
+    const conversation = await Conversation.findById(conversationId).populate(
+      'participants',
+      '-password -createdAt -updatedAt -role'
+    );
+    if (!conversation) {
+      throw new ApiError(httpStatus.NOT_FOUND, t('conversation.error.conversationDoesNotExist'));
+    }
+    return { conversation };
   } catch (error) {
     handleError(error);
   }
