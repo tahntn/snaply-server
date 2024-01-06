@@ -98,7 +98,6 @@ export const getListMessageByConversationIdService = async (payload: {
         req.t('conversation.error.conversationDoesNotExist')
       );
     }
-    areUserIdsEqual;
     //check user in conversation
     const isAuth = conversation.participants.find((item) =>
       areUserIdsEqual({ userId1: user._id, userId2: item })
