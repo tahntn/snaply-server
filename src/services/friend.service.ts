@@ -1,9 +1,7 @@
 import { Request } from 'express';
 import { ApiError, handleError } from '../errors';
 import { httpStatus } from '../constant';
-import { User } from '../models';
 import Friend from '../models/friend.model';
-import mongoose from 'mongoose';
 import { areUserIdsEqual, parseNumber, pick } from '../utils';
 import { createConversationService } from './conversation.service';
 import {
@@ -159,7 +157,9 @@ export const getListFriendByUserIdService = async (req: Request) => {
     const queryObj = {
       status: type === 'friendRequests' ? 'pending' : 'accept',
       ...(type === 'friendRequests' && { targetUserId: currentUser?._id }),
-      ...(type === 'friend' && { userId: currentUser?._id }),
+      ...(type === 'friend' && {
+        $or: [{ userId: currentUser?._id }, { targetUserId: currentUser?._id }],
+      }),
     };
 
     const selectFields = 'username email avatar _id';
