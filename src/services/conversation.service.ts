@@ -3,7 +3,7 @@ import { ApiError, handleError } from '../errors';
 import { Conversation, IConversation, IUser, User } from '../models';
 import { getUserByIdService } from './user.service';
 import { IQueryUser } from '../types';
-import { areUserIdsEqual, hashEmail, parseNumber, randomNumber } from '../utils';
+import { areIdsEqual, hashEmail, parseNumber, randomNumber } from '../utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
 import { httpStatus } from '../constant';
@@ -18,13 +18,7 @@ export const createConversationService = async (payload: {
     const userId = currentUser._id;
 
     //check curent user existing in participants
-    const validParticipants = participants.filter(
-      (user) =>
-        !areUserIdsEqual({
-          userId1: user,
-          userId2: userId,
-        })
-    );
+    const validParticipants = participants.filter((user) => !areIdsEqual(user, userId));
 
     if (validParticipants.length !== participants.length) {
       throw new ApiError(

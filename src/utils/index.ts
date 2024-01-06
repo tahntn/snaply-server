@@ -3,4 +3,4 @@ export { default as pick } from './pick';
 export * from './parseNumber';
 export * from './hashEmail';
 export * from './randomNumber';
-export * from './areUserIdsEqual';
+export * from './areIdsEqual';
