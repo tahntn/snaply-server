@@ -56,7 +56,12 @@
     },
     "error": {
       "conversationNotFound": "Không tìm thấy cuộc trò chuyện.",
-      "userIsNotPartOfThisConversation.": "Người dùng không thuộc về cuộc trò chuyện này."
+      "userIsNotPartOfThisConversation.": "Người dùng không thuộc về cuộc trò chuyện này.",
+      "messageNotExist": "Tin nhắn không tồn tại.",
+      "messageNotBelongToConversation": "Tin nhắn không thuộc cuộc trò chuyện."
+    },
+    "success": {
+      "updatedSuccessful": "Cập nhật tin nhắn thành công."
     }
   },
   "conversation": {

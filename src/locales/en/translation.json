@@ -56,7 +56,12 @@
     },
     "error": {
       "conversationNotFound": "Conversation not found",
-      "userIsNotPartOfThisConversation.": "User is not part of this conversation."
+      "userIsNotPartOfThisConversation.": "User is not part of this conversation.",
+      "messageNotExist": "Message does not exist.",
+      "messageNotBelongToConversation": "Message does not belong to the conversation."
+    },
+    "success": {
+      "updatedSuccessful": "Updated successful."
     }
   },
   "conversation": {
