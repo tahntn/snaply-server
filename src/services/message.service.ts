@@ -3,7 +3,7 @@ import { httpStatus } from '../constant';
 import { ApiError, handleError } from '../errors';
 import { Conversation, IConversation, IUser, Message } from '../models';
 import { TPayloadSendMessage } from '../types';
-import { areUserIdsEqual, parseNumber } from '../utils';
+import { areIdsEqual, parseNumber } from '../utils';
 import mongoose from 'mongoose';
 import { TFunction } from 'i18next';
 
@@ -42,9 +42,7 @@ export const checkUserInConversation = (
   currentUserId: mongoose.Types.ObjectId,
   t: TFunction<'translation', undefined>
 ) => {
-  const isAuth = conversation?.participants.find((item) =>
-    areUserIdsEqual({ userId1: currentUserId, userId2: item })
-  );
+  const isAuth = conversation?.participants.find((item) => areIdsEqual(currentUserId, item));
   if (!isAuth) {
     throw new ApiError(httpStatus.UNAUTHORIZED, t('conversation.error.accesscConversation'));
   }

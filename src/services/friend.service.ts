@@ -2,7 +2,7 @@ import { Request } from 'express';
 import { ApiError, handleError } from '../errors';
 import { httpStatus } from '../constant';
 import Friend from '../models/friend.model';
-import { areUserIdsEqual, parseNumber, pick } from '../utils';
+import { areIdsEqual, parseNumber, pick } from '../utils';
 import { createConversationService } from './conversation.service';
 import {
   ICheckFriend,
@@ -16,7 +16,7 @@ export const checkFriendRequest = async (payload: ICheckFriend, req: Request) =>
   try {
     const { userId1, userId2 } = payload;
 
-    const areEqual = areUserIdsEqual(payload);
+    const areEqual = areIdsEqual(userId1, userId2);
     if (areEqual) {
       throw new ApiError(httpStatus.UNAUTHORIZED, req.t('auth.error.unauthorized'));
     }
@@ -92,12 +92,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
       throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.youAreAlreadyFriends'));
     }
 
-    if (
-      !areUserIdsEqual({
-        userId1: friendRequest.targetUserId,
-        userId2: currentUser._id,
-      })
-    ) {
+    if (!areIdsEqual(friendRequest.targetUserId, currentUser._id)) {
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('auth.error.unauthorized'));
     }
     await Friend.findByIdAndUpdate(friendRequestId, { status: 'accept' }, { new: true });
@@ -130,12 +125,7 @@ export const denyFriendRequestService = async (payload: IUpdateStateFriendReques
       throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
     }
 
-    if (
-      !areUserIdsEqual({
-        userId1: friendRequest.targetUserId,
-        userId2: currentUser._id,
-      })
-    ) {
+    if (!areIdsEqual(friendRequest.targetUserId, currentUser._id)) {
       throw new ApiError(httpStatus.UNAUTHORIZED, req.t('auth.error.unauthorized'));
     }
 
@@ -190,10 +180,7 @@ export const getListFriendByUserIdService = async (req: Request) => {
 
     const _friend = friends.map((friend) => {
       const { targetUserId, userId, ...infoFriend } = friend;
-      const areEqual = areUserIdsEqual({
-        userId1: targetUserId._id,
-        userId2: currentUser._id,
-      });
+      const areEqual = areIdsEqual(targetUserId._id, currentUser._id);
       const user = areEqual ? userId : targetUserId;
       return {
         ...infoFriend,
