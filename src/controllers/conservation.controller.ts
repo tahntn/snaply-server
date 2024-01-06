@@ -8,7 +8,6 @@ import {
   getDetailConversationService,
 } from '../services';
 import mongoose from 'mongoose';
-import { createConversationService, getConversationsService } from '../services';
 import { validate } from '../middlewares';
 import { createConversation } from '../validators';
 import { IConversation } from '../models';
