@@ -47,9 +47,6 @@
     }
   },
   "message": {
-    "text": {
-      "sendPhotos": "{user} đã gửi lên một ảnh"
-    },
     "sendMessage": {
       "title": "Vui lòng nhập tin nhắn",
       "conversationId": "Thiếu params conversationId",
