@@ -8,8 +8,7 @@ export interface IConversation extends Document {
   lastActivity?: ILastActivity;
 }
 export interface ILastActivity {
-  type: 'init' | 'message' | 'user_leave';
-  content?: string;
+  type: 'init' | 'text' | 'user_leave' | 'image' | 'video';
   senderId: mongoose.Types.ObjectId;
   timestamp: Date;
 }
@@ -34,12 +33,8 @@ const ConversationSchema = new mongoose.Schema<IConversation>(
     lastActivity: {
       type: {
         type: String,
-        enum: ['init', 'message', 'user_leave'],
+        enum: ['init', 'text', 'user_leave', 'image', 'video'],
         default: 'init',
-      },
-      content: {
-        type: String,
-        default: '',
       },
       senderId: {
         type: mongoose.Types.ObjectId,

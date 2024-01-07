@@ -17,7 +17,7 @@ export const sendMessagesController = catchAsync(
     await validate(sendMessageValidate(req))(req, res, next);
     const currentUser = req.user!;
     const conversationId = req.params.conversationId;
-    const { title, type, imageList } = req.body;
+    const { title, type, imageList, replyTo } = req.body;
 
     const response = await sendMessageService(
       {
@@ -26,6 +26,7 @@ export const sendMessagesController = catchAsync(
         title,
         type,
         imageList,
+        replyTo,
       },
       req
     );
