@@ -49,7 +49,15 @@
   "message": {
     "sendMessage": {
       "title": "Vui lòng nhập tin nhắn",
-      "conversationId": "Thiếu params conversationId"
+      "conversationId": "Thiếu params conversationId",
+      "type": {
+        "enum": "Type không hợp lệ. Chỉ chấp nhận 'text','image','video','file'"
+      },
+      "imageList": {
+        "array": "imageList phải là array",
+        "string": "imageList chỉ chứa string",
+        "uri": "imageList phải là một url hợp lệ"
+      }
     },
     "getListMessageByConversationId": {
       "conversationId": "Thiếu params conversationId"
@@ -58,7 +66,8 @@
       "conversationNotFound": "Không tìm thấy cuộc trò chuyện.",
       "userIsNotPartOfThisConversation.": "Người dùng không thuộc về cuộc trò chuyện này.",
       "messageNotExist": "Tin nhắn không tồn tại.",
-      "messageNotBelongToConversation": "Tin nhắn không thuộc cuộc trò chuyện."
+      "messageNotBelongToConversation": "Tin nhắn không thuộc cuộc trò chuyện.",
+      "imageRequired": "Vui lòng tải lên ít nhất một ảnh để tiếp tục."
     },
     "success": {
       "updatedSuccessful": "Cập nhật tin nhắn thành công."

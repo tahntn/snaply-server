@@ -35,9 +35,14 @@ export const checkMessageInConversation = (
 
 export const sendMessageService = async (payload: TPayloadSendMessage, req: Request) => {
   try {
-    const { user, conversationId, title } = payload;
+    const { user, conversationId, title, type = 'text', imageList = [] } = payload;
     const currentUserId = user?._id;
 
+    if (type === 'image') {
+      if (!imageList?.length) {
+        throw new ApiError(httpStatus.BAD_REQUEST, req.t('message.error.imageRequired'));
+      }
+    }
     //check conversation exist
     const conversation = await checkExistence(
       Conversation,
@@ -48,14 +53,32 @@ export const sendMessageService = async (payload: TPayloadSendMessage, req: Requ
     // check user is in conversation
     checkUserInConversation(conversation!, currentUserId, req.t);
 
+    // update last active
+    await Conversation.updateOne(
+      {
+        _id: conversation?._id,
+      },
+      {
+        $set: {
+          lastActivity: {
+            type,
+            senderId: currentUserId,
+            timestamp: new Date(),
+          },
+        },
+      }
+    );
+
     // create new message
     const newMessage = await Message.create({
-      title,
+      title: type === 'text' && title,
       senderId: currentUserId,
       conversationId,
+      type,
+      imageList: imageList?.length ? imageList : undefined,
     });
 
-    return newMessage;
+    return { messages: newMessage };
   } catch (error) {
     handleError(error);
   }
@@ -123,7 +146,7 @@ export const pinMessageService = async (payload: {
     const message = await checkExistence(Message, messageId, t('message.error.messageNotExist'));
 
     //check message in converation
-    checkMessageInConversation(conversationId, message?.conversationId!, t);
+    checkMessageInConversation(conversationId, message!.conversationId, t);
 
     const isPin = !message?.isPin;
 

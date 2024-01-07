@@ -17,13 +17,15 @@ export const sendMessagesController = catchAsync(
     await validate(sendMessageValidate(req))(req, res, next);
     const currentUser = req.user!;
     const conversationId = req.params.conversationId;
-    const { title } = req.body;
+    const { title, type, imageList } = req.body;
 
     const response = await sendMessageService(
       {
         user: currentUser,
         conversationId: new mongoose.Types.ObjectId(conversationId),
         title,
+        type,
+        imageList,
       },
       req
     );
