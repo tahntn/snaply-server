@@ -100,7 +100,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
     const res = await createConversationService({
       currentUser,
       data: {
-        participants: [friendRequest!.userId],
+        participants: [friendRequest!.targetUserId],
       } as IConversation,
 
       req,
