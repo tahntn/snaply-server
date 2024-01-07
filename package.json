@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "start": "ts-node src/index.ts --env=production",
     "dev": "nodemon --config nodemon.json src/index.ts",
     "lint": "eslint --ext js,jsx,ts,tsx src/",
