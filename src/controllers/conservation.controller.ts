@@ -1,64 +1,92 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from 'express';
 
 import { httpStatus } from '../constant';
 import { catchAsync, pick } from '../utils';
 import {
   createConversationService,
-  getConversationByIdService,
   getConversationsService,
+  getDetailConversationService,
+  updateGroupConversationService,
 } from '../services';
-import { IUser } from '../models';
-import { IQueryUser } from '../types';
+import mongoose from 'mongoose';
+import { validate } from '../middlewares';
+import { createConversation, getDetailConversation, updateGroupConversation } from '../validators';
+import { IConversation } from '../models';
 
 export const createConversationController = catchAsync(async (req: Request, res: Response) => {
-  const { participants } = req.body;
-  const user = req.user!;
+  await validate(createConversation(req))(req, res);
+  const { participants, isGroup } = req.body as IConversation;
+  const currentUser = req.user!;
 
-  //check participant
-  if (!participants || !Array.isArray(participants) || participants?.length < 1) {
+  if (isGroup && participants.length < 2) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
-      message: 'Please provide complete information with at least two participants.',
+      message: req.t('conversation.createConversation.minParticipantsRequired'),
+    });
+  }
+  2;
+  if (!isGroup && participants.length !== 1) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      code: httpStatus.BAD_REQUEST,
+      message: req.t('conversation.createConversation.exactOneParticipantRequired'),
     });
   }
 
   const response = await createConversationService({
-    user: user,
-    participants,
+    currentUser,
+    data: req.body as IConversation,
     req,
   });
-  res.status(httpStatus.OK).json(response);
+  res.status(httpStatus.OK).json({
+    data: response?.conversation,
+    code: httpStatus.OK,
+    message: req.t('conversation.createConversation.createConversationSuccess'),
+  });
 });
 
 export const getConversationsController = catchAsync(async (req: Request, res: Response) => {
   const currentUser = req.user!;
 
-  const query: IQueryUser = pick(req.query, ['limit', 'page']);
-
-  const response = await getConversationsService(currentUser, query);
-  res.status(httpStatus.OK).json(response);
-});
-
-export const getConversationByIdController = catchAsync(async (req: Request, res: Response) => {
-  const user = req.user!;
   const query = pick(req.query, ['limit', 'page']);
 
-  if (!req.params.conversationId) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      code: httpStatus.BAD_REQUEST,
-      message: 'Please provide keyword',
-    });
-  }
-
-  const response = await getConversationByIdService({
-    user,
-    conversationId: req.params.conversationId as string,
-    page: query?.page,
-    limit: query?.limit,
-    req,
+  const response = await getConversationsService(currentUser, query);
+  res.status(httpStatus.OK).json({
+    code: httpStatus.OK,
+    data: response,
   });
-  res.status(httpStatus.OK).json(response);
 });
 
-export const updateConversationController = catchAsync(async (req: Request, res: Response) => {});
-export const deleteConversationController = catchAsync(async (req: Request, res: Response) => {});
+export const getDetailConversationController = catchAsync(async (req: Request, res: Response) => {
+  await validate(getDetailConversation(req))(req, res);
+  const currentUser = req.user!;
+  const conversationId = req.params.conversationId;
+
+  const response = await getDetailConversationService(
+    new mongoose.Types.ObjectId(conversationId),
+    currentUser,
+    req.t
+  );
+  res.status(httpStatus.OK).json({
+    code: httpStatus.OK,
+    data: response?.conversation,
+  });
+});
+
+export const updateGroupConversationController = catchAsync(async (req: Request, res: Response) => {
+  await validate(updateGroupConversation(req))(req, res);
+  const currentUser = req.user!;
+  const conversationId = req.params.conversationId;
+  const { nameGroup, avatarGroup } = req.body;
+
+  const response = await updateGroupConversationService(
+    new mongoose.Types.ObjectId(conversationId),
+    currentUser,
+    req.t,
+    { nameGroup, avatarGroup }
+  );
+  res.status(httpStatus.OK).json({
+    code: httpStatus.OK,
+    data: response,
+  });
+});

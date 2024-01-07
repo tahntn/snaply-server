@@ -1,12 +1,13 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IMessage extends Document {
   title: string;
-  senderId: Schema.Types.ObjectId;
-  replyTo?: Schema.Types.ObjectId;
-  conversationsId: Schema.Types.ObjectId;
+  senderId: mongoose.Types.ObjectId;
+  replyTo?: mongoose.Types.ObjectId;
+  conversationId: mongoose.Types.ObjectId;
   isPin?: boolean;
-  attachments?: string[];
+  type: string;
+  imageList?: string[];
 }
 
 const MessageSchema = new mongoose.Schema<IMessage>(
@@ -15,22 +16,27 @@ const MessageSchema = new mongoose.Schema<IMessage>(
       type: String,
     },
     senderId: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'User',
     },
     replyTo: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Message',
     },
-    conversationsId: {
-      type: mongoose.Schema.ObjectId,
+    conversationId: {
+      type: Schema.Types.ObjectId,
       ref: 'Conversation',
     },
     isPin: {
       type: Boolean,
       default: false,
     },
-    attachments: [
+    type: {
+      type: String,
+      enum: ['text', 'image', 'video', 'file'],
+      default: 'text',
+    },
+    imageList: [
       {
         type: String,
       },

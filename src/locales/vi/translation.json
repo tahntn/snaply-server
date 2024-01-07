@@ -47,15 +47,91 @@
     }
   },
   "message": {
+    "sendMessage": {
+      "title": "Vui lòng nhập tin nhắn",
+      "conversationId": "Thiếu params conversationId",
+      "type": {
+        "enum": "Type không hợp lệ. Chỉ chấp nhận 'text','image','video','file'"
+      },
+      "imageList": {
+        "array": "imageList phải là array",
+        "string": "imageList chỉ chứa string",
+        "uri": "imageList phải là một url hợp lệ"
+      }
+    },
+    "getListMessageByConversationId": {
+      "conversationId": "Thiếu params conversationId"
+    },
     "error": {
       "conversationNotFound": "Không tìm thấy cuộc trò chuyện.",
-      "userIsNotPartOfThisConversation.": "Người dùng không thuộc về cuộc trò chuyện này."
+      "userIsNotPartOfThisConversation.": "Người dùng không thuộc về cuộc trò chuyện này.",
+      "messageNotExist": "Tin nhắn không tồn tại.",
+      "messageNotBelongToConversation": "Tin nhắn không thuộc cuộc trò chuyện.",
+      "imageRequired": "Vui lòng tải lên ít nhất một ảnh để tiếp tục."
+    },
+    "success": {
+      "updatedSuccessful": "Cập nhật tin nhắn thành công."
     }
   },
   "conversation": {
+    "getListMessage": {
+      "conversationId": { "required": "Thiếu params conversationId" }
+    },
+    "createConversation": {
+      "required": "Chưa cung cấp thông tin người tham gia.",
+      "createConversationSuccess": "Tạo cuộc trò chuyện thành công!",
+      "participantsNotExist": "Một hoặc nhiều người tham gia không tồn tại hoặc chứa người dùng hiện tại.",
+      "participantsIncludeCurrentUser": "Người tham gia bao gồm người dùng hiện tại.",
+      "minParticipantsRequired": "Yêu cầu tối thiểu 2 người tham gia.",
+      "exactOneParticipantRequired": "Đúng một người tham gia là bắt buộc cho cuộc trò chuyện."
+    },
+    "updateConversation": {
+      "onlyUpdateGroupConversation": "Chỉ cập nhật nhóm trò chuyện."
+    },
     "error": {
       "conversationDoesNotExist": "Cuộc trò chuyện không tồn tại.",
-      "accesscConversation.": "Bạn không có quyền truy cập vào cuộc trò chuyện này."
+      "accesscConversation.": "Bạn không có quyền truy cập vào cuộc trò chuyện này.",
+      "atLeastTwoParticipants": "Cuộc trò chuyện phải có ít nhất hai người tham gia.",
+      "userIsNotPartOfThisConversation": "Người dùng không thuộc về cuộc trò chuyên."
     }
+  },
+  "friend": {
+    "createFriend": {
+      "success": "Gửi lời mời kết bạn thành công",
+      "receiverEmail": {
+        "required": "Vui lòng nhập email người gửi kết bạn"
+      }
+    },
+    "getListFriend": {
+      "type": {
+        "enum": "Type không hợp lệ. Chỉ chấp nhận 'friends' hoặc 'friendRequests'"
+      }
+    },
+    "confirmFriend": {
+      "success": "Chấp nhận lời mời kết bạn thành công",
+      "id": { "required": "Truyền thiếu id params" }
+    },
+    "denyFriend": {
+      "success": "Từ chối lời mời kết bạn thành công"
+    },
+    "error": {
+      "cantSendRequestToYourself": "Không thể kết bạn với chính mình",
+      "receiverNotFound": "Người dùng không tồn tại",
+      "invitationAlreadySent": "Lời mời kết bạn đã được gửi",
+      "friendAlreadyAdded": "Người dùng đã là bạn bè . Vui lòng kiểm tra danh sách bạn bè của bạn.",
+      "friendRequestNotFound": "Không tìm thấy lời mời kết bạn",
+      "youAreAlreadyFriends": "Bạn đã là bạn bè."
+    }
+  },
+  "error": {
+    "objectId": "Phải là một id mongo hợp lệ.",
+    "nameString": "Tên phải là một chuỗi.",
+    "avatarString": "Avatar phải là một chuỗi.",
+    "passwordString": "Mật khẩu phải là một chuỗi.",
+    "boolean": "#boolean phải là một giá trị boolean.",
+    "string": "Vui lòng nhập chuỗi.",
+    "cannotEnterEmptyString": "Không được nhập chuỗi rỗng.",
+    "pleasePassData": "Vui lòng truyền dữ liệu.",
+    "pleaseEnterUrl": "Vui lòng nhập địa chỉ URL."
   }
 }

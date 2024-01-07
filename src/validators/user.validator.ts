@@ -7,6 +7,7 @@ export const searchUserName = (req: Request) => ({
       .required()
       .messages({
         'any.required': req.t('user.searchUser.keyword'),
+        'string.base': req.t('error.string'),
       }),
     limit: Joi.string(),
     page: Joi.string(),

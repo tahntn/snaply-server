@@ -1,23 +1,24 @@
 import { Router } from 'express';
-
 import { auth } from '../middlewares';
-
 import {
-  deleteMessageController,
-  getAllMessagesController,
-  getMessageByIdController,
+  getListMessageByConversationIdController,
+  pinMessageController,
   sendMessagesController,
-  updateMessageController,
 } from '../controllers';
 
-const router = Router();
+const router = Router({ mergeParams: true });
+const itemRouter = Router({ mergeParams: true });
+const messageRouter = Router({ mergeParams: true });
 
-router.route('/').post(auth(), sendMessagesController).get(auth(), getAllMessagesController);
+router.use('/message', itemRouter);
 
-router
-  .route('/:messageId')
-  .get(auth(), getMessageByIdController)
-  .patch(auth(), updateMessageController)
-  .delete(auth(), deleteMessageController);
+itemRouter
+  .route('/')
+  .post(auth(), sendMessagesController)
+  .get(auth(), getListMessageByConversationIdController);
+
+itemRouter.use('/:messageId', messageRouter);
+
+messageRouter.route('/pin').post(auth(), pinMessageController);
 
 export default router;

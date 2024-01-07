@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 import { httpStatus } from '../constant';
 import { IQueryUser } from '../types';
-import { catchAsync, pick } from '../utils';
+import { areIdsEqual, catchAsync, pick } from '../utils';
 import { getUserByIdService, searchUserNameService, updateUserService } from '../services';
 import { validate } from '../middlewares';
 import { searchUserName } from '../validators';
@@ -27,7 +27,7 @@ export const updateUserController = catchAsync(async (req: Request, res: Respons
   const user = req.user;
   const data = req.body;
 
-  if (!user?._id.equals(new mongoose.Types.ObjectId(userId))) {
+  if (!areIdsEqual(user?._id, new mongoose.Types.ObjectId(userId))) {
     return res.status(httpStatus.UNAUTHORIZED).json({
       code: httpStatus.UNAUTHORIZED,
       message: req.t('user.updateUser.unauthorized'),

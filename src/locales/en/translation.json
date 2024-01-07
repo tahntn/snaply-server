@@ -38,7 +38,7 @@
       "userNotFound": "User not found.",
       "emailAlready": "Email is already registered.",
       "EmaileoesNotExist": "Email does not exist.",
-      "incorrectPassword.": "Incorrect password."
+      "incorrectPassword": "Incorrect password."
     }
   },
   "token": {
@@ -47,15 +47,87 @@
     }
   },
   "message": {
+    "sendMessage": {
+      "title": "Please enter message",
+      "conversationId": "Missing conversationId params",
+      "type": {
+        "enum": "Invalid type. Only 'text','image','video','file' are accepted."
+      },
+      "imageList": {
+        "array": "imageList must be an array",
+        "string": "imageList must contain only strings",
+        "uri": "imageList must contain valid URIs"
+      }
+    },
+    "getListMessageByConversationId": {
+      "conversationId": "Missing conversationId params"
+    },
     "error": {
       "conversationNotFound": "Conversation not found",
-      "userIsNotPartOfThisConversation.": "User is not part of this conversation."
+      "userIsNotPartOfThisConversation.": "User is not part of this conversation.",
+      "messageNotExist": "Message does not exist.",
+      "messageNotBelongToConversation": "Message does not belong to the conversation.",
+      "imageRequired": "Please upload at least one image to proceed"
+    },
+    "success": {
+      "updatedSuccessful": "Updated successful."
     }
   },
   "conversation": {
+    "getListMessage": {
+      "conversationId": { "required": "Missing conversationId params" }
+    },
+    "createConversation": {
+      "required": "Participants are not provided.",
+      "createConversationSuccess": "Create conversation successful!",
+      "participantsNotExist": "One or more participants do not exist or contain the current user.",
+      "participantsIncludeCurrentUser": "Participants include the current user.",
+      "minParticipantsRequired": "Minimum of 2 participants required.",
+      "exactOneParticipantRequired": "Exactly one participant is required for the conversation."
+    },
+    "updateConversation": {
+      "onlyUpdateGroupConversation": "Only update group conversation."
+    },
     "error": {
       "conversationDoesNotExist": "Conversation does not exist.",
-      "accesscConversation.": "You do not have access to this conversation."
+      "accesscConversation": "You do not have access to this conversation.",
+      "atLeastTwoParticipants": "Please provide complete information with at least two participants.",
+      "userIsNotPartOfThisConversation": "The user does not belong to the conversation."
     }
+  },
+  "friend": {
+    "createFriend": {
+      "success": "Successfully sent a new friend request"
+    },
+    "getListFriend": {
+      "type": {
+        "enum": "Invalid type. Only 'friends' or 'friendRequests' are accepted."
+      }
+    },
+    "confirmFriend": {
+      "success": "Successfully confirmed a friend request",
+      "id": { "required": "Missing id params" }
+    },
+    "denyFriend": {
+      "success": "Successfully denied a friend request"
+    },
+    "error": {
+      "cantSendRequestToYourself": "You cannot send a friend request to yourself.",
+      "receiverNotFound": "User does not exist.",
+      "invitationAlreadySent": "Invitation has been already sent",
+      "friendAlreadyAdded": "Friend already added. Please check friends list.",
+      "friendRequestNotFound": "Friend request has not been found",
+      "youAreAlreadyFriends": "You are already friends."
+    }
+  },
+  "error": {
+    "objectId": "Must be a valid mongo id.",
+    "nameString": "Name must be a string.",
+    "avatarString": "Avatar must be a string.",
+    "boolean": "#boolean must be a boolean.",
+    "string": "Please enter a string.",
+    "cannotEnterEmptyString": "Cannot enter an empty string.",
+    "pleasePassData": "Please pass data.",
+    "pleaseEnterUrl": "Please enter a URL."
   }
 }

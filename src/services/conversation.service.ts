@@ -1,45 +1,84 @@
 import mongoose from 'mongoose';
 import { ApiError, handleError } from '../errors';
-import { Conversation, IUser, Message } from '../models';
-import { getUserByIdService } from './user.service';
+import { Conversation, IConversation, IUser, User } from '../models';
 import { IQueryUser } from '../types';
-import { parseNumber } from '../utils';
-import { httpStatus } from '../constant';
+import { areIdsEqual, hashEmail, parseNumber, randomNumber, removeEmptyFields } from '../utils';
 import { Request } from 'express';
-
+import { TFunction } from 'i18next';
+import { httpStatus } from '../constant';
+import { checkExistence } from './common.service';
+import { checkUserInConversation } from './message.service';
 export const createConversationService = async (payload: {
-  user: Express.User;
-  participants: string[];
+  currentUser: Express.User;
+  data: IConversation;
   req: Request;
 }) => {
   try {
-    const { user, participants, req } = payload;
-    const userId = user._id;
-    const userId2 = participants[0];
-    //check user
-    const checkUser = await getUserByIdService(userId, req);
-    if (!checkUser) {
-      throw new Error();
+    const { currentUser, req, data } = payload;
+    const { participants, isGroup, nameGroup, avatarGroup } = data;
+    const userId = currentUser._id;
+
+    //check curent user existing in participants
+    const validParticipants = participants.filter((user) => areIdsEqual(user, userId));
+
+    if (validParticipants.length !== participants.length) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        req.t('conversation.createConversation.participantsIncludeCurrentUser')
+      );
     }
 
-    //check participant
-    const checkParticipant = await getUserByIdService(new mongoose.Types.ObjectId(userId2), req);
-    if (!checkParticipant) {
-      throw new Error();
+    // check existing users
+    const existingUsers = await User.find({ _id: { $in: participants } });
+
+    if (existingUsers.length !== participants.length) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        req.t('conversation.createConversation.participantsNotExist')
+      );
     }
 
-    //check existing conversation
-    const existingConversation = await Conversation.find({
-      $or: [
-        { participants: { $all: [userId, userId2] } },
-        { participants: { $all: [userId2, userId] } },
-      ],
-    });
-    if (existingConversation.length > 0) {
-      return { conversation: existingConversation[0] };
+    if (!isGroup) {
+      const userId2 = participants[0];
+
+      //check existing conversation
+      const existingConversation = await Conversation.find({
+        $or: [
+          { participants: { $all: [userId, userId2] } },
+          { participants: { $all: [userId2, userId] } },
+        ],
+      });
+      if (existingConversation.length > 0) {
+        return { conversation: existingConversation[0] };
+      }
+      const newConversation = new Conversation({
+        participants: [userId, userId2],
+        lastActivity: {
+          senderId: userId,
+          type: 'init',
+        },
+      });
+      await newConversation.save();
+      return { conversation: newConversation };
+    }
+
+    const _nameGroup = nameGroup || existingUsers.map((user) => user.username).join(', ');
+
+    let _avatarGroup = avatarGroup || '';
+    if (!avatarGroup) {
+      const _randomNumber = randomNumber(10000000);
+      const hashedEmail = await hashEmail(_nameGroup + _randomNumber);
+      _avatarGroup = 'https://www.gravatar.com/avatar/' + hashedEmail + '?d=retro&s=400';
     }
     const newConversation = new Conversation({
-      participants: [userId, userId2],
+      participants: [userId, ...participants],
+      nameGroup: _nameGroup,
+      avatarGroup: _avatarGroup,
+      isGroup,
+      lastActivity: {
+        senderId: userId,
+        type: 'init',
+      },
     });
     await newConversation.save();
     return { conversation: newConversation };
@@ -58,6 +97,7 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
     const conversations = await Conversation.find({
       participants: { $in: [user._id] },
     })
+      .populate('participants', 'username avatar')
       .select('-createdAt -updatedAt -__v')
       .sort({ createdAt: -1 })
       .skip(startIndex)
@@ -65,49 +105,75 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
       .lean()
       .exec();
 
-    return { conversations };
+    return {
+      data: conversations,
+      pagination: {
+        page: _page,
+        limit: _limit,
+      },
+    };
   } catch (error) {
     handleError(error);
   }
 };
 
-export const getConversationByIdService = async (payload: {
-  user: IUser;
-  conversationId: string;
-  page?: string;
-  limit?: string;
-  req: Request;
-}) => {
+export const getDetailConversationService = async (
+  conversationId: mongoose.Types.ObjectId,
+  currentUser: Express.User,
+  t: TFunction<'translation', undefined>
+) => {
   try {
-    const { user, conversationId, page, limit, req } = payload;
-
-    const _page = parseNumber(page, 1);
-    const _limit = parseNumber(limit, 5);
-    const startIndex = (_page - 1) * _limit;
-
-    const conversation = await Conversation.findById(conversationId);
-    //check existing conversation
+    const conversation = await Conversation.findById(conversationId).populate(
+      'participants',
+      '-password -createdAt -updatedAt -role'
+    );
     if (!conversation) {
-      throw new ApiError(
-        httpStatus.UNAUTHORIZED,
-        req.t('conversation.error.conversationDoesNotExist')
-      );
+      throw new ApiError(httpStatus.NOT_FOUND, t('conversation.error.conversationDoesNotExist'));
     }
+    return { conversation };
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const updateGroupConversationService = async (
+  conversationId: mongoose.Types.ObjectId,
+  currentUser: IUser,
+  t: TFunction<'translation', undefined>,
+  payload: { nameGroup?: string; avatarGroup?: string }
+) => {
+  try {
+    const _payload = removeEmptyFields(payload);
+
+    //check pass body
+    if (Object.keys(_payload).length === 0) {
+      throw new ApiError(httpStatus.BAD_GATEWAY, t('error.pleasePassData'));
+    }
+
+    //check existing conversation
+    const conversation = await checkExistence(
+      Conversation,
+      conversationId,
+      t('conversation.error.conversationDoesNotExist')
+    );
 
     //check user in conversation
-    const isAuth = conversation.participants.find((item) => user._id.equals(item));
-    if (!isAuth) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, req.t('conversation.error.accesscConversation'));
+    checkUserInConversation(conversation!, currentUser._id, t);
+
+    if (!conversation?.isGroup) {
+      throw new ApiError(
+        httpStatus.BAD_GATEWAY,
+        t('conversation.updateConversation.onlyUpdateGroupConversation')
+      );
     }
-
-    const messages = await Message.find({ conversationsId: conversationId })
-      .sort({ createdAt: -1 })
-      .skip(startIndex)
-      .limit(_limit)
-      .populate('senderId', '-role -password -createdAt -updatedAt')
-      .exec();
-
-    return { messages };
+    const updatedConversation = await Conversation.findByIdAndUpdate(
+      conversationId,
+      {
+        $set: _payload,
+      },
+      { new: true }
+    );
+    return updatedConversation;
   } catch (error) {
     handleError(error);
   }

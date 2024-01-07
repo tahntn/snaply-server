@@ -1,17 +1,31 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
-const FriendSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'User',
-  },
-  friends: [
-    {
-      type: mongoose.Schema.ObjectId,
+export interface IFriend extends Document {
+  userId: mongoose.Types.ObjectId;
+  targetUserId: mongoose.Types.ObjectId;
+  status: 'pending' | 'accept';
+}
+
+const FriendSchema = new mongoose.Schema<IFriend>(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
       ref: 'User',
+      required: true,
     },
-  ],
-});
+    targetUserId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'accept'],
+      default: 'pending',
+    },
+  },
+  { timestamps: true }
+);
 
-const Friend = mongoose.model('Friend', FriendSchema);
+const Friend = mongoose.model<IFriend>('Friend', FriendSchema);
 export default Friend;

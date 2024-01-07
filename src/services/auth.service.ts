@@ -10,6 +10,7 @@ import { TokenPayload, tokenTypes } from '../types/token.interface';
 import { generateAccessTokens, verifyToken } from './token.service';
 import { getUserByIdService } from './user.service';
 import { Request } from 'express';
+import { hashEmail } from '../utils';
 
 export const loginUserService = async (email: string, password: string, req: Request) => {
   try {
@@ -51,15 +52,21 @@ export const registerUserService = async (newUser: INewRegisteredUser, req: Requ
     //hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    ////create avatar default
+    const hashedEmail = await hashEmail(email);
+    const avatar = 'https://www.gravatar.com/avatar/' + hashedEmail + '?d=retro&s=400';
+
     //create user
     const user = await User.create({
       email,
       username,
       password: hashedPassword,
+      avatar,
     });
 
     return { user };
   } catch (error) {
+    console.log('error', error);
     handleError(error);
   }
 };
