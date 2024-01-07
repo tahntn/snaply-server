@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from 'express';
 
 import { httpStatus } from '../constant';
@@ -6,10 +7,11 @@ import {
   createConversationService,
   getConversationsService,
   getDetailConversationService,
+  updateGroupConversationService,
 } from '../services';
 import mongoose from 'mongoose';
 import { validate } from '../middlewares';
-import { createConversation } from '../validators';
+import { createConversation, getDetailConversation, updateGroupConversation } from '../validators';
 import { IConversation } from '../models';
 
 export const createConversationController = catchAsync(async (req: Request, res: Response) => {
@@ -49,10 +51,14 @@ export const getConversationsController = catchAsync(async (req: Request, res: R
   const query = pick(req.query, ['limit', 'page']);
 
   const response = await getConversationsService(currentUser, query);
-  res.status(httpStatus.OK).json(response);
+  res.status(httpStatus.OK).json({
+    code: httpStatus.OK,
+    data: response,
+  });
 });
 
 export const getDetailConversationController = catchAsync(async (req: Request, res: Response) => {
+  await validate(getDetailConversation(req))(req, res);
   const currentUser = req.user!;
   const conversationId = req.params.conversationId;
 
@@ -64,5 +70,23 @@ export const getDetailConversationController = catchAsync(async (req: Request, r
   res.status(httpStatus.OK).json({
     code: httpStatus.OK,
     data: response?.conversation,
+  });
+});
+
+export const updateGroupConversationController = catchAsync(async (req: Request, res: Response) => {
+  await validate(updateGroupConversation(req))(req, res);
+  const currentUser = req.user!;
+  const conversationId = req.params.conversationId;
+  const { nameGroup, avatarGroup } = req.body;
+
+  const response = await updateGroupConversationService(
+    new mongoose.Types.ObjectId(conversationId),
+    currentUser,
+    req.t,
+    { nameGroup, avatarGroup }
+  );
+  res.status(httpStatus.OK).json({
+    code: httpStatus.OK,
+    data: response,
   });
 });

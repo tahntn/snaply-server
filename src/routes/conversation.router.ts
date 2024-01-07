@@ -5,6 +5,7 @@ import {
   createConversationController,
   getConversationsController,
   getDetailConversationController,
+  updateGroupConversationController,
 } from '../controllers';
 import messageRouter from './message.router';
 
@@ -17,6 +18,9 @@ router
 
 router.use('/:conversationId', messageRouter);
 
-router.route('/:conversationId').get(auth(), getDetailConversationController);
+router
+  .route('/:conversationId')
+  .get(auth(), getDetailConversationController)
+  .put(auth(), updateGroupConversationController);
 
 export default router;

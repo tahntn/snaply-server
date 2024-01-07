@@ -4,3 +4,4 @@ export * from './parseNumber';
 export * from './hashEmail';
 export * from './randomNumber';
 export * from './areIdsEqual';
+export * from './removeEmptyFields';

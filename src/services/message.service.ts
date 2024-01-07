@@ -35,7 +35,7 @@ export const checkMessageInConversation = (
 
 export const sendMessageService = async (payload: TPayloadSendMessage, req: Request) => {
   try {
-    const { user, conversationId, title, type = 'text', imageList = [] } = payload;
+    const { user, conversationId, title, type = 'text', imageList = [], replyTo } = payload;
     const currentUserId = user?._id;
 
     if (type === 'image') {
@@ -69,13 +69,36 @@ export const sendMessageService = async (payload: TPayloadSendMessage, req: Requ
       }
     );
 
+    if (replyTo) {
+      //check existing messages
+      const message = await checkExistence(
+        Message,
+        replyTo,
+        req.t('message.error.messageNotExist')
+      );
+
+      //check message in converation
+      checkMessageInConversation(conversationId, message!.conversationId, req.t);
+
+      // create new message
+      const newMessage = await Message.create({
+        title: type === 'text' ? title : '',
+        senderId: currentUserId,
+        conversationId,
+        type,
+        imageList: type === 'image' ? imageList : [],
+        replyTo: replyTo,
+      });
+      return { messages: newMessage };
+    }
+
     // create new message
     const newMessage = await Message.create({
-      title: type === 'text' && title,
+      title: type === 'text' ? title : '',
       senderId: currentUserId,
       conversationId,
       type,
-      imageList: imageList?.length ? imageList : undefined,
+      imageList: type === 'image' ? imageList : [],
     });
 
     return { messages: newMessage };
@@ -114,6 +137,7 @@ export const getListMessageByConversationIdService = async (payload: {
       .skip(startIndex)
       .limit(_limit)
       .populate('senderId', '-role -password -createdAt -updatedAt')
+      .populate('replyTo')
       .exec();
 
     return { messages };
@@ -142,7 +166,6 @@ export const pinMessageService = async (payload: {
     checkUserInConversation(conversation!, currentUser._id, t);
 
     //check existing messages
-    // const message = await existingMessage(messageId, t);
     const message = await checkExistence(Message, messageId, t('message.error.messageNotExist'));
 
     //check message in converation

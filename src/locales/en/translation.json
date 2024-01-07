@@ -85,6 +85,9 @@
       "minParticipantsRequired": "Minimum of 2 participants required.",
       "exactOneParticipantRequired": "Exactly one participant is required for the conversation."
     },
+    "updateConversation": {
+      "onlyUpdateGroupConversation": "Only update group conversation."
+    },
     "error": {
       "conversationDoesNotExist": "Conversation does not exist.",
       "accesscConversation": "You do not have access to this conversation.",
@@ -122,6 +125,9 @@
     "nameString": "Name must be a string.",
     "avatarString": "Avatar must be a string.",
     "boolean": "#boolean must be a boolean.",
-    "string": "Please enter a string."
+    "string": "Please enter a string.",
+    "cannotEnterEmptyString": "Cannot enter an empty string.",
+    "pleasePassData": "Please pass data.",
+    "pleaseEnterUrl": "Please enter a URL."
   }
 }

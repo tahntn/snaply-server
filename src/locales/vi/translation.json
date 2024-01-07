@@ -85,6 +85,9 @@
       "minParticipantsRequired": "Yêu cầu tối thiểu 2 người tham gia.",
       "exactOneParticipantRequired": "Đúng một người tham gia là bắt buộc cho cuộc trò chuyện."
     },
+    "updateConversation": {
+      "onlyUpdateGroupConversation": "Chỉ cập nhật nhóm trò chuyện."
+    },
     "error": {
       "conversationDoesNotExist": "Cuộc trò chuyện không tồn tại.",
       "accesscConversation.": "Bạn không có quyền truy cập vào cuộc trò chuyện này.",
@@ -126,6 +129,9 @@
     "avatarString": "Avatar phải là một chuỗi.",
     "passwordString": "Mật khẩu phải là một chuỗi.",
     "boolean": "#boolean phải là một giá trị boolean.",
-    "string": "Vui lòng nhập chuỗi."
+    "string": "Vui lòng nhập chuỗi.",
+    "cannotEnterEmptyString": "Không được nhập chuỗi rỗng.",
+    "pleasePassData": "Vui lòng truyền dữ liệu.",
+    "pleaseEnterUrl": "Vui lòng nhập địa chỉ URL."
   }
 }

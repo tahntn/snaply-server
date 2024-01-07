@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 import { ApiError, handleError } from '../errors';
 import { Conversation, IConversation, IUser, User } from '../models';
-import { getUserByIdService } from './user.service';
 import { IQueryUser } from '../types';
-import { areIdsEqual, hashEmail, parseNumber, randomNumber } from '../utils';
+import { areIdsEqual, hashEmail, parseNumber, randomNumber, removeEmptyFields } from '../utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
 import { httpStatus } from '../constant';
+import { checkExistence } from './common.service';
+import { checkUserInConversation } from './message.service';
 export const createConversationService = async (payload: {
   currentUser: Express.User;
   data: IConversation;
@@ -130,6 +131,49 @@ export const getDetailConversationService = async (
       throw new ApiError(httpStatus.NOT_FOUND, t('conversation.error.conversationDoesNotExist'));
     }
     return { conversation };
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const updateGroupConversationService = async (
+  conversationId: mongoose.Types.ObjectId,
+  currentUser: IUser,
+  t: TFunction<'translation', undefined>,
+  payload: { nameGroup?: string; avatarGroup?: string }
+) => {
+  try {
+    const _payload = removeEmptyFields(payload);
+
+    //check pass body
+    if (Object.keys(_payload).length === 0) {
+      throw new ApiError(httpStatus.BAD_GATEWAY, t('error.pleasePassData'));
+    }
+
+    //check existing conversation
+    const conversation = await checkExistence(
+      Conversation,
+      conversationId,
+      t('conversation.error.conversationDoesNotExist')
+    );
+
+    //check user in conversation
+    checkUserInConversation(conversation!, currentUser._id, t);
+
+    if (!conversation?.isGroup) {
+      throw new ApiError(
+        httpStatus.BAD_GATEWAY,
+        t('conversation.updateConversation.onlyUpdateGroupConversation')
+      );
+    }
+    const updatedConversation = await Conversation.findByIdAndUpdate(
+      conversationId,
+      {
+        $set: _payload,
+      },
+      { new: true }
+    );
+    return updatedConversation;
   } catch (error) {
     handleError(error);
   }
