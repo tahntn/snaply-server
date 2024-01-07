@@ -87,10 +87,6 @@ export const sendMessageService = async (payload: TPayloadSendMessage, req: Requ
         $set: {
           lastActivity: {
             type,
-            content:
-              type === 'image'
-                ? req.t('message.text.sendPhotos').replace('{user}', user?.username)
-                : title,
             senderId: currentUserId,
             timestamp: new Date(),
           },
@@ -166,7 +162,7 @@ export const pinMessageService = async (payload: {
     const message = await existingMessage(messageId, t);
 
     //check message in converation
-    checkMessageInConversation(conversationId, message?.conversationId!, t);
+    checkMessageInConversation(conversationId, message!.conversationId, t);
 
     const isPin = !message?.isPin;
 
