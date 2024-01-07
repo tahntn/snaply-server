@@ -47,9 +47,20 @@
     }
   },
   "message": {
+    "text": {
+      "sendPhotos": "{user} đã gửi lên một ảnh"
+    },
     "sendMessage": {
       "title": "Please enter message",
-      "conversationId": "Missing conversationId params"
+      "conversationId": "Missing conversationId params",
+      "type": {
+        "enum": "Invalid type. Only 'text','image','video','file' are accepted."
+      },
+      "imageList": {
+        "array": "imageList must be an array",
+        "string": "imageList must contain only strings",
+        "uri": "imageList must contain valid URIs"
+      }
     },
     "getListMessageByConversationId": {
       "conversationId": "Missing conversationId params"
@@ -58,7 +69,8 @@
       "conversationNotFound": "Conversation not found",
       "userIsNotPartOfThisConversation.": "User is not part of this conversation.",
       "messageNotExist": "Message does not exist.",
-      "messageNotBelongToConversation": "Message does not belong to the conversation."
+      "messageNotBelongToConversation": "Message does not belong to the conversation.",
+      "imageRequired": "Please upload at least one image to proceed"
     },
     "success": {
       "updatedSuccessful": "Updated successful."
