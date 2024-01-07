@@ -100,7 +100,7 @@ export const sendMessageService = async (payload: TPayloadSendMessage, req: Requ
 
     // create new message
     const newMessage = await Message.create({
-      title: type === 'text' ? title : undefined,
+      title: type === 'text' && title,
       senderId: currentUserId,
       conversationId,
       type,
