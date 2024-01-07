@@ -1,6 +1,12 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
-const FriendSchema = new mongoose.Schema(
+export interface IFriend extends Document {
+  userId: mongoose.Types.ObjectId;
+  targetUserId: mongoose.Types.ObjectId;
+  status: 'pending' | 'accept';
+}
+
+const FriendSchema = new mongoose.Schema<IFriend>(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -21,5 +27,5 @@ const FriendSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Friend = mongoose.model('Friend', FriendSchema);
+const Friend = mongoose.model<IFriend>('Friend', FriendSchema);
 export default Friend;
