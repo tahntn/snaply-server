@@ -1,11 +1,11 @@
 {
   "name": "snaply-server",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node ./dist/index.js --env=production",
+    "start": "ts-node dist/index.js --env=production",
     "dev": "nodemon --config nodemon.json src/index.ts",
     "lint": "eslint --ext js,jsx,ts,tsx src/",
     "lint:fix": "eslint --fix --ext js,jsx,ts,tsx src/",
