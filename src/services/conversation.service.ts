@@ -19,7 +19,7 @@ export const createConversationService = async (payload: {
     const userId = currentUser._id;
 
     //check curent user existing in participants
-    const validParticipants = participants.filter((user) => areIdsEqual(user, userId));
+    const validParticipants = participants.filter((user) => !areIdsEqual(user, userId));
 
     if (validParticipants.length !== participants.length) {
       throw new ApiError(
