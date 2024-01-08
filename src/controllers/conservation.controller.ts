@@ -40,8 +40,6 @@ export const createConversationController = catchAsync(async (req: Request, res:
   });
   res.status(httpStatus.OK).json({
     data: response?.conversation,
-    // code: httpStatus.OK,
-    // message: req.t('conversation.createConversation.createConversationSuccess'),
   });
 });
 
