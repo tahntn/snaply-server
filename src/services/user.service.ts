@@ -1,20 +1,47 @@
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 
-import { httpStatus } from '../constant';
+import { httpStatus, selectFieldUser } from '../constant';
 import { ApiError, handleError } from '../errors';
 import { IUser, User } from '../models';
 import { IQueryUser } from '../types';
-import { parseNumber } from '../utils';
+import { areIdsEqual, parseNumber } from '../utils';
 import { Request } from 'express';
 import { checkExistence } from './common.service';
+import { checkFriendRequest } from './friend.service';
 
 export const getUserByIdService = async (id: mongoose.Types.ObjectId, req: Request) => {
   try {
-    //check user
-    const user = await checkExistence(User, id, req.t('user.error.userNotFound'));
-
+    const user = await User.findById(id).select(selectFieldUser);
+    if (!user) {
+      throw new ApiError(httpStatus.NOT_FOUND, req.t('user.error.userNotFound'));
+    }
     return user;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getDetailUserByIdService = async (id: mongoose.Types.ObjectId, req: Request) => {
+  try {
+    const user = await getUserByIdService(id, req);
+    const currentUser = req.user;
+
+    if (areIdsEqual(id, currentUser?._id)) {
+      return { data: user };
+    }
+
+    const friendShip = await checkFriendRequest(
+      {
+        userId1: currentUser?._id,
+        userId2: id,
+      },
+      req
+    );
+    return {
+      data: user,
+      friendShip,
+    };
   } catch (error) {
     handleError(error);
   }
@@ -37,7 +64,7 @@ export const searchUserNameService = async ({
     };
 
     const users = await User.find(query)
-      .select('-role -createdAt -updatedAt -password -__v')
+      .select(selectFieldUser)
       .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(_limit)
@@ -61,17 +88,16 @@ export const searchUserNameService = async ({
   }
 };
 
-export const updateUserService = async (id: string, data: Partial<IUser>, req: Request) => {
+export const updateUserService = async (
+  id: mongoose.Types.ObjectId,
+  data: Partial<IUser>,
+  req: Request
+) => {
   try {
-    const { email, password } = data;
+    const { email, username, avatar } = data;
 
     //check user
-    const checkUser = await User.findOne({
-      _id: id,
-    });
-    if (checkUser === null) {
-      throw new ApiError(httpStatus.NOT_FOUND, req.t('user.error.userNotFound'));
-    }
+    const checkUser = await getUserByIdService(id, req);
 
     if (email) {
       const existingEmail = await User.findOne({
@@ -84,16 +110,15 @@ export const updateUserService = async (id: string, data: Partial<IUser>, req: R
       }
     }
 
-    if (password) {
-      //hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-      data = {
-        ...data,
-        password: hashedPassword,
-      };
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      {
+        email,
+        username,
+        avatar,
+      },
+      { new: true }
+    ).select(selectFieldUser);
     return {
       data: updatedUser,
     };

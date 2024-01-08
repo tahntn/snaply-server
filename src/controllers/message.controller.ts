@@ -64,10 +64,6 @@ export const pinMessageController = catchAsync(
       messageId: new mongoose.Types.ObjectId(messageId),
       t: req.t,
     });
-    res.status(httpStatus.OK).json({
-      code: httpStatus.OK,
-      message: req.t('message.success.updatedSuccessful'),
-      data: response?.message,
-    });
+    res.status(httpStatus.OK).json(response);
   }
 );

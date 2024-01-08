@@ -11,12 +11,14 @@ export const validateLogin = (req: Request) => ({
       .messages({
         'any.required': req.t('auth.email.required'),
         'string.email': req.t('auth.email.email'),
+        'string.empty': req.t('error.cannotEnterEmptyString'),
       }),
     password: Joi.string()
       .required()
       .messages({
         'any.required': req.t('auth.password.required'),
         'string.base': req.t('error.passwordString'),
+        'string.empty': req.t('error.cannotEnterEmptyString'),
       }),
   }),
 });
@@ -29,6 +31,7 @@ export const validateRegister = (req: Request) => ({
       .messages({
         'any.required': req.t('auth.email.required'),
         'string.email': req.t('auth.email.email'),
+        'string.empty': req.t('error.cannotEnterEmptyString'),
       }),
     password: Joi.string()
       .required()
@@ -36,6 +39,7 @@ export const validateRegister = (req: Request) => ({
       .messages({
         'any.required': req.t('auth.password.required'),
         'string.base': req.t('error.passwordString'),
+        'string.empty': req.t('error.cannotEnterEmptyString'),
       }),
     username: Joi.string()
       .required()
@@ -43,6 +47,7 @@ export const validateRegister = (req: Request) => ({
       .messages({
         'any.required': req.t('auth.username.required'),
         'string.base': req.t('error.nameString'),
+        'string.empty': req.t('error.cannotEnterEmptyString'),
       }),
   }),
 });
@@ -54,6 +59,7 @@ export const validateLogout = (req: Request) => ({
       .messages({
         'any.required': req.t('auth.refreshToken.required'),
         'string.base': req.t('error.string'),
+        'string.empty': req.t('error.cannotEnterEmptyString'),
       }),
   }),
 });
@@ -65,6 +71,7 @@ export const validateRefreshTokens = (req: Request) => ({
       .messages({
         'any.required': req.t('auth.refreshToken.required'),
         'string.base': req.t('error.string'),
+        'string.empty': req.t('error.cannotEnterEmptyString'),
       }),
   }),
 });
