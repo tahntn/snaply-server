@@ -24,11 +24,7 @@ export const createFriendRequestController = catchAsync(
       receiverUserId: new mongoose.Types.ObjectId(userId),
     });
 
-    res.status(httpStatus.CREATED).json({
-      code: httpStatus.CREATED,
-      message: req.t('friend.createFriend.success'),
-      data: response,
-    });
+    res.status(httpStatus.CREATED).json(response);
   }
 );
 
@@ -41,11 +37,7 @@ export const confirmFriendRequestController = catchAsync(
       friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
     });
 
-    res.status(httpStatus.OK).json({
-      code: httpStatus.OK,
-      message: req.t('friend.confirmFriend.success'),
-      data: response,
-    });
+    res.status(httpStatus.OK).json(response);
   }
 );
 
@@ -58,11 +50,7 @@ export const denyFriendRequestController = catchAsync(
       friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
     });
 
-    res.status(httpStatus.OK).json({
-      code: httpStatus.OK,
-      message: req.t('friend.denyFriend.success'),
-      data: response,
-    });
+    res.status(httpStatus.OK).json(response);
   }
 );
 

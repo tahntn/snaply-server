@@ -5,7 +5,7 @@ import { IQueryUser } from '../types';
 import { areIdsEqual, hashEmail, parseNumber, randomNumber, removeEmptyFields } from '../utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
-import { httpStatus } from '../constant';
+import { httpStatus, selectFieldUser, selectWithoutField } from '../constant';
 import { checkExistence } from './common.service';
 import { checkUserInConversation } from './message.service';
 export const createConversationService = async (payload: {
@@ -97,8 +97,9 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
     const conversations = await Conversation.find({
       participants: { $in: [user._id] },
     })
-      .populate('participants', 'username avatar')
-      .select('-createdAt -updatedAt -__v')
+      .populate('participants', selectFieldUser)
+      .populate('lastActivity.senderId', selectFieldUser)
+      .select(selectWithoutField)
       .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(_limit)
