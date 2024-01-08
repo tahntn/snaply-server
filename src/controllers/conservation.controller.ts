@@ -40,8 +40,6 @@ export const createConversationController = catchAsync(async (req: Request, res:
   });
   res.status(httpStatus.OK).json({
     data: response?.conversation,
-    code: httpStatus.OK,
-    message: req.t('conversation.createConversation.createConversationSuccess'),
   });
 });
 
@@ -51,10 +49,7 @@ export const getConversationsController = catchAsync(async (req: Request, res: R
   const query = pick(req.query, ['limit', 'page']);
 
   const response = await getConversationsService(currentUser, query);
-  res.status(httpStatus.OK).json({
-    code: httpStatus.OK,
-    data: response,
-  });
+  res.status(httpStatus.OK).json(response);
 });
 
 export const getDetailConversationController = catchAsync(async (req: Request, res: Response) => {

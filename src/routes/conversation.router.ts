@@ -21,6 +21,6 @@ router.use('/:conversationId', messageRouter);
 router
   .route('/:conversationId')
   .get(auth(), getDetailConversationController)
-  .put(auth(), updateGroupConversationController);
+  .patch(auth(), updateGroupConversationController);
 
 export default router;

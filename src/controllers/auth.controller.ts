@@ -28,12 +28,7 @@ export const loginUserController = catchAsync(
       tokens = await generateAuthTokens(response?.user);
     }
     res.status(httpStatus.OK).json({
-      data: {
-        user: response?.user,
-        tokens,
-      },
-      code: httpStatus.OK,
-      message: req.t('auth.success.loginSuccessful'),
+      data: tokens,
     });
   }
 );
@@ -49,12 +44,7 @@ export const registerUserController = catchAsync(
       tokens = await generateAuthTokens(response.user);
     }
     res.status(httpStatus.CREATED).json({
-      data: {
-        user: response?.user,
-        tokens,
-      },
-      code: httpStatus.CREATED,
-      message: req.t('auth.success.registrationSuccessful'),
+      data: tokens,
     });
   }
 );
