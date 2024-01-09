@@ -140,7 +140,13 @@ export const getListMessageByConversationIdService = async (payload: {
       .populate('replyTo')
       .exec();
 
-    return messages;
+    return {
+      data: messages,
+      pagination: {
+        page: _page,
+        limit: _limit,
+      },
+    };
   } catch (error) {
     handleError(error);
   }
