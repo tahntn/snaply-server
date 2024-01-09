@@ -62,10 +62,7 @@ export const getDetailConversationController = catchAsync(async (req: Request, r
     currentUser,
     req.t
   );
-  res.status(httpStatus.OK).json({
-    code: httpStatus.OK,
-    data: response?.conversation,
-  });
+  res.status(httpStatus.OK).json(response);
 });
 
 export const updateGroupConversationController = catchAsync(async (req: Request, res: Response) => {
@@ -80,8 +77,5 @@ export const updateGroupConversationController = catchAsync(async (req: Request,
     req.t,
     { nameGroup, avatarGroup }
   );
-  res.status(httpStatus.OK).json({
-    code: httpStatus.OK,
-    data: response,
-  });
+  res.status(httpStatus.OK).json(response);
 });

@@ -9,6 +9,7 @@ import { areIdsEqual, parseNumber } from '../utils';
 import { Request } from 'express';
 import { checkExistence } from './common.service';
 import { checkFriendRequest } from './friend.service';
+import { TFunction } from 'i18next';
 
 export const getUserByIdService = async (id: mongoose.Types.ObjectId, req: Request) => {
   try {
@@ -122,6 +123,38 @@ export const updateUserService = async (
     return {
       data: updatedUser,
     };
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const changePasswordService = async (
+  currentUserId: mongoose.Types.ObjectId,
+  data: {
+    newPassword: string;
+    oldPassword: string;
+  },
+  t: TFunction<'translation', undefined>
+) => {
+  try {
+    const { oldPassword, newPassword } = data;
+    const checkUser = await checkExistence(User, currentUserId, t('user.error.userNotFound'));
+
+    //compare password
+    const comparePassword = bcrypt.compareSync(oldPassword, checkUser!.password);
+
+    //check password
+    if (!comparePassword) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, t('user.error.incorrectPassword'));
+    }
+
+    //hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.findByIdAndUpdate(currentUserId, {
+      password: hashedPassword,
+    }).select(selectFieldUser);
+    return;
   } catch (error) {
     handleError(error);
   }
