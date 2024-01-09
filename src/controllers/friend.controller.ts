@@ -50,7 +50,7 @@ export const denyFriendRequestController = catchAsync(
       friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
     });
 
-    res.status(httpStatus.OK).json(response);
+    res.status(httpStatus.NO_CONTENT).send();
   }
 );
 
