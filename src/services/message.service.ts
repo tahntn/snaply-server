@@ -133,7 +133,6 @@ export const getListMessageByConversationIdService = async (payload: {
     checkUserInConversation(conversation!, currentUserId, req.t);
 
     const messages = await Message.find({ conversationId: conversationId })
-      .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(_limit)
       .populate('senderId', '-role -password -createdAt -updatedAt')
