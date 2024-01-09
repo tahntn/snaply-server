@@ -5,13 +5,14 @@ import { httpStatus } from '../constant';
 import { IQueryUser } from '../types';
 import { areIdsEqual, catchAsync, pick } from '../utils';
 import {
+  changePasswordService,
   getDetailUserByIdService,
   getUserByIdService,
   searchUserNameService,
   updateUserService,
 } from '../services';
 import { validate } from '../middlewares';
-import { searchUserName, updateUser } from '../validators';
+import { changePassword, searchUserName, updateUser } from '../validators';
 
 export const searchUserNameController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -33,6 +34,18 @@ export const updateUserController = catchAsync(async (req: Request, res: Respons
     req
   );
   return res.status(httpStatus.OK).json(response);
+});
+
+export const changePasswordController = catchAsync(async (req: Request, res: Response) => {
+  await validate(changePassword(req))(req, res);
+  const currentUser = req.user;
+  const { oldPassword, newPassword } = req.body;
+  await changePasswordService(
+    new mongoose.Types.ObjectId(currentUser!._id),
+    { oldPassword, newPassword },
+    req.t
+  );
+  return res.status(httpStatus.NO_CONTENT).send();
 });
 
 export const getDetailUserByIdController = catchAsync(async (req: Request, res: Response) => {

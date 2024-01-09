@@ -12,6 +12,7 @@ export const validateLogin = (req: Request) => ({
         'any.required': req.t('auth.email.required'),
         'string.email': req.t('auth.email.email'),
         'string.empty': req.t('error.cannotEnterEmptyString'),
+        'string.base': req.t('error.string'),
       }),
     password: Joi.string()
       .required()
@@ -32,6 +33,7 @@ export const validateRegister = (req: Request) => ({
         'any.required': req.t('auth.email.required'),
         'string.email': req.t('auth.email.email'),
         'string.empty': req.t('error.cannotEnterEmptyString'),
+        'string.base': req.t('error.string'),
       }),
     password: Joi.string()
       .required()
