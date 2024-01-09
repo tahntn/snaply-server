@@ -34,6 +34,10 @@
       "success": "Cập nhật thành công",
       "unauthorized": "Bạn không thể cập nhật thông tin người dùng khác."
     },
+    "changePassword": {
+      "oldPasswordRequired": "Mật khẩu cũ là bắt buộc.",
+      "newPasswordRequired": "Mật khẩu mới là bắt buộc."
+    },
     "error": {
       "userNotFound": "Không tìm thấy người dùng.",
       "emailAlready": "Email đã đăng ký.",

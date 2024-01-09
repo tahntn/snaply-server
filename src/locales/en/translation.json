@@ -34,6 +34,12 @@
       "success": "Update successful.",
       "unauthorized": "You cannot update another user's information."
     },
+
+    "changePassword": {
+      "newPasswordRequired": "New password is required.",
+      "oldPasswordRequired": "Old password is required."
+    },
+
     "error": {
       "userNotFound": "User not found.",
       "emailAlready": "Email is already registered.",
