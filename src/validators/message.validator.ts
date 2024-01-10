@@ -4,13 +4,10 @@ import { objectId } from './custom.validator';
 
 export const sendMessageValidate = (req: Request) => ({
   body: Joi.object().keys({
-    title: Joi.string()
-      .required()
-      .messages({
-        'any.required': req.t('message.sendMessage.title'),
-        'string.base': req.t('error.string'),
-        'string.empty': req.t('error.cannotEnterEmptyString'),
-      }),
+    title: Joi.string().messages({
+      'string.base': req.t('error.string'),
+      'string.empty': req.t('error.cannotEnterEmptyString'),
+    }),
     type: Joi.string()
       .valid('text', 'image', 'video', 'file')
       .default('text')

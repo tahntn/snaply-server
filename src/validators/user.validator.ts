@@ -9,6 +9,7 @@ export const searchUserName = (req: Request) => ({
       .messages({
         'any.required': req.t('user.searchUser.keyword'),
         'string.base': req.t('error.string'),
+        'string.empty': req.t('error.cannotEnterEmptyString'),
       }),
     limit: Joi.string().messages({
       'string.empty': req.t('error.cannotEnterEmptyString'),

@@ -49,5 +49,13 @@ const ConversationSchema = new mongoose.Schema<IConversation>(
   { timestamps: true }
 );
 
+ConversationSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
+});
+
 const Conversation = mongoose.model<IConversation>('Conversation', ConversationSchema);
 export default Conversation;
