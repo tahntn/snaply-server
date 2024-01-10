@@ -127,6 +127,12 @@
       "youAreAlreadyFriends": "Bạn đã là bạn bè."
     }
   },
+  "upload": {
+    "error": {
+      "missingFile": "Chưa tài file",
+      "fileNotSupported": "Loại file không hợp lệ"
+    }
+  },
   "error": {
     "objectId": "Phải là một id mongo hợp lệ.",
     "nameString": "Tên phải là một chuỗi.",

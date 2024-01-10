@@ -5,3 +5,4 @@ export * from './hashEmail';
 export * from './randomNumber';
 export * from './areIdsEqual';
 export * from './removeEmptyFields';
+export * from './streamToString';
