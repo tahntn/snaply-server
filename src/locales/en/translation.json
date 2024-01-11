@@ -126,6 +126,12 @@
       "youAreAlreadyFriends": "You are already friends."
     }
   },
+  "upload": {
+    "error": {
+      "missingFile": "Missing files",
+      "fileNotSupported": "File type not supported"
+    }
+  },
   "error": {
     "objectId": "Must be a valid mongo id.",
     "nameString": "Name must be a string.",
