@@ -38,9 +38,7 @@ export const createConversationController = catchAsync(async (req: Request, res:
     data: req.body as IConversation,
     req,
   });
-  res.status(httpStatus.OK).json({
-    data: response?.conversation,
-  });
+  res.status(httpStatus.OK).json(response);
 });
 
 export const getConversationsController = catchAsync(async (req: Request, res: Response) => {

@@ -53,14 +53,14 @@ export const registerUserService = async (newUser: INewRegisteredUser, req: Requ
 
     ////create avatar default
     const hashedEmail = await hashEmail(email);
-    const avatar = 'https://www.gravatar.com/avatar/' + hashedEmail + '?d=retro&s=400';
+    const defaultAvatar = 'https://www.gravatar.com/avatar/' + hashedEmail + '?d=retro&s=400';
 
     //create user
     const user = await User.create({
       email,
       username,
       password: hashedPassword,
-      avatar,
+      defaultAvatar,
     });
 
     return { user };

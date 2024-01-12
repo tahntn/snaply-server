@@ -120,9 +120,7 @@ export const updateUserService = async (
       },
       { new: true }
     ).select(selectFieldUser);
-    return {
-      data: updatedUser,
-    };
+    return updatedUser;
   } catch (error) {
     handleError(error);
   }

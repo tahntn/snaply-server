@@ -27,5 +27,13 @@ const FriendSchema = new mongoose.Schema<IFriend>(
   { timestamps: true }
 );
 
+FriendSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
+});
+
 const Friend = mongoose.model<IFriend>('Friend', FriendSchema);
 export default Friend;

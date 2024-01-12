@@ -59,7 +59,7 @@ export const createConversationService = async (payload: {
         },
       });
       await newConversation.save();
-      return { conversation: newConversation };
+      return newConversation;
     }
 
     const _nameGroup = nameGroup || existingUsers.map((user) => user.username).join(', ');
@@ -81,7 +81,7 @@ export const createConversationService = async (payload: {
       },
     });
     await newConversation.save();
-    return { conversation: newConversation };
+    return newConversation;
   } catch (error) {
     handleError(error);
   }
@@ -126,12 +126,12 @@ export const getDetailConversationService = async (
   try {
     const conversation = await Conversation.findById(conversationId).populate(
       'participants',
-      '-password -createdAt -updatedAt -role'
+      selectFieldUser
     );
     if (!conversation) {
       throw new ApiError(httpStatus.NOT_FOUND, t('conversation.error.conversationDoesNotExist'));
     }
-    return { conversation };
+    return conversation;
   } catch (error) {
     handleError(error);
   }

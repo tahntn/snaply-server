@@ -105,7 +105,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
 
       req,
     });
-    return res?.conversation;
+    return res;
   } catch (error) {
     handleError(error);
   }
@@ -131,7 +131,7 @@ export const denyFriendRequestService = async (payload: IUpdateStateFriendReques
 
     await Friend.deleteOne(friendRequestId);
 
-    return true;
+    return;
   } catch (error) {
     handleError(error);
   }
