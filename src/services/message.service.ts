@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { httpStatus } from '../constant';
+import { httpStatus, selectFieldUser } from '../constant';
 import { ApiError, handleError } from '../errors';
 import { Conversation, IConversation, IUser, Message } from '../models';
 import { TPayloadSendMessage } from '../types';
@@ -136,7 +136,7 @@ export const getListMessageByConversationIdService = async (payload: {
       .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(_limit)
-      .populate('senderId', '-role -password -createdAt -updatedAt')
+      .populate('senderId', selectFieldUser)
       .populate('replyTo')
       .exec();
 

@@ -126,7 +126,7 @@ export const getDetailConversationService = async (
   try {
     const conversation = await Conversation.findById(conversationId).populate(
       'participants',
-      '-password -createdAt -updatedAt -role'
+      selectFieldUser
     );
     if (!conversation) {
       throw new ApiError(httpStatus.NOT_FOUND, t('conversation.error.conversationDoesNotExist'));

@@ -7,6 +7,7 @@ export interface IUser extends Document {
   password: string;
   avatar: string;
   role: string;
+  defaultAvatar: string;
 }
 
 const UserSchema = new mongoose.Schema<IUser>(
@@ -29,6 +30,10 @@ const UserSchema = new mongoose.Schema<IUser>(
     avatar: {
       type: String,
       default: '',
+    },
+    defaultAvatar: {
+      type: String,
+      required: true,
     },
     role: {
       type: String,
