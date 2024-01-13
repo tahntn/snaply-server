@@ -43,9 +43,16 @@ export const createConversationService = async (payload: {
 
       //check existing conversation
       const existingConversation = await Conversation.find({
-        $or: [
-          { participants: { $all: [userId, userId2] } },
-          { participants: { $all: [userId2, userId] } },
+        $and: [
+          {
+            $or: [
+              { participants: { $all: [userId, userId2] } },
+              { participants: { $all: [userId2, userId] } },
+            ],
+          },
+          {
+            isGroup: false,
+          },
         ],
       });
       if (existingConversation.length > 0) {
