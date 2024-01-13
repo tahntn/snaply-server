@@ -49,3 +49,17 @@ export const getListFriendByUserIdValidate = (req: Request) => ({
       }),
   }),
 });
+
+export const getListFriendSortByAlphabetValidate = (req: Request) => ({
+  query: Joi.object().keys({
+    q: Joi.string(),
+    limit: Joi.string().messages({
+      'string.empty': req.t('error.cannotEnterEmptyString'),
+      'string.base': req.t('error.string'),
+    }),
+    page: Joi.string().messages({
+      'string.empty': req.t('error.cannotEnterEmptyString'),
+      'string.base': req.t('error.string'),
+    }),
+  }),
+});

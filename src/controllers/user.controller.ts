@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 import { httpStatus } from '../constant';
 import { IQueryUser } from '../types';
-import { areIdsEqual, catchAsync, pick } from '../utils';
+import { catchAsync, pick } from '../utils';
 import {
   changePasswordService,
   getDetailUserByIdService,

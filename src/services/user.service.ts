@@ -98,7 +98,6 @@ export const updateUserService = async (
     const { email, username, avatar } = data;
 
     //check user
-    const checkUser = await getUserByIdService(id, req);
 
     if (email) {
       const existingEmail = await User.findOne({
