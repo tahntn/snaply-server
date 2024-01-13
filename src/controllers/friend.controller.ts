@@ -47,12 +47,12 @@ export const denyFriendRequestController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     await validate(updateFriendRequestValidate(req))(req, res, next);
     const friendRequestId = req.params.friendRequestId;
-    const response = await denyFriendRequestService({
+    await denyFriendRequestService({
       req,
       friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
     });
 
-    res.status(httpStatus.NO_CONTENT).send(response);
+    res.status(httpStatus.NO_CONTENT).send();
   }
 );
 
