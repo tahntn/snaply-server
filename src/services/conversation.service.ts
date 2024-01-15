@@ -99,7 +99,7 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
     })
       .populate('participants', 'username avatar')
       .select('-createdAt -updatedAt -__v')
-      .sort({ createdAt: -1 })
+      .sort({ updatedAt: -1 })
       .skip(startIndex)
       .limit(_limit)
       .lean()
