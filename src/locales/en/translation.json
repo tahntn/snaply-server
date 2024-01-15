@@ -34,6 +34,12 @@
       "success": "Update successful.",
       "unauthorized": "You cannot update another user's information."
     },
+
+    "changePassword": {
+      "newPasswordRequired": "New password is required.",
+      "oldPasswordRequired": "Old password is required."
+    },
+
     "error": {
       "userNotFound": "User not found.",
       "emailAlready": "Email is already registered.",
@@ -118,6 +124,12 @@
       "friendAlreadyAdded": "Friend already added. Please check friends list.",
       "friendRequestNotFound": "Friend request has not been found",
       "youAreAlreadyFriends": "You are already friends."
+    }
+  },
+  "upload": {
+    "error": {
+      "missingFile": "Missing files",
+      "fileNotSupported": "File type not supported"
     }
   },
   "error": {

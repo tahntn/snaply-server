@@ -3,10 +3,16 @@ import mongoose from 'mongoose';
 
 import { httpStatus } from '../constant';
 import { IQueryUser } from '../types';
-import { areIdsEqual, catchAsync, pick } from '../utils';
-import { getUserByIdService, searchUserNameService, updateUserService } from '../services';
+import { catchAsync, pick } from '../utils';
+import {
+  changePasswordService,
+  getDetailUserByIdService,
+  getUserByIdService,
+  searchUserNameService,
+  updateUserService,
+} from '../services';
 import { validate } from '../middlewares';
-import { searchUserName } from '../validators';
+import { changePassword, searchUserName, updateUser } from '../validators';
 
 export const searchUserNameController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -14,35 +20,42 @@ export const searchUserNameController = catchAsync(
     const user = req.user;
     const query: IQueryUser = pick(req.query, ['limit', 'page', 'q']);
     const response = await searchUserNameService({ ...query, userId: user?._id });
-    res.status(httpStatus.OK).json({
-      code: httpStatus.OK,
-      message: req.t('user.searchUser.success'),
-      data: response,
-    });
+    res.status(httpStatus.OK).json(response);
   }
 );
 
 export const updateUserController = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.params.id;
-  const user = req.user;
+  await validate(updateUser(req))(req, res);
+  const currentUser = req.user;
   const data = req.body;
-
-  if (!areIdsEqual(user?._id, new mongoose.Types.ObjectId(userId))) {
-    return res.status(httpStatus.UNAUTHORIZED).json({
-      code: httpStatus.UNAUTHORIZED,
-      message: req.t('user.updateUser.unauthorized'),
-    });
-  }
-  const response = await updateUserService(userId, data, req);
-  return res.status(httpStatus.OK).json({
-    code: httpStatus.OK,
-    message: 'Updated successful.',
-    data: response?.data,
-  });
+  const response = await updateUserService(
+    new mongoose.Types.ObjectId(currentUser!._id),
+    data,
+    req
+  );
+  return res.status(httpStatus.OK).json(response);
 });
 
-export const getUserByIdController = catchAsync(async (req: Request, res: Response) => {
+export const changePasswordController = catchAsync(async (req: Request, res: Response) => {
+  await validate(changePassword(req))(req, res);
+  const currentUser = req.user;
+  const { oldPassword, newPassword } = req.body;
+  await changePasswordService(
+    new mongoose.Types.ObjectId(currentUser!._id),
+    { oldPassword, newPassword },
+    req.t
+  );
+  return res.status(httpStatus.NO_CONTENT).send();
+});
+
+export const getDetailUserByIdController = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
+  const response = await getDetailUserByIdService(new mongoose.Types.ObjectId(userId), req);
+  return res.status(httpStatus.OK).json(response);
+});
+
+export const getMeController = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?._id;
   const response = await getUserByIdService(new mongoose.Types.ObjectId(userId), req);
   return res.status(httpStatus.OK).json(response);
 });

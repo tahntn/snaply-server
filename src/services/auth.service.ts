@@ -20,19 +20,18 @@ export const loginUserService = async (email: string, password: string, req: Req
     });
     if (checkUser === null) {
       throw new ApiError(httpStatus.UNAUTHORIZED, req.t('user.error.EmaileoesNotExist'));
-    } else {
-      //compare password
-      const comparePassword = bcrypt.compareSync(password, checkUser.password);
-
-      //check password
-      if (!comparePassword) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, req.t('user.error.incorrectPassword'));
-      }
-
-      return {
-        user: checkUser,
-      };
     }
+    //compare password
+    const comparePassword = bcrypt.compareSync(password, checkUser.password);
+
+    //check password
+    if (!comparePassword) {
+      throw new ApiError(httpStatus.UNAUTHORIZED, req.t('user.error.incorrectPassword'));
+    }
+
+    return {
+      user: checkUser,
+    };
   } catch (error) {
     handleError(error);
   }

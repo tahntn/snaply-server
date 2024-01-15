@@ -5,7 +5,7 @@ import { IQueryUser } from '../types';
 import { areIdsEqual, hashEmail, parseNumber, randomNumber, removeEmptyFields } from '../utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
-import { httpStatus } from '../constant';
+import { httpStatus, selectFieldUser, selectWithoutField } from '../constant';
 import { checkExistence } from './common.service';
 import { checkUserInConversation } from './message.service';
 export const createConversationService = async (payload: {
@@ -43,9 +43,16 @@ export const createConversationService = async (payload: {
 
       //check existing conversation
       const existingConversation = await Conversation.find({
-        $or: [
-          { participants: { $all: [userId, userId2] } },
-          { participants: { $all: [userId2, userId] } },
+        $and: [
+          {
+            $or: [
+              { participants: { $all: [userId, userId2] } },
+              { participants: { $all: [userId2, userId] } },
+            ],
+          },
+          {
+            isGroup: false,
+          },
         ],
       });
       if (existingConversation.length > 0) {
@@ -59,7 +66,7 @@ export const createConversationService = async (payload: {
         },
       });
       await newConversation.save();
-      return { conversation: newConversation };
+      return newConversation;
     }
 
     const _nameGroup = nameGroup || existingUsers.map((user) => user.username).join(', ');
@@ -81,7 +88,7 @@ export const createConversationService = async (payload: {
       },
     });
     await newConversation.save();
-    return { conversation: newConversation };
+    return newConversation;
   } catch (error) {
     handleError(error);
   }
@@ -97,8 +104,9 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
     const conversations = await Conversation.find({
       participants: { $in: [user._id] },
     })
-      .populate('participants', 'username avatar')
-      .select('-createdAt -updatedAt -__v')
+      .populate('participants', selectFieldUser)
+      .populate('lastActivity.senderId', selectFieldUser)
+      .select(selectWithoutField)
       .sort({ updatedAt: -1 })
       .skip(startIndex)
       .limit(_limit)
@@ -130,7 +138,7 @@ export const getDetailConversationService = async (
     if (!conversation) {
       throw new ApiError(httpStatus.NOT_FOUND, t('conversation.error.conversationDoesNotExist'));
     }
-    return { conversation };
+    return conversation;
   } catch (error) {
     handleError(error);
   }

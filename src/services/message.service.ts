@@ -101,7 +101,7 @@ export const sendMessageService = async (payload: TPayloadSendMessage, req: Requ
       imageList: type === 'image' ? imageList : [],
     });
 
-    return { messages: newMessage };
+    return newMessage;
   } catch (error) {
     handleError(error);
   }
@@ -140,7 +140,13 @@ export const getListMessageByConversationIdService = async (payload: {
       .populate('replyTo')
       .exec();
 
-    return { messages };
+    return {
+      data: messages,
+      pagination: {
+        page: _page,
+        limit: _limit,
+      },
+    };
   } catch (error) {
     handleError(error);
   }
@@ -181,7 +187,7 @@ export const pinMessageService = async (payload: {
       { new: true }
     );
 
-    return { message: updatedMessage };
+    return updatedMessage;
   } catch (error) {
     handleError(error);
   }

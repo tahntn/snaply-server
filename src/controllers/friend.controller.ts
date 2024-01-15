@@ -5,6 +5,7 @@ import {
   createFriendRequestService,
   denyFriendRequestService,
   getListFriendByUserIdService,
+  getListFriendSortByAlphabetService,
 } from '../services';
 import { catchAsync } from '../utils';
 import { NextFunction, Request, Response } from 'express';
@@ -12,6 +13,7 @@ import { validate } from '../middlewares';
 import {
   createFriendRequestValidate,
   getListFriendByUserIdValidate,
+  getListFriendSortByAlphabetValidate,
   updateFriendRequestValidate,
 } from '../validators/friend.validator';
 
@@ -24,11 +26,7 @@ export const createFriendRequestController = catchAsync(
       receiverUserId: new mongoose.Types.ObjectId(userId),
     });
 
-    res.status(httpStatus.CREATED).json({
-      code: httpStatus.CREATED,
-      message: req.t('friend.createFriend.success'),
-      data: response,
-    });
+    res.status(httpStatus.CREATED).json(response);
   }
 );
 
@@ -41,11 +39,7 @@ export const confirmFriendRequestController = catchAsync(
       friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
     });
 
-    res.status(httpStatus.OK).json({
-      code: httpStatus.OK,
-      message: req.t('friend.confirmFriend.success'),
-      data: response,
-    });
+    res.status(httpStatus.OK).json(response);
   }
 );
 
@@ -53,16 +47,12 @@ export const denyFriendRequestController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     await validate(updateFriendRequestValidate(req))(req, res, next);
     const friendRequestId = req.params.friendRequestId;
-    const response = await denyFriendRequestService({
+    await denyFriendRequestService({
       req,
       friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
     });
 
-    res.status(httpStatus.OK).json({
-      code: httpStatus.OK,
-      message: req.t('friend.denyFriend.success'),
-      data: response,
-    });
+    res.status(httpStatus.NO_CONTENT).send();
   }
 );
 
@@ -71,6 +61,15 @@ export const getListFriendByUserIdController = catchAsync(
     await validate(getListFriendByUserIdValidate(req))(req, res, next);
 
     const response = await getListFriendByUserIdService(req);
+    res.status(httpStatus.OK).json(response);
+  }
+);
+
+export const getListFriendSortByAlphabetController = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    await validate(getListFriendSortByAlphabetValidate(req))(req, res, next);
+
+    const response = await getListFriendSortByAlphabetService(req);
     res.status(httpStatus.OK).json(response);
   }
 );

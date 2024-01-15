@@ -105,7 +105,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
 
       req,
     });
-    return res?.conversation;
+    return res;
   } catch (error) {
     handleError(error);
   }
@@ -131,7 +131,7 @@ export const denyFriendRequestService = async (payload: IUpdateStateFriendReques
 
     await Friend.deleteOne(friendRequestId);
 
-    return true;
+    return;
   } catch (error) {
     handleError(error);
   }
@@ -195,6 +195,113 @@ export const getListFriendByUserIdService = async (req: Request) => {
         limit: _limit,
         // totalPages,
         // totalFriends,
+      },
+    };
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getListFriendSortByAlphabetService = async (req: Request) => {
+  try {
+    const currentUser = req.user!;
+    const query = pick(req.query, ['limit', 'page', 'q']);
+    const { limit, page, q } = query;
+
+    const _page = parseNumber(page, 1);
+    const _limit = parseNumber(limit, 5);
+    const startIndex = (_page - 1) * _limit;
+
+    const queryObj = {
+      $and: [
+        {
+          status: 'accept',
+        },
+        {
+          $or: [{ userId: currentUser?._id }, { targetUserId: currentUser?._id }],
+        },
+      ],
+    };
+    const friends = await Friend.aggregate([
+      // 1. Get all friends of user
+      {
+        $match: {
+          ...queryObj,
+        },
+      },
+      // 2. Look up to fill user or targetUser data
+      {
+        $addFields: {
+          lookupField: {
+            $cond: {
+              if: { $eq: ['$userId', currentUser?._id] },
+              then: '$targetUserId',
+              else: '$userId',
+            },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'lookupField',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+
+      // 3. Remove unused fields
+      {
+        $project: {
+          _id: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          'user.username': 1,
+          'user.email': 1,
+          'user.avatar': 1,
+        },
+      },
+
+      // 4. Search user
+
+      {
+        $match: {
+          'user.username': { $regex: q || '', $options: 'i' },
+        },
+      },
+      // 5. Group by first letter name user
+      {
+        $group: {
+          _id: {
+            $substr: [{ $toLower: '$user.username' }, 0, 1],
+          },
+          friends: {
+            $push: '$$ROOT',
+          },
+        },
+      },
+      // 6. Pagination
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+      {
+        $skip: startIndex,
+      },
+      {
+        $limit: _limit,
+      },
+    ]);
+
+    return {
+      data: friends,
+      pagination: {
+        page: _page,
+        limit: _limit,
       },
     };
   } catch (error) {

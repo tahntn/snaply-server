@@ -34,6 +34,10 @@
       "success": "Cập nhật thành công",
       "unauthorized": "Bạn không thể cập nhật thông tin người dùng khác."
     },
+    "changePassword": {
+      "oldPasswordRequired": "Mật khẩu cũ là bắt buộc.",
+      "newPasswordRequired": "Mật khẩu mới là bắt buộc."
+    },
     "error": {
       "userNotFound": "Không tìm thấy người dùng.",
       "emailAlready": "Email đã đăng ký.",
@@ -121,6 +125,12 @@
       "friendAlreadyAdded": "Người dùng đã là bạn bè . Vui lòng kiểm tra danh sách bạn bè của bạn.",
       "friendRequestNotFound": "Không tìm thấy lời mời kết bạn",
       "youAreAlreadyFriends": "Bạn đã là bạn bè."
+    }
+  },
+  "upload": {
+    "error": {
+      "missingFile": "Chưa tài file",
+      "fileNotSupported": "Loại file không hợp lệ"
     }
   },
   "error": {

@@ -11,7 +11,7 @@ export const checkExistence = async <T extends Document>(
   try {
     const document = await model.findById(objectId);
     if (!document) {
-      throw new ApiError(httpStatus.BAD_REQUEST, errorMessage);
+      throw new ApiError(httpStatus.NOT_FOUND, errorMessage);
     }
     return document;
   } catch (error) {

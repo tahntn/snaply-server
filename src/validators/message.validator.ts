@@ -4,13 +4,10 @@ import { objectId } from './custom.validator';
 
 export const sendMessageValidate = (req: Request) => ({
   body: Joi.object().keys({
-    title: Joi.string()
-      .required()
-      .messages({
-        'any.required': req.t('message.sendMessage.title'),
-        'string.base': req.t('error.string'),
-        'string.empty': req.t('error.cannotEnterEmptyString'),
-      }),
+    title: Joi.string().messages({
+      'string.base': req.t('error.string'),
+      'string.empty': req.t('error.cannotEnterEmptyString'),
+    }),
     type: Joi.string()
       .valid('text', 'image', 'video', 'file')
       .default('text')
@@ -30,6 +27,7 @@ export const sendMessageValidate = (req: Request) => ({
       .custom((value, helper) => objectId(value, helper, req))
       .messages({
         'string.empty': req.t('error.cannotEnterEmptyString'),
+        'string.base': req.t('error.string'),
       }),
   }),
   params: Joi.object().keys({
@@ -39,14 +37,19 @@ export const sendMessageValidate = (req: Request) => ({
       .messages({
         'any.required': req.t('message.sendMessage.conversationId'),
         'string.empty': req.t('error.cannotEnterEmptyString'),
+        'string.base': req.t('error.string'),
       }),
   }),
 });
 
 export const getListMessageByConversationIdValidate = (req: Request) => ({
   query: Joi.object().keys({
-    limit: Joi.string(),
-    page: Joi.string(),
+    limit: Joi.string().messages({
+      'string.empty': req.t('error.cannotEnterEmptyString'),
+    }),
+    page: Joi.string().messages({
+      'string.empty': req.t('error.cannotEnterEmptyString'),
+    }),
   }),
   params: Joi.object().keys({
     conversationId: Joi.string()
@@ -55,6 +58,7 @@ export const getListMessageByConversationIdValidate = (req: Request) => ({
       .messages({
         'any.required': req.t('message.getListMessageByConversationId.conversationId'),
         'string.empty': req.t('error.cannotEnterEmptyString'),
+        'string.base': req.t('error.string'),
       }),
   }),
 });
