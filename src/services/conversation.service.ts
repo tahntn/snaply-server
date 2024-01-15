@@ -43,9 +43,16 @@ export const createConversationService = async (payload: {
 
       //check existing conversation
       const existingConversation = await Conversation.find({
-        $or: [
-          { participants: { $all: [userId, userId2] } },
-          { participants: { $all: [userId2, userId] } },
+        $and: [
+          {
+            $or: [
+              { participants: { $all: [userId, userId2] } },
+              { participants: { $all: [userId2, userId] } },
+            ],
+          },
+          {
+            isGroup: false,
+          },
         ],
       });
       if (existingConversation.length > 0) {
@@ -100,7 +107,7 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
       .populate('participants', selectFieldUser)
       .populate('lastActivity.senderId', selectFieldUser)
       .select(selectWithoutField)
-      .sort({ createdAt: -1 })
+      .sort({ updatedAt: -1 })
       .skip(startIndex)
       .limit(_limit)
       .lean()
