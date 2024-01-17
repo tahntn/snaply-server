@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
 import { httpStatus } from '../constant';
@@ -14,15 +14,13 @@ import {
 import { validate } from '../middlewares';
 import { changePassword, searchUserName, updateUser } from '../validators';
 
-export const searchUserNameController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    await validate(searchUserName(req))(req, res, next);
-    const user = req.user;
-    const query: IQueryUser = pick(req.query, ['limit', 'page', 'q']);
-    const response = await searchUserNameService({ ...query, userId: user?._id });
-    res.status(httpStatus.OK).json(response);
-  }
-);
+export const searchUserNameController = catchAsync(async (req: Request, res: Response) => {
+  await validate(searchUserName(req))(req, res);
+  const user = req.user;
+  const query: IQueryUser = pick(req.query, ['limit', 'page', 'q']);
+  const response = await searchUserNameService({ ...query, userId: user?._id });
+  res.status(httpStatus.OK).json(response);
+});
 
 export const updateUserController = catchAsync(async (req: Request, res: Response) => {
   await validate(updateUser(req))(req, res);
