@@ -72,16 +72,16 @@ export const searchUserNameService = async ({
       .lean()
       .exec();
 
-    const totalUsers = await User.countDocuments(query).exec();
-    const totalPages = Math.ceil(totalUsers / _limit);
+    // const totalUsers = await User.countDocuments(query).exec();
+    // const totalPages = Math.ceil(totalUsers / _limit);
 
     return {
       data: users,
       pagination: {
-        totalPages,
         page: _page,
         limit: _limit,
-        totalUsers,
+        // totalPages,
+        // totalUsers,
       },
     };
   } catch (error) {
