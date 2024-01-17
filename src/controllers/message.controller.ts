@@ -19,18 +19,16 @@ export const sendMessagesController = catchAsync(
     const conversationId = req.params.conversationId;
     const { title, type, imageList, replyTo } = req.body;
 
-    const response = await sendMessageService(
-      {
-        user: currentUser,
-        conversationId: new mongoose.Types.ObjectId(conversationId),
-        title,
-        type,
-        imageList,
-        replyTo,
-      },
-      req
-    );
-    res.status(httpStatus.OK).json(response);
+    const response = await sendMessageService({
+      user: currentUser,
+      conversationId: new mongoose.Types.ObjectId(conversationId),
+      title,
+      type,
+      imageList,
+      replyTo,
+      t: req.t,
+    });
+    res.status(httpStatus.OK).json(response?.message);
   }
 );
 
@@ -46,7 +44,7 @@ export const getListMessageByConversationIdController = catchAsync(
       conversationId: new mongoose.Types.ObjectId(conversationId),
       page: query?.page,
       limit: query?.limit,
-      req,
+      t: req.t,
     });
     res.status(httpStatus.OK).json(response);
   }

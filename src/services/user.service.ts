@@ -11,11 +11,14 @@ import { checkExistence } from './common.service';
 import { checkFriendRequest } from './friend.service';
 import { TFunction } from 'i18next';
 
-export const getUserByIdService = async (id: mongoose.Types.ObjectId, req: Request) => {
+export const getUserByIdService = async (
+  id: mongoose.Types.ObjectId,
+  t: TFunction<'translation', undefined>
+) => {
   try {
     const user = await User.findById(id).select(selectFieldUser);
     if (!user) {
-      throw new ApiError(httpStatus.NOT_FOUND, req.t('user.error.userNotFound'));
+      throw new ApiError(httpStatus.NOT_FOUND, t('user.error.userNotFound'));
     }
     return user;
   } catch (error) {
@@ -23,10 +26,15 @@ export const getUserByIdService = async (id: mongoose.Types.ObjectId, req: Reque
   }
 };
 
-export const getDetailUserByIdService = async (id: mongoose.Types.ObjectId, req: Request) => {
+export const getDetailUserByIdService = async (payload: {
+  id: mongoose.Types.ObjectId;
+  currentUser: IUser;
+  t: TFunction<'translation', undefined>;
+}) => {
   try {
-    const user = await getUserByIdService(id, req);
-    const currentUser = req.user;
+    const { id, currentUser, t } = payload;
+    const user = await getUserByIdService(id, t);
+    // const currentUser = req.user;
 
     if (areIdsEqual(id, currentUser?._id)) {
       return { data: user };
@@ -37,7 +45,7 @@ export const getDetailUserByIdService = async (id: mongoose.Types.ObjectId, req:
         userId1: currentUser?._id,
         userId2: id,
       },
-      req
+      t
     );
     return {
       data: user,
@@ -92,7 +100,7 @@ export const searchUserNameService = async ({
 export const updateUserService = async (
   id: mongoose.Types.ObjectId,
   data: Partial<IUser>,
-  req: Request
+  t: TFunction<'translation', undefined>
 ) => {
   try {
     const { email, username, avatar } = data;
@@ -106,7 +114,7 @@ export const updateUserService = async (
 
       //check existing email
       if (existingEmail) {
-        throw new ApiError(httpStatus.BAD_REQUEST, req.t('user.error.emailAlready'));
+        throw new ApiError(httpStatus.BAD_REQUEST, t('user.error.emailAlready'));
       }
     }
 

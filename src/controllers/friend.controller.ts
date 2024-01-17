@@ -22,8 +22,9 @@ export const createFriendRequestController = catchAsync(
     await validate(createFriendRequestValidate(req))(req, res, next);
     const userId = req.params.userId;
     const response = await createFriendRequestService({
-      req,
+      t: req.t,
       receiverUserId: new mongoose.Types.ObjectId(userId),
+      currentUser: req.user!,
     });
 
     res.status(httpStatus.CREATED).json(response);
@@ -35,8 +36,9 @@ export const confirmFriendRequestController = catchAsync(
     await validate(updateFriendRequestValidate(req))(req, res, next);
     const friendRequestId = req.params.friendRequestId;
     const response = await confirmFriendRequestService({
-      req,
+      t: req.t,
       friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
+      currentUser: req.user!,
     });
 
     res.status(httpStatus.OK).json(response);
@@ -48,8 +50,9 @@ export const denyFriendRequestController = catchAsync(
     await validate(updateFriendRequestValidate(req))(req, res, next);
     const friendRequestId = req.params.friendRequestId;
     await denyFriendRequestService({
-      req,
+      t: req.t,
       friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
+      currentUser: req.user!,
     });
 
     res.status(httpStatus.NO_CONTENT).send();

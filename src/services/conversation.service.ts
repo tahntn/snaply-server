@@ -1,30 +1,30 @@
 import mongoose from 'mongoose';
 import { ApiError, handleError } from '../errors';
-import { Conversation, IConversation, IUser, User } from '../models';
+import { Conversation, IConversation, IMessage, IUser, User } from '../models';
 import { IQueryUser } from '../types';
 import { areIdsEqual, hashEmail, parseNumber, randomNumber, removeEmptyFields } from '../utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
 import { httpStatus, selectFieldUser, selectWithoutField } from '../constant';
 import { checkExistence } from './common.service';
-import { checkUserInConversation } from './message.service';
+import { checkUserInConversation, sendMessageService } from './message.service';
 export const createConversationService = async (payload: {
   currentUser: Express.User;
   data: IConversation;
-  req: Request;
+  t: TFunction<'translation', undefined>;
 }) => {
   try {
-    const { currentUser, req, data } = payload;
+    const { currentUser, t, data } = payload;
     const { participants, isGroup, nameGroup, avatarGroup } = data;
     const userId = currentUser._id;
 
-    //check curent user existing in participants
+    //check current user existing in participants
     const validParticipants = participants.filter((user) => !areIdsEqual(user, userId));
 
     if (validParticipants.length !== participants.length) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
-        req.t('conversation.createConversation.participantsIncludeCurrentUser')
+        t('conversation.createConversation.participantsIncludeCurrentUser')
       );
     }
 
@@ -34,7 +34,7 @@ export const createConversationService = async (payload: {
     if (existingUsers.length !== participants.length) {
       throw new ApiError(
         httpStatus.BAD_REQUEST,
-        req.t('conversation.createConversation.participantsNotExist')
+        t('conversation.createConversation.participantsNotExist')
       );
     }
 
@@ -58,15 +58,21 @@ export const createConversationService = async (payload: {
       if (existingConversation.length > 0) {
         return { conversation: existingConversation[0] };
       }
+
+      //create new conversation
       const newConversation = new Conversation({
         participants: [userId, userId2],
-        lastActivity: {
-          senderId: userId,
-          type: 'init',
-        },
       });
-      await newConversation.save();
-      return newConversation;
+      const _newConversation = await newConversation.save();
+      const res = await sendMessageService({
+        user: currentUser,
+        conversationId: _newConversation.id,
+        title: 'new',
+        type: 'update',
+        imageList: [],
+        t,
+      });
+      return res?.updatedConversation;
     }
 
     const _nameGroup = nameGroup || existingUsers.map((user) => user.username).join(', ');
@@ -77,18 +83,23 @@ export const createConversationService = async (payload: {
       const hashedEmail = await hashEmail(_nameGroup + _randomNumber);
       _avatarGroup = 'https://www.gravatar.com/avatar/' + hashedEmail + '?d=retro&s=400';
     }
+    //create new group conversation
     const newConversation = new Conversation({
       participants: [userId, ...participants],
       nameGroup: _nameGroup,
       avatarGroup: _avatarGroup,
       isGroup,
-      lastActivity: {
-        senderId: userId,
-        type: 'init',
-      },
     });
-    await newConversation.save();
-    return newConversation;
+    const _newConversation = await newConversation.save();
+    const res = await sendMessageService({
+      user: currentUser,
+      conversationId: _newConversation.id,
+      title: 'new',
+      type: 'update',
+      imageList: [],
+      t,
+    });
+    return res?.updatedConversation;
   } catch (error) {
     handleError(error);
   }
@@ -105,7 +116,15 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
       participants: { $in: [user._id] },
     })
       .populate('participants', selectFieldUser)
-      .populate('lastActivity.senderId', selectFieldUser)
+      .populate({
+        path: 'lastActivity.lastMessage',
+        select: selectWithoutField,
+        populate: {
+          path: 'senderId',
+          select: selectFieldUser,
+        },
+      })
+
       .select(selectWithoutField)
       .sort({ updatedAt: -1 })
       .skip(startIndex)
@@ -131,10 +150,16 @@ export const getDetailConversationService = async (
   t: TFunction<'translation', undefined>
 ) => {
   try {
-    const conversation = await Conversation.findById(conversationId).populate(
-      'participants',
-      '-password -createdAt -updatedAt -role'
-    );
+    const conversation = await Conversation.findById(conversationId)
+      .populate('participants', selectFieldUser)
+      .populate({
+        path: 'lastActivity.lastMessage',
+        select: selectWithoutField,
+        populate: {
+          path: 'senderId',
+          select: selectFieldUser,
+        },
+      });
     if (!conversation) {
       throw new ApiError(httpStatus.NOT_FOUND, t('conversation.error.conversationDoesNotExist'));
     }
@@ -166,7 +191,11 @@ export const updateGroupConversationService = async (
     );
 
     //check user in conversation
-    checkUserInConversation(conversation!, currentUser._id, t);
+    checkUserInConversation({
+      conversation: conversation!,
+      t,
+      currentUserId: currentUser._id,
+    });
 
     if (!conversation?.isGroup) {
       throw new ApiError(
@@ -181,7 +210,45 @@ export const updateGroupConversationService = async (
       },
       { new: true }
     );
-    return updatedConversation;
+
+    const { nameGroup, avatarGroup } = payload;
+    let res:
+      | {
+          message: mongoose.Document<unknown, {}, IMessage> &
+            IMessage & {
+              _id: mongoose.Types.ObjectId;
+            };
+          updatedConversation:
+            | (mongoose.Document<unknown, {}, IConversation> &
+                IConversation & {
+                  _id: mongoose.Types.ObjectId;
+                })
+            | null;
+        }
+      | undefined;
+    if (nameGroup) {
+      res = await sendMessageService({
+        user: currentUser,
+        conversationId: conversationId,
+        title: 'change_name_group',
+        type: 'update',
+        imageList: [],
+        t,
+      });
+    }
+
+    if (avatarGroup) {
+      res = await sendMessageService({
+        user: currentUser,
+        conversationId: conversationId,
+        title: 'change_avatar_group',
+        type: 'update',
+        imageList: [],
+        t,
+      });
+    }
+
+    return res?.updatedConversation;
   } catch (error) {
     handleError(error);
   }

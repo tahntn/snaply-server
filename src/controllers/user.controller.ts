@@ -31,7 +31,7 @@ export const updateUserController = catchAsync(async (req: Request, res: Respons
   const response = await updateUserService(
     new mongoose.Types.ObjectId(currentUser!._id),
     data,
-    req
+    req.t
   );
   return res.status(httpStatus.OK).json(response);
 });
@@ -50,12 +50,16 @@ export const changePasswordController = catchAsync(async (req: Request, res: Res
 
 export const getDetailUserByIdController = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
-  const response = await getDetailUserByIdService(new mongoose.Types.ObjectId(userId), req);
+  const response = await getDetailUserByIdService({
+    id: new mongoose.Types.ObjectId(userId),
+    currentUser: req.user!,
+    t: req.t,
+  });
   return res.status(httpStatus.OK).json(response);
 });
 
 export const getMeController = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?._id;
-  const response = await getUserByIdService(new mongoose.Types.ObjectId(userId), req);
+  const response = await getUserByIdService(new mongoose.Types.ObjectId(userId), req.t);
   return res.status(httpStatus.OK).json(response);
 });
