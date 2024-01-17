@@ -36,7 +36,7 @@ export const createConversationController = catchAsync(async (req: Request, res:
   const response = await createConversationService({
     currentUser,
     data: req.body as IConversation,
-    req,
+    t: req.t,
   });
   res.status(httpStatus.OK).json(response);
 });

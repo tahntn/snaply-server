@@ -19,7 +19,7 @@ export const loginUserService = async (email: string, password: string, req: Req
       email,
     });
     if (checkUser === null) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, req.t('user.error.EmaileoesNotExist'));
+      throw new ApiError(httpStatus.UNAUTHORIZED, req.t('user.error.EmaildoesNotExist'));
     }
     //compare password
     const comparePassword = bcrypt.compareSync(password, checkUser.password);
@@ -88,7 +88,7 @@ export const refreshTokensService = async (
 ): Promise<TokenPayload> => {
   try {
     const refreshTokenDoc = await verifyToken(refreshToken, tokenTypes.REFRESH);
-    const user = await getUserByIdService(new mongoose.Types.ObjectId(refreshTokenDoc.user), req);
+    const user = await getUserByIdService(new mongoose.Types.ObjectId(refreshTokenDoc.user), req.t);
     if (!user) {
       throw new Error();
     }

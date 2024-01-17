@@ -8,11 +8,12 @@ import mongoose from 'mongoose';
 import { TFunction } from 'i18next';
 import { checkExistence } from './common.service';
 
-export const checkUserInConversation = (
-  conversation: IConversation,
-  currentUserId: mongoose.Types.ObjectId,
-  t: TFunction<'translation', undefined>
-) => {
+export const checkUserInConversation = (payload: {
+  conversation: IConversation;
+  currentUserId: mongoose.Types.ObjectId;
+  t: TFunction<'translation', undefined>;
+}) => {
+  const { conversation, currentUserId, t } = payload;
   const isAuth = conversation?.participants.find((item) => areIdsEqual(currentUserId, item));
   if (!isAuth) {
     throw new ApiError(httpStatus.UNAUTHORIZED, t('conversation.error.accesscConversation'));
@@ -33,75 +34,62 @@ export const checkMessageInConversation = (
   return true;
 };
 
-export const sendMessageService = async (payload: TPayloadSendMessage, req: Request) => {
+export const sendMessageService = async (payload: TPayloadSendMessage) => {
   try {
-    const { user, conversationId, title, type = 'text', imageList = [], replyTo } = payload;
+    const { user, conversationId, title, type = 'text', imageList = [], replyTo, t } = payload;
     const currentUserId = user?._id;
 
     if (type === 'image') {
       if (!imageList?.length) {
-        throw new ApiError(httpStatus.BAD_REQUEST, req.t('message.error.imageRequired'));
+        throw new ApiError(httpStatus.BAD_REQUEST, t('message.error.imageRequired'));
       }
     }
     //check conversation exist
     const conversation = await checkExistence(
       Conversation,
       conversationId,
-      req.t('conversation.error.conversationDoesNotExist')
+      t('conversation.error.conversationDoesNotExist')
     );
 
     // check user is in conversation
-    checkUserInConversation(conversation!, currentUserId, req.t);
-
-    // update last active
-    await Conversation.updateOne(
-      {
-        _id: conversation?._id,
-      },
-      {
-        $set: {
-          lastActivity: {
-            type,
-            senderId: currentUserId,
-            timestamp: new Date(),
-          },
-        },
-      }
-    );
+    checkUserInConversation({
+      conversation: conversation!,
+      t,
+      currentUserId,
+    });
 
     if (replyTo) {
       //check existing messages
-      const message = await checkExistence(
-        Message,
-        replyTo,
-        req.t('message.error.messageNotExist')
-      );
+      const message = await checkExistence(Message, replyTo, t('message.error.messageNotExist'));
 
       //check message in converation
-      checkMessageInConversation(conversationId, message!.conversationId, req.t);
-
-      // create new message
-      const newMessage = await Message.create({
-        title: type === 'text' ? title : '',
-        senderId: currentUserId,
-        conversationId,
-        type,
-        imageList: type === 'image' ? imageList : [],
-        replyTo: replyTo,
-      });
-      return { messages: newMessage };
+      checkMessageInConversation(conversationId, message!.conversationId, t);
     }
 
     // create new message
     const newMessage = await Message.create({
-      title: type === 'text' ? title : '',
+      title: type === 'image' ? '' : title,
       senderId: currentUserId,
       conversationId,
       type,
       imageList: type === 'image' ? imageList : [],
+      replyTo,
     });
 
-    return newMessage;
+    // update last active
+    const updatedConversation = await Conversation.findByIdAndUpdate(
+      conversation?._id,
+      {
+        lastActivity: {
+          lastMessage: newMessage,
+        },
+      },
+      { new: true }
+    );
+    return {
+      message: newMessage,
+      updatedConversation,
+    };
   } catch (error) {
     handleError(error);
   }
@@ -112,10 +100,10 @@ export const getListMessageByConversationIdService = async (payload: {
   conversationId: mongoose.Types.ObjectId;
   page?: string;
   limit?: string;
-  req: Request;
+  t: TFunction<'translation', undefined>;
 }) => {
   try {
-    const { user, conversationId, page, limit, req } = payload;
+    const { user, conversationId, page, limit, t } = payload;
 
     const _page = parseNumber(page, 1);
     const _limit = parseNumber(limit, 5);
@@ -126,11 +114,15 @@ export const getListMessageByConversationIdService = async (payload: {
     const conversation = await checkExistence(
       Conversation,
       conversationId,
-      req.t('conversation.error.conversationDoesNotExist')
+      t('conversation.error.conversationDoesNotExist')
     );
 
     //check user in conversation
-    checkUserInConversation(conversation!, currentUserId, req.t);
+    checkUserInConversation({
+      conversation: conversation!,
+      t,
+      currentUserId,
+    });
 
     const messages = await Message.find({ conversationId: conversationId })
       .sort({ createdAt: -1 })
@@ -169,7 +161,11 @@ export const pinMessageService = async (payload: {
     );
 
     //check user in conversation
-    checkUserInConversation(conversation!, currentUser._id, t);
+    checkUserInConversation({
+      conversation: conversation!,
+      t,
+      currentUserId: currentUser._id,
+    });
 
     //check existing messages
     const message = await checkExistence(Message, messageId, t('message.error.messageNotExist'));

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { httpStatus } from '../constant';
 import { catchAsync, pick } from '../utils';
 
@@ -12,31 +11,27 @@ import mongoose from 'mongoose';
 import { validate } from '../middlewares';
 import { getListMessageByConversationIdValidate, sendMessageValidate } from '../validators';
 
-export const sendMessagesController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    await validate(sendMessageValidate(req))(req, res, next);
-    const currentUser = req.user!;
-    const conversationId = req.params.conversationId;
-    const { title, type, imageList, replyTo } = req.body;
+export const sendMessagesController = catchAsync(async (req: Request, res: Response) => {
+  await validate(sendMessageValidate(req))(req, res);
+  const currentUser = req.user!;
+  const conversationId = req.params.conversationId;
+  const { title, type, imageList, replyTo } = req.body;
 
-    const response = await sendMessageService(
-      {
-        user: currentUser,
-        conversationId: new mongoose.Types.ObjectId(conversationId),
-        title,
-        type,
-        imageList,
-        replyTo,
-      },
-      req
-    );
-    res.status(httpStatus.OK).json(response);
-  }
-);
+  const response = await sendMessageService({
+    user: currentUser,
+    conversationId: new mongoose.Types.ObjectId(conversationId),
+    title,
+    type,
+    imageList,
+    replyTo,
+    t: req.t,
+  });
+  res.status(httpStatus.OK).json(response?.message);
+});
 
 export const getListMessageByConversationIdController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    await validate(getListMessageByConversationIdValidate(req))(req, res, next);
+  async (req: Request, res: Response) => {
+    await validate(getListMessageByConversationIdValidate(req))(req, res);
     const user = req.user!;
     const query = pick(req.query, ['limit', 'page']);
     const conversationId = req.params.conversationId;
@@ -46,24 +41,22 @@ export const getListMessageByConversationIdController = catchAsync(
       conversationId: new mongoose.Types.ObjectId(conversationId),
       page: query?.page,
       limit: query?.limit,
-      req,
-    });
-    res.status(httpStatus.OK).json(response);
-  }
-);
-
-export const pinMessageController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const currentUser = req.user!;
-    const conversationId = req.params.conversationId;
-    const messageId = req.params.messageId;
-
-    const response = await pinMessageService({
-      currentUser,
-      conversationId: new mongoose.Types.ObjectId(conversationId),
-      messageId: new mongoose.Types.ObjectId(messageId),
       t: req.t,
     });
     res.status(httpStatus.OK).json(response);
   }
 );
+
+export const pinMessageController = catchAsync(async (req: Request, res: Response) => {
+  const currentUser = req.user!;
+  const conversationId = req.params.conversationId;
+  const messageId = req.params.messageId;
+
+  const response = await pinMessageService({
+    currentUser,
+    conversationId: new mongoose.Types.ObjectId(conversationId),
+    messageId: new mongoose.Types.ObjectId(messageId),
+    t: req.t,
+  });
+  res.status(httpStatus.OK).json(response);
+});

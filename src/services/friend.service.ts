@@ -12,14 +12,18 @@ import {
 import { getUserByIdService } from './user.service';
 import { IConversation } from '../models';
 import { checkExistence } from './common.service';
+import { TFunction } from 'i18next';
 
-export const checkFriendRequest = async (payload: ICheckFriend, req: Request) => {
+export const checkFriendRequest = async (
+  payload: ICheckFriend,
+  t: TFunction<'translation', undefined>
+) => {
   try {
     const { userId1, userId2 } = payload;
 
     const areEqual = areIdsEqual(userId1, userId2);
     if (areEqual) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, req.t('auth.error.unauthorized'));
+      throw new ApiError(httpStatus.UNAUTHORIZED, t('auth.error.unauthorized'));
     }
 
     const friend = await Friend.findOne({
@@ -37,13 +41,12 @@ export const checkFriendRequest = async (payload: ICheckFriend, req: Request) =>
 
 export const createFriendRequestService = async (payload: ICreateFriendRequest) => {
   try {
-    const { req, receiverUserId } = payload;
-    const currentUser = req.user!;
+    const { t, receiverUserId, currentUser } = payload;
 
     //check receiver user
-    const receiverUser = await getUserByIdService(receiverUserId, req);
+    const receiverUser = await getUserByIdService(receiverUserId, t);
     if (!receiverUser) {
-      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.receiverNotFound'));
+      throw new ApiError(httpStatus.NOT_FOUND, t('friend.error.receiverNotFound'));
     }
 
     //check friend request
@@ -52,16 +55,16 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
         userId1: receiverUser._id,
         userId2: currentUser._id,
       },
-      req
+      t
     );
 
     if (friendRequest) {
       //check status accept
       if (friendRequest.status === 'accept') {
-        throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.youAreAlreadyFriends'));
+        throw new ApiError(httpStatus.BAD_REQUEST, t('friend.error.youAreAlreadyFriends'));
       }
       //check status pending
-      throw new ApiError(httpStatus.BAD_REQUEST, req.t('friend.error.invitationAlreadySent'));
+      throw new ApiError(httpStatus.BAD_REQUEST, t('friend.error.invitationAlreadySent'));
     }
 
     //Create your request list
@@ -79,21 +82,20 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
 
 export const confirmFriendRequestService = async (payload: IUpdateStateFriendRequest) => {
   try {
-    const { req, friendRequestId } = payload;
+    const { t, friendRequestId, currentUser } = payload;
 
-    const currentUser = req.user!;
     const friendRequest = await checkExistence(
       Friend,
       friendRequestId,
-      req.t('friend.error.friendRequestNotFound')
+      t('friend.error.friendRequestNotFound')
     );
 
     if (friendRequest!.status !== 'pending') {
-      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.youAreAlreadyFriends'));
+      throw new ApiError(httpStatus.NOT_FOUND, t('friend.error.youAreAlreadyFriends'));
     }
 
     if (!areIdsEqual(friendRequest!.targetUserId, currentUser._id)) {
-      throw new ApiError(httpStatus.BAD_REQUEST, req.t('auth.error.unauthorized'));
+      throw new ApiError(httpStatus.BAD_REQUEST, t('auth.error.unauthorized'));
     }
     await Friend.findByIdAndUpdate(friendRequestId, { status: 'accept' }, { new: true });
 
@@ -102,8 +104,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
       data: {
         participants: [friendRequest!.userId],
       } as IConversation,
-
-      req,
+      t,
     });
     return res;
   } catch (error) {
@@ -113,8 +114,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
 
 export const denyFriendRequestService = async (payload: IUpdateStateFriendRequest) => {
   try {
-    const { req, friendRequestId } = payload;
-    const currentUser = req.user!;
+    const { t, friendRequestId, currentUser } = payload;
     //check friend request, status pending
     const friendRequest = await Friend.findOne({
       _id: friendRequestId,
@@ -122,11 +122,11 @@ export const denyFriendRequestService = async (payload: IUpdateStateFriendReques
     });
 
     if (!friendRequest) {
-      throw new ApiError(httpStatus.NOT_FOUND, req.t('friend.error.friendRequestNotFound'));
+      throw new ApiError(httpStatus.NOT_FOUND, t('friend.error.friendRequestNotFound'));
     }
 
     if (!areIdsEqual(friendRequest.targetUserId, currentUser._id)) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, req.t('auth.error.unauthorized'));
+      throw new ApiError(httpStatus.UNAUTHORIZED, t('auth.error.unauthorized'));
     }
 
     await Friend.deleteOne(friendRequestId);

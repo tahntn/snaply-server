@@ -6,7 +6,7 @@ export interface IMessage extends Document {
   replyTo?: mongoose.Types.ObjectId;
   conversationId: mongoose.Types.ObjectId;
   isPin?: boolean;
-  type: string;
+  type: 'text' | 'image' | 'video' | 'file' | 'update';
   imageList?: string[];
 }
 
@@ -33,7 +33,7 @@ const MessageSchema = new mongoose.Schema<IMessage>(
     },
     type: {
       type: String,
-      enum: ['text', 'image', 'video', 'file'],
+      enum: ['text', 'image', 'video', 'file', 'update'],
       default: 'text',
     },
     imageList: [

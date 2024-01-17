@@ -1,22 +1,20 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
+import { IMessage } from './message.model';
 
 export interface IConversation extends Document {
   participants: mongoose.Types.ObjectId[];
   isGroup?: boolean;
   nameGroup?: string;
   avatarGroup?: string;
-  lastActivity?: ILastActivity;
-}
-export interface ILastActivity {
-  type: 'init' | 'text' | 'user_leave' | 'image' | 'video';
-  senderId: mongoose.Types.ObjectId;
-  timestamp: Date;
+  lastActivity?: {
+    lastMessage: IMessage;
+  };
 }
 const ConversationSchema = new mongoose.Schema<IConversation>(
   {
     participants: [
       {
-        type: mongoose.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User',
       },
     ],
@@ -31,18 +29,9 @@ const ConversationSchema = new mongoose.Schema<IConversation>(
       type: String,
     },
     lastActivity: {
-      type: {
-        type: String,
-        enum: ['init', 'text', 'user_leave', 'image', 'video'],
-        default: 'init',
-      },
-      senderId: {
-        type: mongoose.Types.ObjectId,
-        ref: 'User',
-      },
-      timestamp: {
-        type: Date,
-        default: Date.now(),
+      lastMessage: {
+        type: Schema.Types.ObjectId,
+        ref: 'Message',
       },
     },
   },
