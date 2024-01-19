@@ -8,7 +8,7 @@ import {
   getListFriendSortByAlphabetService,
 } from '../services';
 import { catchAsync } from '../utils';
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { validate } from '../middlewares';
 import {
   createFriendRequestValidate,
@@ -17,57 +17,52 @@ import {
   updateFriendRequestValidate,
 } from '../validators/friend.validator';
 
-export const createFriendRequestController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    await validate(createFriendRequestValidate(req))(req, res, next);
-    const userId = req.params.userId;
-    const response = await createFriendRequestService({
-      req,
-      receiverUserId: new mongoose.Types.ObjectId(userId),
-    });
+export const createFriendRequestController = catchAsync(async (req: Request, res: Response) => {
+  await validate(createFriendRequestValidate(req))(req, res);
+  const userId = req.params.userId;
+  const response = await createFriendRequestService({
+    t: req.t,
+    receiverUserId: new mongoose.Types.ObjectId(userId),
+    currentUser: req.user!,
+  });
 
-    res.status(httpStatus.CREATED).json(response);
-  }
-);
+  res.status(httpStatus.CREATED).json(response);
+});
 
-export const confirmFriendRequestController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    await validate(updateFriendRequestValidate(req))(req, res, next);
-    const friendRequestId = req.params.friendRequestId;
-    const response = await confirmFriendRequestService({
-      req,
-      friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
-    });
+export const confirmFriendRequestController = catchAsync(async (req: Request, res: Response) => {
+  await validate(updateFriendRequestValidate(req))(req, res);
+  const friendRequestId = req.params.friendRequestId;
+  const response = await confirmFriendRequestService({
+    t: req.t,
+    friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
+    currentUser: req.user!,
+  });
 
-    res.status(httpStatus.OK).json(response);
-  }
-);
+  res.status(httpStatus.OK).json(response);
+});
 
-export const denyFriendRequestController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    await validate(updateFriendRequestValidate(req))(req, res, next);
-    const friendRequestId = req.params.friendRequestId;
-    await denyFriendRequestService({
-      req,
-      friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
-    });
+export const denyFriendRequestController = catchAsync(async (req: Request, res: Response) => {
+  await validate(updateFriendRequestValidate(req))(req, res);
+  const friendRequestId = req.params.friendRequestId;
+  await denyFriendRequestService({
+    t: req.t,
+    friendRequestId: new mongoose.Types.ObjectId(friendRequestId),
+    currentUser: req.user!,
+  });
 
-    res.status(httpStatus.NO_CONTENT).send();
-  }
-);
+  res.status(httpStatus.NO_CONTENT).send();
+});
 
-export const getListFriendByUserIdController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    await validate(getListFriendByUserIdValidate(req))(req, res, next);
+export const getListFriendByUserIdController = catchAsync(async (req: Request, res: Response) => {
+  await validate(getListFriendByUserIdValidate(req))(req, res);
 
-    const response = await getListFriendByUserIdService(req);
-    res.status(httpStatus.OK).json(response);
-  }
-);
+  const response = await getListFriendByUserIdService(req);
+  res.status(httpStatus.OK).json(response);
+});
 
 export const getListFriendSortByAlphabetController = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    await validate(getListFriendSortByAlphabetValidate(req))(req, res, next);
+  async (req: Request, res: Response) => {
+    await validate(getListFriendSortByAlphabetValidate(req))(req, res);
 
     const response = await getListFriendSortByAlphabetService(req);
     res.status(httpStatus.OK).json(response);
