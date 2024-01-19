@@ -56,7 +56,7 @@ export const createConversationService = async (payload: {
         ],
       });
       if (existingConversation.length > 0) {
-        return { conversation: existingConversation[0] };
+        return existingConversation[0];
       }
 
       //create new conversation
