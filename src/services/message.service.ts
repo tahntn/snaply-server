@@ -36,12 +36,18 @@ export const checkMessageInConversation = (
 
 export const sendMessageService = async (payload: TPayloadSendMessage) => {
   try {
-    const { user, conversationId, title, type = 'text', imageList = [], replyTo, t } = payload;
+    const { user, conversationId, title, type = 'text', imageList = [], replyTo, url, t } = payload;
     const currentUserId = user?._id;
 
     if (type === 'image') {
       if (!imageList?.length) {
         throw new ApiError(httpStatus.BAD_REQUEST, t('message.error.imageRequired'));
+      }
+    }
+
+    if (type === 'gif') {
+      if (!url) {
+        throw new ApiError(httpStatus.BAD_REQUEST, t('message.sendMessage.url.pleaseAddUrl'));
       }
     }
     //check conversation exist
@@ -68,12 +74,13 @@ export const sendMessageService = async (payload: TPayloadSendMessage) => {
 
     // create new message
     const newMessage = await Message.create({
-      title: type === 'image' ? '' : title,
+      title: type === 'text' || type === 'update' ? title : '',
       senderId: currentUserId,
       conversationId,
       type,
       imageList: type === 'image' ? imageList : [],
       replyTo,
+      url,
     });
 
     // update last active
