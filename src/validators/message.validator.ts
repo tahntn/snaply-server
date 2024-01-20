@@ -9,7 +9,7 @@ export const sendMessageValidate = (req: Request) => ({
       'string.empty': req.t('error.cannotEnterEmptyString'),
     }),
     type: Joi.string()
-      .valid('text', 'image', 'video', 'file')
+      .valid('text', 'image', 'video', 'file', 'update', 'gif')
       .default('text')
       .messages({
         'any.only': req.t('message.sendMessage.type.enum'),
@@ -18,9 +18,9 @@ export const sendMessageValidate = (req: Request) => ({
     imageList: Joi.array()
       .items(Joi.string().uri())
       .messages({
-        'array.base': 'ImageList must be an array',
-        'string.base': 'ImageList must contain only strings',
-        'string.uri': 'ImageList must contain valid URIs',
+        'array.base': req.t('message.sendMessage.imageList.array'),
+        'string.base': req.t('message.sendMessage.imageList.string'),
+        'string.uri': req.t('message.sendMessage.imageList.uri'),
         'string.empty': req.t('error.cannotEnterEmptyString'),
       }),
     replyTo: Joi.string()
@@ -28,6 +28,13 @@ export const sendMessageValidate = (req: Request) => ({
       .messages({
         'string.empty': req.t('error.cannotEnterEmptyString'),
         'string.base': req.t('error.string'),
+      }),
+    url: Joi.string()
+      .uri()
+      .messages({
+        'string.empty': req.t('error.cannotEnterEmptyString'),
+        'string.base': req.t('error.string'),
+        'string.uri': req.t('error.pleaseEnterUrl'),
       }),
   }),
   params: Joi.object().keys({

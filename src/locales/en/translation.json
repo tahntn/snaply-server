@@ -57,12 +57,15 @@
       "title": "Please enter message",
       "conversationId": "Missing conversationId params",
       "type": {
-        "enum": "Invalid type. Only 'text','image','video','file' are accepted."
+        "enum": "Invalid type."
       },
       "imageList": {
-        "array": "imageList must be an array",
-        "string": "imageList must contain only strings",
-        "uri": "imageList must contain valid URIs"
+        "array": "ImageList must be an array",
+        "string": "ImageList must contain only strings",
+        "uri": "ImageList must contain valid URIs"
+      },
+      "url": {
+        "pleaseAddUrl": "Please add URL"
       }
     },
     "getListMessageByConversationId": {
