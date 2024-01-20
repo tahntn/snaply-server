@@ -259,6 +259,7 @@ export const getListFriendSortByAlphabetService = async (req: Request) => {
           _id: 1,
           createdAt: 1,
           updatedAt: 1,
+          'user._id': 1,
           'user.username': 1,
           'user.email': 1,
           'user.avatar': 1,
