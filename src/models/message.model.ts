@@ -6,7 +6,7 @@ export interface IMessage extends Document {
   replyTo?: mongoose.Types.ObjectId;
   conversationId: mongoose.Types.ObjectId;
   isPin?: boolean;
-  type: 'text' | 'image' | 'video' | 'file' | 'update' | 'gif';
+  type: 'text' | 'image' | 'video' | 'file' | 'update' | 'gif' | 'sticker';
   imageList?: string[];
   url?: string;
 }
@@ -34,7 +34,7 @@ const MessageSchema = new mongoose.Schema<IMessage>(
     },
     type: {
       type: String,
-      enum: ['text', 'image', 'video', 'file', 'update', 'gif'],
+      enum: ['text', 'image', 'video', 'file', 'update', 'gif', 'sticker'],
       default: 'text',
     },
     imageList: [

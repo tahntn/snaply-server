@@ -9,7 +9,7 @@ export const sendMessageValidate = (req: Request) => ({
       'string.empty': req.t('error.cannotEnterEmptyString'),
     }),
     type: Joi.string()
-      .valid('text', 'image', 'video', 'file', 'update', 'gif')
+      .valid('text', 'image', 'video', 'file', 'update', 'gif', 'sticker')
       .default('text')
       .messages({
         'any.only': req.t('message.sendMessage.type.enum'),
