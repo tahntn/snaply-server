@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { TFunction } from 'i18next';
 import mongoose from 'mongoose';
 import { IUser } from '../models';
+import Pusher from 'pusher';
 
 export interface ICheckFriend {
   userId1: mongoose.Types.ObjectId;
@@ -18,4 +19,5 @@ export interface IUpdateStateFriendRequest {
   t: TFunction<'translation', undefined>;
   friendRequestId: mongoose.Types.ObjectId;
   currentUser: IUser;
+  pusher: Pusher;
 }

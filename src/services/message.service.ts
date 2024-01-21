@@ -7,6 +7,7 @@ import { areIdsEqual, parseNumber } from '../utils';
 import mongoose from 'mongoose';
 import { TFunction } from 'i18next';
 import { checkExistence } from './common.service';
+import Pusher from 'pusher';
 
 export const checkUserInConversation = (payload: {
   conversation: IConversation;
@@ -34,7 +35,7 @@ export const checkMessageInConversation = (
   return true;
 };
 
-export const sendMessageService = async (payload: TPayloadSendMessage) => {
+export const sendMessageService = async (payload: TPayloadSendMessage, pusher: Pusher) => {
   try {
     const { user, conversationId, title, type = 'text', imageList = [], replyTo, url, t } = payload;
     const currentUserId = user?._id;
@@ -81,6 +82,17 @@ export const sendMessageService = async (payload: TPayloadSendMessage) => {
       imageList: type === 'image' ? imageList : [],
       replyTo,
       url,
+    });
+
+    //trigger to conversation new message
+    await pusher.trigger(conversationId.toString(), 'message:new', {
+      ...newMessage.toObject(),
+      senderId: {
+        username: user.username,
+        email: user.email,
+        id: user.id,
+        avatar: user.avatar,
+      },
     });
 
     // update last active

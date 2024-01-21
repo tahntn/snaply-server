@@ -82,8 +82,7 @@ export const createFriendRequestService = async (payload: ICreateFriendRequest) 
 
 export const confirmFriendRequestService = async (payload: IUpdateStateFriendRequest) => {
   try {
-    const { t, friendRequestId, currentUser } = payload;
-
+    const { t, friendRequestId, currentUser, pusher } = payload;
     const friendRequest = await checkExistence(
       Friend,
       friendRequestId,
@@ -105,6 +104,7 @@ export const confirmFriendRequestService = async (payload: IUpdateStateFriendReq
         participants: [friendRequest!.userId],
       } as IConversation,
       t,
+      pusher,
     });
     return res;
   } catch (error) {

@@ -3,18 +3,19 @@ import { ApiError, handleError } from '../errors';
 import { Conversation, IConversation, IMessage, IUser, User } from '../models';
 import { IQueryUser } from '../types';
 import { areIdsEqual, hashEmail, parseNumber, randomNumber, removeEmptyFields } from '../utils';
-import { Request } from 'express';
 import { TFunction } from 'i18next';
 import { httpStatus, selectFieldUser, selectWithoutField } from '../constant';
 import { checkExistence } from './common.service';
 import { checkUserInConversation, sendMessageService } from './message.service';
+import Pusher from 'pusher';
 export const createConversationService = async (payload: {
   currentUser: Express.User;
   data: IConversation;
   t: TFunction<'translation', undefined>;
+  pusher: Pusher;
 }) => {
   try {
-    const { currentUser, t, data } = payload;
+    const { currentUser, t, data, pusher } = payload;
     const { participants, isGroup, nameGroup, avatarGroup } = data;
     const userId = currentUser._id;
 
@@ -64,14 +65,17 @@ export const createConversationService = async (payload: {
         participants: [userId, userId2],
       });
       const _newConversation = await newConversation.save();
-      const res = await sendMessageService({
-        user: currentUser,
-        conversationId: _newConversation.id,
-        title: 'new',
-        type: 'update',
-        imageList: [],
-        t,
-      });
+      const res = await sendMessageService(
+        {
+          user: currentUser,
+          conversationId: _newConversation.id,
+          title: 'new',
+          type: 'update',
+          imageList: [],
+          t,
+        },
+        pusher
+      );
       return res?.updatedConversation;
     }
 
@@ -91,14 +95,17 @@ export const createConversationService = async (payload: {
       isGroup,
     });
     const _newConversation = await newConversation.save();
-    const res = await sendMessageService({
-      user: currentUser,
-      conversationId: _newConversation.id,
-      title: 'new',
-      type: 'update',
-      imageList: [],
-      t,
-    });
+    const res = await sendMessageService(
+      {
+        user: currentUser,
+        conversationId: _newConversation.id,
+        title: 'new',
+        type: 'update',
+        imageList: [],
+        t,
+      },
+      pusher
+    );
     return res?.updatedConversation;
   } catch (error) {
     handleError(error);
@@ -173,7 +180,8 @@ export const updateGroupConversationService = async (
   conversationId: mongoose.Types.ObjectId,
   currentUser: IUser,
   t: TFunction<'translation', undefined>,
-  payload: { nameGroup?: string; avatarGroup?: string }
+  payload: { nameGroup?: string; avatarGroup?: string },
+  pusher: Pusher
 ) => {
   try {
     const _payload = removeEmptyFields(payload);
@@ -227,25 +235,31 @@ export const updateGroupConversationService = async (
         }
       | undefined;
     if (nameGroup) {
-      res = await sendMessageService({
-        user: currentUser,
-        conversationId: conversationId,
-        title: 'change_name_group',
-        type: 'update',
-        imageList: [],
-        t,
-      });
+      res = await sendMessageService(
+        {
+          user: currentUser,
+          conversationId: conversationId,
+          title: 'change_name_group',
+          type: 'update',
+          imageList: [],
+          t,
+        },
+        pusher
+      );
     }
 
     if (avatarGroup) {
-      res = await sendMessageService({
-        user: currentUser,
-        conversationId: conversationId,
-        title: 'change_avatar_group',
-        type: 'update',
-        imageList: [],
-        t,
-      });
+      res = await sendMessageService(
+        {
+          user: currentUser,
+          conversationId: conversationId,
+          title: 'change_avatar_group',
+          type: 'update',
+          imageList: [],
+          t,
+        },
+        pusher
+      );
     }
 
     return res?.updatedConversation;
