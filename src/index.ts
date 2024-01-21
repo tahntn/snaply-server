@@ -11,13 +11,17 @@ import i18next from 'i18next';
 import Backend from 'i18next-node-fs-backend';
 import i18nextMiddleware from 'i18next-http-middleware';
 import { IUser } from './models';
-
+import Pusher from 'pusher';
+import { pusherMiddleware } from './middlewares';
 dotenv.config();
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     export interface User extends IUser {}
+    export interface Request {
+      pusher: Pusher;
+    }
   }
 }
 
@@ -38,6 +42,7 @@ app.use(express());
 app.use(cors({}));
 app.use(bodyParser.json());
 app.use(i18nextMiddleware.handle(i18next));
+app.use(pusherMiddleware);
 
 // jwt authentication
 app.use(passport.initialize());
