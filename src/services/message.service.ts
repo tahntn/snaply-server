@@ -45,7 +45,7 @@ export const sendMessageService = async (payload: TPayloadSendMessage) => {
       }
     }
 
-    if (type === 'gif') {
+    if (type === 'gif' || type === 'sticker') {
       if (!url) {
         throw new ApiError(httpStatus.BAD_REQUEST, t('message.sendMessage.url.pleaseAddUrl'));
       }
