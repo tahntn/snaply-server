@@ -3,7 +3,7 @@ import { IMessage, IUser } from '../models';
 
 export type TPayloadSendMessage = Pick<
   IMessage,
-  'conversationId' | 'title' | 'type' | 'imageList' | 'replyTo'
+  'conversationId' | 'title' | 'type' | 'imageList' | 'replyTo' | 'url'
 > & {
   user: IUser;
   t: TFunction<'translation', undefined>;

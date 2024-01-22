@@ -55,12 +55,15 @@
       "title": "Vui lòng nhập tin nhắn",
       "conversationId": "Thiếu params conversationId",
       "type": {
-        "enum": "Type không hợp lệ. Chỉ chấp nhận 'text','image','video','file'"
+        "enum": "Type không hợp lệ."
       },
       "imageList": {
         "array": "imageList phải là array",
         "string": "imageList chỉ chứa string",
         "uri": "imageList phải là một url hợp lệ"
+      },
+      "url": {
+        "pleaseAddUrl": "Vui lòng thêm URL"
       }
     },
     "getListMessageByConversationId": {

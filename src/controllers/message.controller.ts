@@ -15,8 +15,7 @@ export const sendMessagesController = catchAsync(async (req: Request, res: Respo
   await validate(sendMessageValidate(req))(req, res);
   const currentUser = req.user!;
   const conversationId = req.params.conversationId;
-  const { title, type, imageList, replyTo } = req.body;
-
+  const { title, type, imageList, replyTo, url } = req.body;
   const response = await sendMessageService({
     user: currentUser,
     conversationId: new mongoose.Types.ObjectId(conversationId),
@@ -24,6 +23,7 @@ export const sendMessagesController = catchAsync(async (req: Request, res: Respo
     type,
     imageList,
     replyTo,
+    url,
     t: req.t,
   });
   res.status(httpStatus.OK).json(response?.message);
