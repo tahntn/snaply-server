@@ -277,7 +277,7 @@ export const typingMessageService = async (payload: {
   try {
     const { currentUser, conversationId, pusher, isTyping } = payload;
 
-    await pusher.trigger(conversationId, 'message:new', {
+    await pusher.trigger(conversationId, 'message:typing', {
       isTyping,
       userTyping: {
         username: currentUser.username,
