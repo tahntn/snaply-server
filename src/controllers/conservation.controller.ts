@@ -18,7 +18,7 @@ export const createConversationController = catchAsync(async (req: Request, res:
   await validate(createConversation(req))(req, res);
   const { participants, isGroup } = req.body as IConversation;
   const currentUser = req.user!;
-
+  const pusher = req.pusher;
   if (isGroup && participants.length < 2) {
     return res.status(httpStatus.BAD_REQUEST).json({
       code: httpStatus.BAD_REQUEST,
@@ -37,6 +37,7 @@ export const createConversationController = catchAsync(async (req: Request, res:
     currentUser,
     data: req.body as IConversation,
     t: req.t,
+    pusher,
   });
   res.status(httpStatus.OK).json(response);
 });
@@ -66,6 +67,7 @@ export const getDetailConversationController = catchAsync(async (req: Request, r
 export const updateGroupConversationController = catchAsync(async (req: Request, res: Response) => {
   await validate(updateGroupConversation(req))(req, res);
   const currentUser = req.user!;
+  const pusher = req.pusher;
   const conversationId = req.params.conversationId;
   const { nameGroup, avatarGroup } = req.body;
 
@@ -73,7 +75,8 @@ export const updateGroupConversationController = catchAsync(async (req: Request,
     new mongoose.Types.ObjectId(conversationId),
     currentUser,
     req.t,
-    { nameGroup, avatarGroup }
+    { nameGroup, avatarGroup },
+    pusher
   );
   res.status(httpStatus.OK).json(response);
 });

@@ -14,18 +14,22 @@ import { getListMessageByConversationIdValidate, sendMessageValidate } from '../
 export const sendMessagesController = catchAsync(async (req: Request, res: Response) => {
   await validate(sendMessageValidate(req))(req, res);
   const currentUser = req.user!;
+  const pusher = req.pusher;
   const conversationId = req.params.conversationId;
   const { title, type, imageList, replyTo, url } = req.body;
-  const response = await sendMessageService({
-    user: currentUser,
-    conversationId: new mongoose.Types.ObjectId(conversationId),
-    title,
-    type,
-    imageList,
-    replyTo,
-    url,
-    t: req.t,
-  });
+  const response = await sendMessageService(
+    {
+      user: currentUser,
+      conversationId: new mongoose.Types.ObjectId(conversationId),
+      title,
+      type,
+      imageList,
+      replyTo,
+      url,
+      t: req.t,
+    },
+    pusher
+  );
   res.status(httpStatus.OK).json(response?.message);
 });
 
