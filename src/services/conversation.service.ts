@@ -267,3 +267,28 @@ export const updateGroupConversationService = async (
     handleError(error);
   }
 };
+
+export const typingMessageService = async (payload: {
+  currentUser: IUser;
+  conversationId: string;
+  pusher: Pusher;
+  isTyping: boolean;
+}) => {
+  try {
+    const { currentUser, conversationId, pusher, isTyping } = payload;
+
+    await pusher.trigger(conversationId, 'message:typing', {
+      isTyping,
+      userTyping: {
+        username: currentUser.username,
+        email: currentUser.email,
+        id: currentUser.id,
+        avatar: currentUser.avatar,
+      },
+    });
+
+    return;
+  } catch (error) {
+    handleError(error);
+  }
+};
