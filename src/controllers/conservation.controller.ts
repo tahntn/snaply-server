@@ -7,11 +7,17 @@ import {
   createConversationService,
   getConversationsService,
   getDetailConversationService,
+  typingMessageService,
   updateGroupConversationService,
 } from '../services';
 import mongoose from 'mongoose';
 import { validate } from '../middlewares';
-import { createConversation, getDetailConversation, updateGroupConversation } from '../validators';
+import {
+  createConversation,
+  getDetailConversation,
+  typingMessage,
+  updateGroupConversation,
+} from '../validators';
 import { IConversation } from '../models';
 
 export const createConversationController = catchAsync(async (req: Request, res: Response) => {
@@ -79,4 +85,19 @@ export const updateGroupConversationController = catchAsync(async (req: Request,
     pusher
   );
   res.status(httpStatus.OK).json(response);
+});
+
+export const typingMessageController = catchAsync(async (req: Request, res: Response) => {
+  await validate(typingMessage(req))(req, res);
+  const currentUser = req.user!;
+  const pusher = req.pusher;
+  const conversationId = req.params.conversationId;
+  const { isTyping } = req.body;
+  await typingMessageService({
+    currentUser,
+    conversationId,
+    pusher,
+    isTyping,
+  });
+  res.status(httpStatus.NO_CONTENT).send();
 });
