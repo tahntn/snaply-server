@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IMessage extends Document {
-  title: string;
+  title?: string;
   senderId: mongoose.Types.ObjectId;
   replyTo?: mongoose.Types.ObjectId;
   conversationId: mongoose.Types.ObjectId;
@@ -15,6 +15,7 @@ const MessageSchema = new mongoose.Schema<IMessage>(
   {
     title: {
       type: String,
+      default: '',
     },
     senderId: {
       type: Schema.Types.ObjectId,
