@@ -131,8 +131,10 @@
   },
   "upload": {
     "error": {
-      "missingFile": "Missing files",
-      "fileNotSupported": "File type not supported"
+      "missingFiles": "Missing files",
+      "missingFile": "Missing file",
+      "fileNotSupported": "File type not supported",
+      "failedToDeleteImage": "Failed to delete image"
     }
   },
   "error": {
