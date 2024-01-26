@@ -132,8 +132,10 @@
   },
   "upload": {
     "error": {
-      "missingFile": "Chưa tài file",
-      "fileNotSupported": "Loại file không hợp lệ"
+      "missingFiles": "Chưa tải file",
+      "missingFile": "Chưa tải file",
+      "fileNotSupported": "Loại file không hợp lệ",
+      "failedToDeleteImage": "Xóa ảnh thất bại"
     }
   },
   "error": {
