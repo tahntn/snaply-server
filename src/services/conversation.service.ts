@@ -80,9 +80,7 @@ export const createConversationService = async (payload: {
       );
 
       const _newConversationPopulated = await _newConversation.populate('participants');
-
-      //trigger to new conversation
-      await pusher.trigger([userId.toString(), userId2.toString()], 'conversation:new', {
+      const _newConversationObj = {
         ..._newConversationPopulated.toObject(),
         lastActivity: {
           lastMessage: {
@@ -95,10 +93,17 @@ export const createConversationService = async (payload: {
             },
           },
         },
+      };
+
+      _newConversation.participants.forEach((participant) => {
+        if (participant._id) {
+          pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
+        }
       });
+
+      //trigger to new conversation
       return res?.updatedConversation;
     }
-
     const _nameGroup = nameGroup || existingUsers.map((user) => user.username).join(', ');
 
     let _avatarGroup = avatarGroup || '';
@@ -126,25 +131,30 @@ export const createConversationService = async (payload: {
       },
       pusher
     );
+
     const _newConversationPopulated = await _newConversation.populate('participants');
-    await pusher.trigger(
-      [userId.toString(), [...participants]?.map((participant) => participant?.toString())],
-      'conversation:new',
-      {
-        ..._newConversationPopulated.toObject(),
-        lastActivity: {
-          lastMessage: {
-            ...res?.message.toObject(),
-            senderId: {
-              username: currentUser?.username,
-              email: currentUser?.email,
-              id: currentUser?.id,
-              avatar: currentUser?.avatar,
-            },
+
+    const _newConversationObj = {
+      ..._newConversationPopulated.toObject(),
+      lastActivity: {
+        lastMessage: {
+          ...res?.message.toObject(),
+          senderId: {
+            username: currentUser?.username,
+            email: currentUser?.email,
+            id: currentUser?.id,
+            avatar: currentUser?.avatar,
           },
         },
+      },
+    };
+
+    _newConversation.participants.forEach((participant) => {
+      if (participant._id) {
+        pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
       }
-    );
+    });
+
     return res?.updatedConversation;
   } catch (error) {
     handleError(error);
