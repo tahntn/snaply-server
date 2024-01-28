@@ -8,6 +8,7 @@ import { httpStatus, selectFieldUser, selectWithoutField } from '../constant';
 import { checkExistence } from './common.service';
 import { checkUserInConversation, sendMessageService } from './message.service';
 import Pusher from 'pusher';
+
 export const createConversationService = async (payload: {
   currentUser: Express.User;
   data: IConversation;
@@ -65,6 +66,7 @@ export const createConversationService = async (payload: {
         participants: [userId, userId2],
       });
       const _newConversation = await newConversation.save();
+
       const res = await sendMessageService(
         {
           user: currentUser,
@@ -76,6 +78,24 @@ export const createConversationService = async (payload: {
         },
         pusher
       );
+
+      const _newConversationPopulated = await _newConversation.populate('participants');
+
+      //trigger to new conversation
+      await pusher.trigger([userId.toString(), userId2.toString()], 'conversation:new', {
+        ..._newConversationPopulated.toObject(),
+        lastActivity: {
+          lastMessage: {
+            ...res?.message.toObject(),
+            senderId: {
+              username: currentUser?.username,
+              email: currentUser?.email,
+              id: currentUser?.id,
+              avatar: currentUser?.avatar,
+            },
+          },
+        },
+      });
       return res?.updatedConversation;
     }
 
@@ -106,8 +126,28 @@ export const createConversationService = async (payload: {
       },
       pusher
     );
+    const _newConversationPopulated = await _newConversation.populate('participants');
+    await pusher.trigger(
+      [userId.toString(), [...participants]?.map((participant) => participant?.toString())],
+      'conversation:new',
+      {
+        ..._newConversationPopulated.toObject(),
+        lastActivity: {
+          lastMessage: {
+            ...res?.message.toObject(),
+            senderId: {
+              username: currentUser?.username,
+              email: currentUser?.email,
+              id: currentUser?.id,
+              avatar: currentUser?.avatar,
+            },
+          },
+        },
+      }
+    );
     return res?.updatedConversation;
   } catch (error) {
+    console.log(error, 'error');
     handleError(error);
   }
 };
