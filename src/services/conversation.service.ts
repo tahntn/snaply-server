@@ -147,7 +147,6 @@ export const createConversationService = async (payload: {
     );
     return res?.updatedConversation;
   } catch (error) {
-    console.log(error, 'error');
     handleError(error);
   }
 };
