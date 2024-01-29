@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { httpStatus } from '../constant';
 import { ApiError, handleError } from '../errors';
 import { Conversation, IConversation, IUser, Message } from '../models';

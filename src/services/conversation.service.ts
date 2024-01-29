@@ -8,6 +8,7 @@ import { httpStatus, selectFieldUser, selectWithoutField } from '../constant';
 import { checkExistence } from './common.service';
 import { checkUserInConversation, sendMessageService } from './message.service';
 import Pusher from 'pusher';
+
 export const createConversationService = async (payload: {
   currentUser: Express.User;
   data: IConversation;
@@ -65,6 +66,7 @@ export const createConversationService = async (payload: {
         participants: [userId, userId2],
       });
       const _newConversation = await newConversation.save();
+
       const res = await sendMessageService(
         {
           user: currentUser,
@@ -76,9 +78,32 @@ export const createConversationService = async (payload: {
         },
         pusher
       );
+
+      const _newConversationPopulated = await _newConversation.populate('participants');
+      const _newConversationObj = {
+        ..._newConversationPopulated.toObject(),
+        lastActivity: {
+          lastMessage: {
+            ...res?.message.toObject(),
+            senderId: {
+              username: currentUser?.username,
+              email: currentUser?.email,
+              id: currentUser?.id,
+              avatar: currentUser?.avatar,
+            },
+          },
+        },
+      };
+
+      _newConversation.participants.forEach((participant) => {
+        if (participant._id) {
+          pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
+        }
+      });
+
+      //trigger to new conversation
       return res?.updatedConversation;
     }
-
     const _nameGroup = nameGroup || existingUsers.map((user) => user.username).join(', ');
 
     let _avatarGroup = avatarGroup || '';
@@ -106,6 +131,30 @@ export const createConversationService = async (payload: {
       },
       pusher
     );
+
+    const _newConversationPopulated = await _newConversation.populate('participants');
+
+    const _newConversationObj = {
+      ..._newConversationPopulated.toObject(),
+      lastActivity: {
+        lastMessage: {
+          ...res?.message.toObject(),
+          senderId: {
+            username: currentUser?.username,
+            email: currentUser?.email,
+            id: currentUser?.id,
+            avatar: currentUser?.avatar,
+          },
+        },
+      },
+    };
+
+    _newConversation.participants.forEach((participant) => {
+      if (participant._id) {
+        pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
+      }
+    });
+
     return res?.updatedConversation;
   } catch (error) {
     handleError(error);
