@@ -95,15 +95,16 @@ export const createConversationService = async (payload: {
         },
       };
 
-      _newConversation.participants.forEach((participant) => {
+      _newConversation.participants.forEach(async (participant) => {
         if (participant._id) {
-          pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
+          await pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
         }
       });
-
-      //trigger to new conversation
       return res?.updatedConversation;
     }
+
+    // Group conversation
+
     const _nameGroup = nameGroup || existingUsers.map((user) => user.username).join(', ');
 
     let _avatarGroup = avatarGroup || '';
@@ -149,9 +150,9 @@ export const createConversationService = async (payload: {
       },
     };
 
-    _newConversation.participants.forEach((participant) => {
+    _newConversation.participants.forEach(async (participant) => {
       if (participant._id) {
-        pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
+        await pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
       }
     });
 
@@ -260,6 +261,7 @@ export const updateGroupConversationService = async (
         t('conversation.updateConversation.onlyUpdateGroupConversation')
       );
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updatedConversation = await Conversation.findByIdAndUpdate(
       conversationId,
       {
@@ -271,12 +273,13 @@ export const updateGroupConversationService = async (
     const { nameGroup, avatarGroup } = payload;
     let res:
       | {
+          // eslint-disable-next-line @typescript-eslint/ban-types
           message: mongoose.Document<unknown, {}, IMessage> &
             IMessage & {
               _id: mongoose.Types.ObjectId;
             };
-          updatedConversation:
-            | (mongoose.Document<unknown, {}, IConversation> &
+          updatedConversation: // eslint-disable-next-line @typescript-eslint/ban-types
+          | (mongoose.Document<unknown, {}, IConversation> &
                 IConversation & {
                   _id: mongoose.Types.ObjectId;
                 })
