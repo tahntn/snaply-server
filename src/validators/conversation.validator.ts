@@ -67,3 +67,9 @@ export const updateGroupConversation = (req: Request) => ({
       }),
   }),
 });
+
+export const typingMessage = (req: Request) => ({
+  body: Joi.object().keys({
+    isTyping: Joi.boolean().required(),
+  }),
+});

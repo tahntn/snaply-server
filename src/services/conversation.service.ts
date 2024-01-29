@@ -8,6 +8,7 @@ import { httpStatus, selectFieldUser, selectWithoutField } from '../constant';
 import { checkExistence } from './common.service';
 import { checkUserInConversation, sendMessageService } from './message.service';
 import Pusher from 'pusher';
+
 export const createConversationService = async (payload: {
   currentUser: Express.User;
   data: IConversation;
@@ -65,6 +66,7 @@ export const createConversationService = async (payload: {
         participants: [userId, userId2],
       });
       const _newConversation = await newConversation.save();
+
       const res = await sendMessageService(
         {
           user: currentUser,
@@ -76,8 +78,32 @@ export const createConversationService = async (payload: {
         },
         pusher
       );
+
+      const _newConversationPopulated = await _newConversation.populate('participants');
+      const _newConversationObj = {
+        ..._newConversationPopulated.toObject(),
+        lastActivity: {
+          lastMessage: {
+            ...res?.message.toObject(),
+            senderId: {
+              username: currentUser?.username,
+              email: currentUser?.email,
+              id: currentUser?.id,
+              avatar: currentUser?.avatar,
+            },
+          },
+        },
+      };
+
+      _newConversation.participants.forEach(async (participant) => {
+        if (participant._id) {
+          await pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
+        }
+      });
       return res?.updatedConversation;
     }
+
+    // Group conversation
 
     const _nameGroup = nameGroup || existingUsers.map((user) => user.username).join(', ');
 
@@ -106,6 +132,30 @@ export const createConversationService = async (payload: {
       },
       pusher
     );
+
+    const _newConversationPopulated = await _newConversation.populate('participants');
+
+    const _newConversationObj = {
+      ..._newConversationPopulated.toObject(),
+      lastActivity: {
+        lastMessage: {
+          ...res?.message.toObject(),
+          senderId: {
+            username: currentUser?.username,
+            email: currentUser?.email,
+            id: currentUser?.id,
+            avatar: currentUser?.avatar,
+          },
+        },
+      },
+    };
+
+    _newConversation.participants.forEach(async (participant) => {
+      if (participant._id) {
+        await pusher.trigger(participant._id.toString(), 'conversation:new', _newConversationObj);
+      }
+    });
+
     return res?.updatedConversation;
   } catch (error) {
     handleError(error);
@@ -211,6 +261,7 @@ export const updateGroupConversationService = async (
         t('conversation.updateConversation.onlyUpdateGroupConversation')
       );
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updatedConversation = await Conversation.findByIdAndUpdate(
       conversationId,
       {
@@ -222,12 +273,13 @@ export const updateGroupConversationService = async (
     const { nameGroup, avatarGroup } = payload;
     let res:
       | {
+          // eslint-disable-next-line @typescript-eslint/ban-types
           message: mongoose.Document<unknown, {}, IMessage> &
             IMessage & {
               _id: mongoose.Types.ObjectId;
             };
-          updatedConversation:
-            | (mongoose.Document<unknown, {}, IConversation> &
+          updatedConversation: // eslint-disable-next-line @typescript-eslint/ban-types
+          | (mongoose.Document<unknown, {}, IConversation> &
                 IConversation & {
                   _id: mongoose.Types.ObjectId;
                 })
@@ -263,6 +315,31 @@ export const updateGroupConversationService = async (
     }
 
     return res?.updatedConversation;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const typingMessageService = async (payload: {
+  currentUser: IUser;
+  conversationId: string;
+  pusher: Pusher;
+  isTyping: boolean;
+}) => {
+  try {
+    const { currentUser, conversationId, pusher, isTyping } = payload;
+
+    await pusher.trigger(conversationId, 'message:typing', {
+      isTyping,
+      userTyping: {
+        username: currentUser.username,
+        email: currentUser.email,
+        id: currentUser.id,
+        avatar: currentUser.avatar,
+      },
+    });
+
+    return;
   } catch (error) {
     handleError(error);
   }
