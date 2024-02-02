@@ -108,13 +108,29 @@ export const sendMessageService = async (payload: TPayloadSendMessage, pusher: P
     //trigger to user conversation updated
     if (type != 'update' || (type === 'update' && title !== 'new')) {
       const _newConversationPopulated = await updatedConversation!.populate('participants');
-      console.log(
-        '🚀 ~ sendMessageService ~ _newConversationPopulated:',
-        _newConversationPopulated
-      );
+
+      const _newConversationObj = {
+        ..._newConversationPopulated.toObject(),
+        lastActivity: {
+          lastMessage: {
+            ...newMessage.toObject(),
+            senderId: {
+              username: user?.username,
+              email: user?.email,
+              id: user?.id,
+              avatar: user?.avatar,
+            },
+          },
+        },
+      };
+      console.log('🚀 ~ sendMessageService ~ _newConversationPopulated:', _newConversationObj);
 
       _newConversationPopulated.participants.forEach(async (participant) => {
-        await pusher.trigger(participant._id.toString(), 'conversation:update', 'a');
+        await pusher.trigger(
+          participant._id.toString(),
+          'conversation:update',
+          _newConversationObj
+        );
       });
     }
 
