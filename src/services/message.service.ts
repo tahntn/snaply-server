@@ -104,6 +104,20 @@ export const sendMessageService = async (payload: TPayloadSendMessage, pusher: P
       },
       { new: true }
     );
+
+    //trigger to user conversation updated
+    if (type != 'update' || (type === 'update' && title !== 'new')) {
+      const _newConversationPopulated = await updatedConversation!.populate('participants');
+      console.log(
+        '🚀 ~ sendMessageService ~ _newConversationPopulated:',
+        _newConversationPopulated
+      );
+
+      _newConversationPopulated.participants.forEach(async (participant) => {
+        await pusher.trigger(participant._id.toString(), 'conversation:update', 'a');
+      });
+    }
+
     return {
       message: newMessage,
       updatedConversation,
