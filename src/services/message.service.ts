@@ -123,7 +123,6 @@ export const sendMessageService = async (payload: TPayloadSendMessage, pusher: P
           },
         },
       };
-      console.log('🚀 ~ sendMessageService ~ _newConversationPopulated:', _newConversationObj);
 
       _newConversationPopulated.participants.forEach(async (participant) => {
         await pusher.trigger(
