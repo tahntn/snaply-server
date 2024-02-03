@@ -165,7 +165,7 @@ export const createConversationService = async (payload: {
 export const getConversationsService = async (user: IUser, { offset, limit }: IQueryUser) => {
   try {
     const _limit = parseNumber(limit, 5);
-    const _offset = parseNumber(offset, 5);
+    const _offset = parseNumber(offset, 0);
 
     const conversations = await Conversation.find({
       participants: { $in: [user._id] },
