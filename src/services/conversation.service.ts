@@ -83,7 +83,7 @@ export const createConversationService = async (payload: {
         'participants',
         '-password -__v -createdAt -updatedAt'
       );
-      console.log('_newConversationPopulated', _newConversationPopulated);
+
       const _newConversationObj = {
         ..._newConversationPopulated.toObject(),
         lastActivity: {
