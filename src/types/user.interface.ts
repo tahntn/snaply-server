@@ -10,5 +10,6 @@ export interface IUserWithTokens {
 export interface IQueryUser {
   page?: string;
   limit?: string;
+  offset?: string;
   q: string;
 }
