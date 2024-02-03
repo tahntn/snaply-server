@@ -51,7 +51,7 @@ export const createConversationController = catchAsync(async (req: Request, res:
 export const getConversationsController = catchAsync(async (req: Request, res: Response) => {
   const currentUser = req.user!;
 
-  const query = pick(req.query, ['limit', 'page']);
+  const query = pick(req.query, ['offset', 'page']);
 
   const response = await getConversationsService(currentUser, query);
   res.status(httpStatus.OK).json(response);
