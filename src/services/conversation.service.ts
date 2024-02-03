@@ -79,7 +79,11 @@ export const createConversationService = async (payload: {
         pusher
       );
 
-      const _newConversationPopulated = await _newConversation.populate('participants');
+      const _newConversationPopulated = await _newConversation.populate(
+        'participants',
+        '-password -__v -createdAt -updatedAt'
+      );
+
       const _newConversationObj = {
         ..._newConversationPopulated.toObject(),
         lastActivity: {
