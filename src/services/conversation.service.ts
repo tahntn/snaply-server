@@ -79,7 +79,11 @@ export const createConversationService = async (payload: {
         pusher
       );
 
-      const _newConversationPopulated = await _newConversation.populate('participants');
+      const _newConversationPopulated = await _newConversation.populate(
+        'participants',
+        '-password -__v -createdAt -updatedAt'
+      );
+
       const _newConversationObj = {
         ..._newConversationPopulated.toObject(),
         lastActivity: {
@@ -162,12 +166,10 @@ export const createConversationService = async (payload: {
   }
 };
 
-export const getConversationsService = async (user: IUser, { page, limit }: IQueryUser) => {
+export const getConversationsService = async (user: IUser, { offset, limit }: IQueryUser) => {
   try {
-    const _page = parseNumber(page, 1);
     const _limit = parseNumber(limit, 5);
-
-    const startIndex = (_page - 1) * _limit;
+    const _offset = parseNumber(offset, 0);
 
     const conversations = await Conversation.find({
       participants: { $in: [user._id] },
@@ -184,7 +186,7 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
 
       .select(selectWithoutField)
       .sort({ updatedAt: -1 })
-      .skip(startIndex)
+      .skip(_offset)
       .limit(_limit)
       .lean()
       .exec();
@@ -192,7 +194,6 @@ export const getConversationsService = async (user: IUser, { page, limit }: IQue
     return {
       data: conversations,
       pagination: {
-        page: _page,
         limit: _limit,
       },
     };
