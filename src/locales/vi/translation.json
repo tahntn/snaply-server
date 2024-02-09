@@ -74,7 +74,8 @@
       "userIsNotPartOfThisConversation.": "Người dùng không thuộc về cuộc trò chuyện này.",
       "messageNotExist": "Tin nhắn không tồn tại.",
       "messageNotBelongToConversation": "Tin nhắn không thuộc cuộc trò chuyện.",
-      "imageRequired": "Vui lòng tải lên ít nhất một ảnh để tiếp tục."
+      "imageRequired": "Vui lòng tải lên ít nhất một ảnh để tiếp tục.",
+      "onlyPinnedTextMessages": "Chỉ ghim tin nhắn văn bản."
     },
     "success": {
       "updatedSuccessful": "Cập nhật tin nhắn thành công."

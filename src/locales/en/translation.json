@@ -76,7 +76,8 @@
       "userIsNotPartOfThisConversation.": "User is not part of this conversation.",
       "messageNotExist": "Message does not exist.",
       "messageNotBelongToConversation": "Message does not belong to the conversation.",
-      "imageRequired": "Please upload at least one image to proceed"
+      "imageRequired": "Please upload at least one image to proceed",
+      "onlyPinnedTextMessages": "Only pinned text messages."
     },
     "success": {
       "updatedSuccessful": "Updated successful."
