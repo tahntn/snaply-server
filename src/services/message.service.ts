@@ -113,9 +113,12 @@ export const sendMessageService = async (payload: TPayloadSendMessage, pusher: P
 
       const _newConversationObj = {
         ..._newConversationPopulated.toObject(),
-        participants: _newConversationPopulated.participants.map(
-          (participants) => participants._id
-        ),
+        participants: _newConversationPopulated.participants.map((participants) => {
+          if (_newConversationPopulated.isGroup) {
+            return participants._id;
+          }
+          return participants;
+        }),
         lastActivity: {
           lastMessage: {
             ...newMessage.toObject(),
