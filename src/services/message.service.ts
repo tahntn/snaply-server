@@ -83,9 +83,11 @@ export const sendMessageService = async (payload: TPayloadSendMessage, pusher: P
       url,
     });
 
+    const _newMessage = await newMessage!.populate('replyTo');
     //trigger to conversation new message
     await pusher.trigger(conversationId.toString(), 'message:new', {
       ...newMessage.toObject(),
+      replyTo: _newMessage.replyTo,
       senderId: {
         username: user.username,
         email: user.email,
@@ -111,6 +113,12 @@ export const sendMessageService = async (payload: TPayloadSendMessage, pusher: P
 
       const _newConversationObj = {
         ..._newConversationPopulated.toObject(),
+        participants: _newConversationPopulated.participants.map((participants) => {
+          if (_newConversationPopulated.isGroup) {
+            return participants._id;
+          }
+          return participants;
+        }),
         lastActivity: {
           lastMessage: {
             ...newMessage.toObject(),
