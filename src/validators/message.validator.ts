@@ -57,6 +57,7 @@ export const getListMessageByConversationIdValidate = (req: Request) => ({
     page: Joi.string().messages({
       'string.empty': req.t('error.cannotEnterEmptyString'),
     }),
+    is_pin: Joi.boolean(),
   }),
   params: Joi.object().keys({
     conversationId: Joi.string()

@@ -6,7 +6,6 @@ import { ApiError, handleError } from '../errors';
 import { IUser, User } from '../models';
 import { IQueryUser } from '../types';
 import { areIdsEqual, parseNumber } from '../utils';
-import { Request } from 'express';
 import { checkExistence } from './common.service';
 import { checkFriendRequest } from './friend.service';
 import { TFunction } from 'i18next';
@@ -34,7 +33,6 @@ export const getDetailUserByIdService = async (payload: {
   try {
     const { id, currentUser, t } = payload;
     const user = await getUserByIdService(id, t);
-    // const currentUser = req.user;
 
     if (areIdsEqual(id, currentUser?._id)) {
       return { data: user };
