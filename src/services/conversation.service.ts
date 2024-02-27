@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { ApiError, handleError } from '../errors';
-import { Conversation, IConversation, IMessage, IUser, User } from '../models';
+import { Conversation, IConversation, IMessage, IUser, Message, User } from '../models';
 import { IQueryUser } from '../types';
 import { areIdsEqual, hashEmail, parseNumber, randomNumber, removeEmptyFields } from '../utils';
 import { TFunction } from 'i18next';
@@ -218,10 +218,21 @@ export const getDetailConversationService = async (
           select: selectFieldUser,
         },
       });
+
     if (!conversation) {
       throw new ApiError(httpStatus.NOT_FOUND, t('conversation.error.conversationDoesNotExist'));
     }
-    return conversation;
+
+    const pinnedMessagesCount = await Message.countDocuments({
+      conversationId,
+      isPin: true,
+    }).exec();
+    const _conversation = {
+      ...conversation.toObject(),
+      pinnedMessagesCount,
+    };
+
+    return _conversation;
   } catch (error) {
     handleError(error);
   }

@@ -37,14 +37,17 @@ export const getListMessageByConversationIdController = catchAsync(
   async (req: Request, res: Response) => {
     await validate(getListMessageByConversationIdValidate(req))(req, res);
     const user = req.user!;
-    const query = pick(req.query, ['limit', 'page']);
+    const query = pick(req.query, ['limit', 'page', 'is_pin']);
     const conversationId = req.params.conversationId;
 
     const response = await getListMessageByConversationIdService({
       user,
       conversationId: new mongoose.Types.ObjectId(conversationId),
-      page: query?.page,
-      limit: query?.limit,
+      data: {
+        page: query?.page,
+        limit: query?.limit,
+        isPin: !!query?.is_pin,
+      },
       t: req.t,
     });
     res.status(httpStatus.OK).json(response);
@@ -52,6 +55,20 @@ export const getListMessageByConversationIdController = catchAsync(
 );
 
 export const pinMessageController = catchAsync(async (req: Request, res: Response) => {
+  const currentUser = req.user!;
+  const conversationId = req.params.conversationId;
+  const messageId = req.params.messageId;
+
+  const response = await pinMessageService({
+    currentUser,
+    conversationId: new mongoose.Types.ObjectId(conversationId),
+    messageId: new mongoose.Types.ObjectId(messageId),
+    t: req.t,
+  });
+  res.status(httpStatus.OK).json(response);
+});
+
+export const listPinMessageController = catchAsync(async (req: Request, res: Response) => {
   const currentUser = req.user!;
   const conversationId = req.params.conversationId;
   const messageId = req.params.messageId;
