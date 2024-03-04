@@ -208,6 +208,18 @@ export const getDetailConversationService = async (
   t: TFunction<'translation', undefined>
 ) => {
   try {
+    const detailConversation = await checkExistence(
+      Conversation,
+      conversationId,
+      t('conversation.error.conversationDoesNotExist')
+    );
+
+    checkUserInConversation({
+      conversation: detailConversation!,
+      t,
+      currentUserId: currentUser.id,
+    });
+
     const conversation = await Conversation.findById(conversationId)
       .populate('participants', selectFieldUser)
       .populate({
