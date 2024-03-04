@@ -139,7 +139,7 @@
     }
   },
   "error": {
-    "objectId": "Must be a valid mongo id.",
+    "objectId": "Invalid ID.",
     "nameString": "Name must be a string.",
     "avatarString": "Avatar must be a string.",
     "boolean": "#boolean must be a boolean.",
