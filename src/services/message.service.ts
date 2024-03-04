@@ -242,7 +242,7 @@ export const pinMessageService = async (payload: {
     //check existing messages
     const message = await checkExistence(Message, messageId, t('message.error.messageNotExist'));
 
-    if (message?.type !== 'text') {
+    if (message?.type !== 'text' && message?.type !== 'image') {
       throw new ApiError(httpStatus.BAD_REQUEST, t('message.error.onlyPinnedTextMessages'));
     }
 
