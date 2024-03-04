@@ -10,7 +10,7 @@ import {
   IUpdateStateFriendRequest,
 } from '../types/friend.interface';
 import { getUserByIdService } from './user.service';
-import { IConversation } from '../models';
+import { IConversation, IUser } from '../models';
 import { checkExistence } from './common.service';
 import { TFunction } from 'i18next';
 
@@ -146,6 +146,7 @@ export const getListFriendByUserIdService = async (req: Request) => {
     const _page = parseNumber(page, 1);
     const _limit = parseNumber(limit, 5);
     const _type = type || 'friends';
+    console.log('🚀 ~ getListFriendByUserIdService ~ _type:', _type);
 
     const startIndex = (_page - 1) * _limit;
 
@@ -175,7 +176,8 @@ export const getListFriendByUserIdService = async (req: Request) => {
       .lean()
       .exec();
 
-    // const totalFriends = await Friend.countDocuments(queryObj).exec();
+    const totalFriends = await Friend.countDocuments(queryObj).exec();
+    console.log('🚀 ~ getListFriendByUserIdService ~ totalFriends:', totalFriends);
     // const totalPages = Math.ceil(totalFriends / _limit);
 
     const _friend = friends.map((friend) => {
@@ -194,7 +196,7 @@ export const getListFriendByUserIdService = async (req: Request) => {
         page: _page,
         limit: _limit,
         // totalPages,
-        // totalFriends,
+        totalFriends,
       },
     };
   } catch (error) {
@@ -305,6 +307,36 @@ export const getListFriendSortByAlphabetService = async (req: Request) => {
         limit: _limit,
       },
     };
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getTotalListFriendtService = async (data: {
+  currentUser: IUser;
+  type: 'friendRequests' | undefined;
+}) => {
+  try {
+    const { currentUser, type } = data;
+
+    const _type = type || 'friends';
+    console.log('🚀 ~ _type:', _type);
+    const queryObj = {
+      $and: [
+        {
+          status: _type === 'friendRequests' ? 'pending' : 'accept',
+        },
+        {
+          ...(_type === 'friendRequests' && { targetUserId: currentUser?._id }),
+          ...(_type === 'friends' && {
+            $or: [{ userId: currentUser?._id }, { targetUserId: currentUser?._id }],
+          }),
+        },
+      ],
+    };
+    const total = await Friend.countDocuments(queryObj).exec();
+    console.log('🚀 ~ total:', total);
+    return total;
   } catch (error) {
     handleError(error);
   }
