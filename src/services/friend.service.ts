@@ -146,7 +146,6 @@ export const getListFriendByUserIdService = async (req: Request) => {
     const _page = parseNumber(page, 1);
     const _limit = parseNumber(limit, 5);
     const _type = type || 'friends';
-    console.log('🚀 ~ getListFriendByUserIdService ~ _type:', _type);
 
     const startIndex = (_page - 1) * _limit;
 
@@ -176,8 +175,7 @@ export const getListFriendByUserIdService = async (req: Request) => {
       .lean()
       .exec();
 
-    const totalFriends = await Friend.countDocuments(queryObj).exec();
-    console.log('🚀 ~ getListFriendByUserIdService ~ totalFriends:', totalFriends);
+    // const totalFriends = await Friend.countDocuments(queryObj).exec();
     // const totalPages = Math.ceil(totalFriends / _limit);
 
     const _friend = friends.map((friend) => {
@@ -196,7 +194,7 @@ export const getListFriendByUserIdService = async (req: Request) => {
         page: _page,
         limit: _limit,
         // totalPages,
-        totalFriends,
+        // totalFriends,
       },
     };
   } catch (error) {
@@ -320,7 +318,6 @@ export const getTotalListFriendtService = async (data: {
     const { currentUser, type } = data;
 
     const _type = type || 'friends';
-    console.log('🚀 ~ _type:', _type);
     const queryObj = {
       $and: [
         {
@@ -335,7 +332,6 @@ export const getTotalListFriendtService = async (data: {
       ],
     };
     const total = await Friend.countDocuments(queryObj).exec();
-    console.log('🚀 ~ total:', total);
     return total;
   } catch (error) {
     handleError(error);
