@@ -6,8 +6,9 @@ import {
   denyFriendRequestService,
   getListFriendByUserIdService,
   getListFriendSortByAlphabetService,
+  getTotalListFriendtService,
 } from '../services';
-import { catchAsync } from '../utils';
+import { catchAsync, pick } from '../utils';
 import { Request, Response } from 'express';
 import { validate } from '../middlewares';
 import {
@@ -67,8 +68,18 @@ export const getListFriendByUserIdController = catchAsync(async (req: Request, r
 export const getListFriendSortByAlphabetController = catchAsync(
   async (req: Request, res: Response) => {
     await validate(getListFriendSortByAlphabetValidate(req))(req, res);
-
     const response = await getListFriendSortByAlphabetService(req);
     res.status(httpStatus.OK).json(response);
   }
 );
+
+export const getTotalListFriendController = catchAsync(async (req: Request, res: Response) => {
+  const currentUser = req.user!;
+
+  const query = pick(req.query, ['type']);
+  const response = await getTotalListFriendtService({
+    currentUser,
+    type: query.type,
+  });
+  res.status(httpStatus.OK).json(response);
+});

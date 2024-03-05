@@ -83,9 +83,11 @@ export const sendMessageService = async (payload: TPayloadSendMessage, pusher: P
       url,
     });
 
+    const _newMessage = await newMessage!.populate('replyTo');
     //trigger to conversation new message
     await pusher.trigger(conversationId.toString(), 'message:new', {
       ...newMessage.toObject(),
+      replyTo: _newMessage.replyTo,
       senderId: {
         username: user.username,
         email: user.email,
@@ -111,6 +113,12 @@ export const sendMessageService = async (payload: TPayloadSendMessage, pusher: P
 
       const _newConversationObj = {
         ..._newConversationPopulated.toObject(),
+        participants: _newConversationPopulated.participants.map((participants) => {
+          if (_newConversationPopulated.isGroup) {
+            return participants._id;
+          }
+          return participants;
+        }),
         lastActivity: {
           lastMessage: {
             ...newMessage.toObject(),
@@ -145,12 +153,20 @@ export const sendMessageService = async (payload: TPayloadSendMessage, pusher: P
 export const getListMessageByConversationIdService = async (payload: {
   user: IUser;
   conversationId: mongoose.Types.ObjectId;
-  page?: string;
-  limit?: string;
+  data: {
+    page?: string;
+    limit?: string;
+    isPin?: boolean;
+  };
   t: TFunction<'translation', undefined>;
 }) => {
   try {
-    const { user, conversationId, page, limit, t } = payload;
+    const {
+      user,
+      conversationId,
+      data: { page, limit, isPin },
+      t,
+    } = payload;
 
     const _page = parseNumber(page, 1);
     const _limit = parseNumber(limit, 5);
@@ -171,7 +187,16 @@ export const getListMessageByConversationIdService = async (payload: {
       currentUserId,
     });
 
-    const messages = await Message.find({ conversationId: conversationId })
+    const query: {
+      conversationId: mongoose.Types.ObjectId;
+      isPin?: boolean;
+    } = { conversationId };
+
+    if (isPin && !!isPin) {
+      query.isPin = isPin;
+    }
+
+    const messages = await Message.find(query)
       .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(_limit)
@@ -216,6 +241,10 @@ export const pinMessageService = async (payload: {
 
     //check existing messages
     const message = await checkExistence(Message, messageId, t('message.error.messageNotExist'));
+
+    if (message?.type !== 'text' && message?.type !== 'image') {
+      throw new ApiError(httpStatus.BAD_REQUEST, t('message.error.onlyPinnedTextMessages'));
+    }
 
     //check message in converation
     checkMessageInConversation(conversationId, message!.conversationId, t);

@@ -68,7 +68,8 @@ export const updateGroupConversation = (req: Request) => ({
   }),
 });
 
-export const typingMessage = (req: Request) => ({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const typingMessage = (_req: Request) => ({
   body: Joi.object().keys({
     isTyping: Joi.boolean().required(),
   }),

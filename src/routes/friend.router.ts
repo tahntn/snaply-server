@@ -6,6 +6,7 @@ import {
   denyFriendRequestController,
   getListFriendByUserIdController,
   getListFriendSortByAlphabetController,
+  getTotalListFriendController,
 } from '../controllers';
 
 const router = Router();
@@ -15,5 +16,5 @@ router.post('/confirm/:friendRequestId', auth(), confirmFriendRequestController)
 router.post('/deny/:friendRequestId', auth(), denyFriendRequestController);
 router.get('/list', auth(), getListFriendByUserIdController);
 router.get('/list-v2', auth(), getListFriendSortByAlphabetController);
-
+router.get('/total', auth(), getTotalListFriendController);
 export default router;
