@@ -57,7 +57,7 @@ export const changePassword = (req: Request) => ({
       }),
     oldPassword: Joi.string()
       .required()
-      .custom((value, helper) => password(value, helper, req))
+      // .custom((value, helper) => password(value, helper, req))
       .messages({
         'any.required': req.t('user.changePassword.oldPasswordRequired'),
         'string.base': req.t('error.string'),
