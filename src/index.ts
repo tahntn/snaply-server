@@ -13,6 +13,7 @@ import i18nextMiddleware from 'i18next-http-middleware';
 import { IUser } from './models';
 import Pusher from 'pusher';
 import { pusherMiddleware } from './middlewares';
+import cron from 'node-cron';
 dotenv.config();
 
 declare global {
@@ -77,6 +78,10 @@ app.use(errorConverter);
 
 // handle error
 app.use(errorHandler);
+
+cron.schedule('* * * * *', () => {
+  console.log('running a task every minute');
+});
 
 process.on('unhandledRejection', (reason, p) => {
   console.error('Unhandled Rejection at:', p, 'reason:', reason);
