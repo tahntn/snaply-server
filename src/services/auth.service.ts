@@ -48,6 +48,13 @@ export const registerUserService = async (newUser: INewRegisteredUser, req: Requ
       throw new ApiError(httpStatus.BAD_REQUEST, req.t('user.error.emailAlready'));
     }
 
+    //check existing username
+    const existingUsername = await User.findOne({ username });
+
+    if (existingUsername) {
+      throw new ApiError(httpStatus.BAD_REQUEST, req.t('user.error.usernameAlready'));
+    }
+
     //hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 

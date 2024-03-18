@@ -116,6 +116,13 @@ export const updateUserService = async (
       }
     }
 
+    //check existing username
+    const existingUsername = await User.findOne({ username });
+
+    if (existingUsername) {
+      throw new ApiError(httpStatus.BAD_REQUEST, t('user.error.usernameAlready'));
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       id,
       {

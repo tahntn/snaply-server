@@ -43,6 +43,7 @@
     "error": {
       "userNotFound": "User not found.",
       "emailAlready": "Email is already registered.",
+      "usernameAlready": "Username is already registered.",
       "EmaildoesNotExist": "Email does not exist.",
       "incorrectPassword": "Incorrect password."
     }
