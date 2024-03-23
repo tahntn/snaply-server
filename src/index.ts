@@ -70,6 +70,16 @@ const server = app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
 
+//
+app.get('/', (req, res) => {
+  console.log('[server]');
+  return res.json({
+    Github: 'https://github.com/tahntn/snaply-server',
+    Issues: 'https://github.com/tahntn/snaply-server/issues',
+    Website: 'https://snaply-client.vercel.app',
+  });
+});
+
 //initiate router
 app.use('/api/v1', router);
 
